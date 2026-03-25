@@ -1,0 +1,79 @@
+{
+  "train_csv": "data/d1namo_train_excl001.csv",
+  "test_csv": "data/d1namo_test_subject001.csv",
+  "features": [
+    "glucose_mgdl",
+    "glucose_lag1",
+    "glucose_lag2",
+    "glucose_lag3",
+    "glucose_lag6",
+    "glucose_lag9",
+    "glucose_lag12",
+    "delta1",
+    "delta3",
+    "delta6",
+    "accel13",
+    "roll3",
+    "roll6",
+    "roll12",
+    "tod_sin",
+    "tod_cos"
+  ],
+  "rows_train": 6768,
+  "rows_test": 1423,
+  "ranked_models": [
+    {
+      "name": "random_forest",
+      "mae": 5.976271070446178,
+      "rmse": 9.863237578941165,
+      "r2": 0.9874510538729022,
+      "hit_05": 0.7617709065354884,
+      "hit_08": 0.8938861560084329,
+      "hit_10": 0.932536893886156,
+      "composite": 0.14467758763064542
+    },
+    {
+      "name": "huber",
+      "mae": 5.855640812250473,
+      "rmse": 9.010661812361501,
+      "r2": 0.9895267457523323,
+      "hit_05": 0.763879128601546,
+      "hit_08": 0.8833450456781448,
+      "hit_10": 0.9262122276879832,
+      "composite": 0.14598480939211778
+    },
+    {
+      "name": "gradient_boosting",
+      "mae": 6.310633147035183,
+      "rmse": 9.77980391704248,
+      "r2": 0.9876624603580343,
+      "hit_05": 0.7456078706957133,
+      "hit_08": 0.8770203794799719,
+      "hit_10": 0.9255094869992972,
+      "composite": 0.1545611787970198
+    },
+    {
+      "name": "elastic_net",
+      "mae": 7.426034530279727,
+      "rmse": 10.387957372545635,
+      "r2": 0.9860803413897151,
+      "hit_05": 0.6444132115249473,
+      "hit_08": 0.7835558678847505,
+      "hit_10": 0.8468025298664793,
+      "composite": 0.2179272301184715
+    },
+    {
+      "name": "ridge",
+      "mae": 7.427306970394827,
+      "rmse": 10.389641204949521,
+      "r2": 0.98607582841936,
+      "hit_05": 0.6444132115249473,
+      "hit_08": 0.7835558678847505,
+      "hit_10": 0.8468025298664793,
+      "composite": 0.21795013404054328
+    }
+  ],
+  "best_model": "random_forest",
+  "best_embeddable_model": "huber",
+  "exported_header": "src/cgm_model_generated.h"
+}
