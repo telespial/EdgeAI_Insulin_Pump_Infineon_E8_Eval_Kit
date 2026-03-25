@@ -15,7 +15,8 @@ export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusTool
 ## Build
 
 ```bash
-cd /home/user/projects/embedded/codemaster/projects/Infineon/PSOC_EDGE_E8_EVAL/firmware_kit_epc2
+cd firmware_kit_epc2
+make getlibs
 make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
 ```
 
@@ -32,5 +33,3 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
 - If display is blank after flash, re-check display config (`W4P3INCH_DISP`) and known working restore tag.
 - If combine/sign fails with `EdgeProtect Secure Suite not found`, verify:
   - `CY_TOOL_edgeprotecttools_EXE_ABS` points to a valid `edgeprotecttools` binary.
-  - Example known-good path:
-    `/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools`

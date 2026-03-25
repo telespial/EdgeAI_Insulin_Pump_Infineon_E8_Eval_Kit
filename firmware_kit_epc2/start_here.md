@@ -1,6 +1,6 @@
-# Start Here (PSOC Edge E84 - Smart Pong Port)
+# Start Here (PSOC Edge E84 - Insulin Pump)
 
-This project is the working firmware repo for the PSOC Edge E84 Evaluation Kit with the 4.3-inch display.
+This project is the working insulin pump firmware repo for the PSOC Edge E84 Evaluation Kit with the 4.3-inch display.
 
 Read in this exact order:
 1. `README.md`

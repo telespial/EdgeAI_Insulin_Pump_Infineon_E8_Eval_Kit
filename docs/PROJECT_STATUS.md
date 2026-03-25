@@ -13,3 +13,7 @@
 - Flash: `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` ✅
 - Detected MCU: `PSE846GPS2DBZC4A` (Rev `B0`)
 - Programmed artifact: `firmware_kit_epc2/build/app_combined.hex`
+
+## Restore tags
+- Golden: `golden-e8-insulin-pump`, `golden-e8-insulin-pump-20260325`
+- Failsafe: `failsafe-e8-insulin-pump`, `failsafe-e8-insulin-pump-20260325`

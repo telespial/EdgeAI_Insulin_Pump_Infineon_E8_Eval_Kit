@@ -5,3 +5,4 @@
 2026-03-25T09:24:00-07:00 | docs refresh | rewrote insulin repo README/start docs for self-contained pull-build-flash workflow
 2026-03-25T09:28:00-07:00 | build verify | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
 2026-03-25T09:29:00-07:00 | flash verify | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+2026-03-25T10:07:00-07:00 | docs + restore tags sync | updated restore/status/runbook docs for self-contained build path and golden/failsafe tag workflow
