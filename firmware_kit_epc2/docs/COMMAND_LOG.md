@@ -397,3 +397,5 @@
 - 2026-04-08 09:53:49 PDT | cmd: tag+push main and restore tags (golden/failsafe, dated + rolling)
 - 2026-04-08 09:53:49 PDT | cmd: update docs/RESTORE_POINTS.md with pushed commit hash
 - 2026-04-08 09:53:49 PDT | cmd: update docs/PROJECT_STATE.md with publish/tag summary
+- 2026-04-08 09:54:13 PDT | cmd: reconcile docs commit hash to latest pushed baseline
+- 2026-04-08 09:54:13 PDT | cmd: retarget restore tags to final baseline commit

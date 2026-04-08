@@ -11,7 +11,7 @@ Known-good checkpoints for fast recovery when development changes break boot, di
 
 ## Latest Verified Baseline (2026-04-08)
 - Board: `PSE846GPS2DBZC4A` (Rev `B0`)
-- Git commit: `e3b3845`
+- Git commit: `f05711e`
 - Build:
   - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
 - Flash:

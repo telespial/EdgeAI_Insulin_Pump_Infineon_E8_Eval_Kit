@@ -482,4 +482,4 @@
 - Updated rolling restore tags to current baseline:
   - `golden-e8-insulin-pump`
   - `failsafe-e8-insulin-pump`
-- Current pushed baseline commit: `e3b3845`.
+- Current pushed baseline commit: `f05711e`.
