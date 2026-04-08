@@ -170,3 +170,6 @@
 [2026-04-08T08:05:01-07:00] CMD: git status --short and git diff --name-only (insulin repo)
 [2026-04-08T08:05:17-07:00] CMD: git diff key files (edgeai port, project state, runbook/common_app/docs status)
 [2026-04-08T08:05:27-07:00] CMD: git remote -v (verify origin)
+[2026-04-08T08:05:46-07:00] CMD: git add -A
+[2026-04-08T08:05:46-07:00] CMD: git commit -m 'Insulin UI runtime: continuous replay, temp/clinical readout, restore points, and build/flash docs'
+[2026-04-08T08:05:46-07:00] CMD: git push origin HEAD
