@@ -473,3 +473,13 @@
 - Baseline for restore points:
   - Build image: `build/app_combined.hex` (mtime `2026-04-08 09:48:33 -0700`)
   - Flash verification: OpenOCD write+verify completed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Git Publish + Restore Tags (2026-04-08)
+- Pushed branch `main` to `git@github.com:telespial/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit.git`.
+- Published dated restore tags:
+  - `golden-e8-insulin-pump-20260408`
+  - `failsafe-e8-insulin-pump-20260408`
+- Updated rolling restore tags to current baseline:
+  - `golden-e8-insulin-pump`
+  - `failsafe-e8-insulin-pump`
+- Current pushed baseline commit: `e3b3845`.

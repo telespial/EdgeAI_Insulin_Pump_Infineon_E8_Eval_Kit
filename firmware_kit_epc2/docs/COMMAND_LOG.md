@@ -394,3 +394,6 @@
 - 2026-04-08 09:53:10 PDT | cmd: git status --short
 - 2026-04-08 09:53:10 PDT | cmd: prepare release tags golden/failsafe for 2026-04-08 baseline
 - 2026-04-08 09:53:10 PDT | cmd: push main and restore tags to origin
+- 2026-04-08 09:53:49 PDT | cmd: tag+push main and restore tags (golden/failsafe, dated + rolling)
+- 2026-04-08 09:53:49 PDT | cmd: update docs/RESTORE_POINTS.md with pushed commit hash
+- 2026-04-08 09:53:49 PDT | cmd: update docs/PROJECT_STATE.md with publish/tag summary
