@@ -388,3 +388,5 @@
 - 2026-04-08 09:52:08 PDT | cmd: update docs/OPS_RUNBOOK.md with restore artifact generation commands
 - 2026-04-08 09:52:27 PDT | cmd: update docs/PROJECT_STATE.md with golden+failsafe restore refresh
 - 2026-04-08 09:52:36 PDT | cmd: git status --short before commit
+- 2026-04-08 09:52:43 PDT | cmd: git add -A
+- 2026-04-08 09:52:43 PDT | cmd: git commit -m 'Stabilize runtime timing, refresh temp path, and publish 2026-04-08 restore points'
