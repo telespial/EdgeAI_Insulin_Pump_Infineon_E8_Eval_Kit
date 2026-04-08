@@ -33,6 +33,8 @@ CY_WIN_HOME=$(subst \,/,$(USERPROFILE))
 CY_TOOLS_PATHS ?= $(wildcard \
     $(CY_WIN_HOME)/ModusToolbox/tools_* \
     $(HOME)/ModusToolbox/tools_* \
+    /opt/Tools/ModusToolbox/tools_* \
+    /home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_* \
     /Applications/ModusToolbox/tools_*)
 
 # If you install ModusToolbox software in a custom location, add the path to its
@@ -53,5 +55,5 @@ CY_TOOLS_DIR=$(lastword $(sort $(wildcard $(CY_TOOLS_PATHS))))
 CY_COMPILER_GCC_ARM_DIR?=
 
 ifeq ($(CY_TOOLS_DIR),)
-$(error Unable to find any of the available CY_TOOLS_PATHS -- $(CY_TOOLS_PATHS))
+$(error Unable to find ModusToolbox build tools (tools_X.Y). Checked CY_TOOLS_PATHS='$(CY_TOOLS_PATHS)'. Note: programmer-only installs like /opt/Tools/ModusToolboxProgtools-1.7 can flash but cannot build)
 endif

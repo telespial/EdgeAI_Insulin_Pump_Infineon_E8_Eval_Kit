@@ -173,10 +173,11 @@ void MedicalHal_FillRect(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_
 
 void MedicalHal_DrawRect(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color)
 {
-    display_hal_fill_rect((int32_t)x0, (int32_t)y0, (int32_t)x1, (int32_t)y0, color);
-    display_hal_fill_rect((int32_t)x0, (int32_t)y1, (int32_t)x1, (int32_t)y1, color);
-    display_hal_fill_rect((int32_t)x0, (int32_t)y0, (int32_t)x0, (int32_t)y1, color);
-    display_hal_fill_rect((int32_t)x1, (int32_t)y0, (int32_t)x1, (int32_t)y1, color);
+    /* Route through the mapped fill path so 480x320 virtual coordinates stay aligned on 800x480 output. */
+    MedicalHal_FillRect(x0, y0, x1, y0, color);
+    MedicalHal_FillRect(x0, y1, x1, y1, color);
+    MedicalHal_FillRect(x0, y0, x0, y1, color);
+    MedicalHal_FillRect(x1, y0, x1, y1, color);
 }
 
 void MedicalHal_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color)
@@ -257,11 +258,7 @@ void MedicalHal_DrawText(int16_t x, int16_t y, const char *text, uint8_t scale, 
         return;
     }
 
-    out_scale = (uint8_t)(((uint32_t)scale * (uint32_t)EDGEAI_LCD_H + (uint32_t)LCD_H - 1u) / (uint32_t)LCD_H);
-    if (out_scale == 0u)
-    {
-        out_scale = 1u;
-    }
-
-    edgeai_text5x7_draw_scaled_no_present(map_x0((int32_t)x), map_y0((int32_t)y), (int32_t)out_scale, text, color);
+    out_scale = (scale == 0u) ? 1u : scale;
+    /* Text renderer already goes through par_lcd_s035 -> MedicalHal_FillRect mapping, so keep virtual coords here. */
+    edgeai_text5x7_draw_scaled_no_present((int32_t)x, (int32_t)y, (int32_t)out_scale, text, color);
 }

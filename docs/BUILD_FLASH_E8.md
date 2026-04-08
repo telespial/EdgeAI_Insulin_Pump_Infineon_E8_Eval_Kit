@@ -33,3 +33,15 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
 - If display is blank after flash, re-check display config (`W4P3INCH_DISP`) and known working restore tag.
 - If combine/sign fails with `EdgeProtect Secure Suite not found`, verify:
   - `CY_TOOL_edgeprotecttools_EXE_ABS` points to a valid `edgeprotecttools` binary.
+
+## Direct Flash Alternative (Installed Progtools Path)
+
+If full Modus `tools_3.7` make tooling is unavailable but programmer tools are installed, you can flash an existing `app_combined.hex` directly:
+
+```bash
+/opt/Tools/ModusToolboxProgtools-1.7/openocd/bin/openocd \
+  -s /opt/Tools/ModusToolboxProgtools-1.7/openocd/scripts \
+  -s firmware_kit_epc2/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource \
+  -c "set QSPI_FLASHLOADER firmware_kit_epc2/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/PSE84_SMIF.FLM" \
+  -c "source [find interface/kitprog3.cfg]; transport select swd; source [find target/infineon/pse84xgxs2.cfg]; init; reset init; adapter speed 12000; flash write_image erase firmware_kit_epc2/build/app_combined.hex; verify_image firmware_kit_epc2/build/app_combined.hex; reset run; shutdown;"
+```

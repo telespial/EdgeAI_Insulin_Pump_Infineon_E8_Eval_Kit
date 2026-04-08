@@ -3,7 +3,7 @@
 ## Source Of Truth
 Exact source baseline to port:
 
-- `/home/user/projects/embedded/codemaster/projects/Infineon/PSOC_EDGE_E8_EVAL/EdgeAI_CGM_Insulin_Pump_demo_NXP_FRDM-MCXN947`
+- `../EdgeAI_CGM_Insulin_Pump_demo_NXP_FRDM-MCXN947`
 
 Imported snapshot inside this app:
 
