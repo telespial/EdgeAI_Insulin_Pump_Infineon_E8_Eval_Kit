@@ -390,3 +390,7 @@
 - 2026-04-08 09:52:36 PDT | cmd: git status --short before commit
 - 2026-04-08 09:52:43 PDT | cmd: git add -A
 - 2026-04-08 09:52:43 PDT | cmd: git commit -m 'Stabilize runtime timing, refresh temp path, and publish 2026-04-08 restore points'
+- 2026-04-08 09:52:57 PDT | cmd: git status --short; git add docs/COMMAND_LOG.md; git commit -m 'Update command log for commit workflow'
+- 2026-04-08 09:53:10 PDT | cmd: git status --short
+- 2026-04-08 09:53:10 PDT | cmd: prepare release tags golden/failsafe for 2026-04-08 baseline
+- 2026-04-08 09:53:10 PDT | cmd: push main and restore tags to origin
