@@ -8,8 +8,9 @@ Build and flash the standalone insulin pump demo on E8 Eval Kit EPC2.
 2. `PROJECT_STATE.md`
 3. `OPS_RUNBOOK.md`
 4. `HARDWARE_SETUP.md`
-5. `COMMAND_LOG.md`
-6. `TODO.md`
+5. `RESTORE_POINTS.md`
+6. `COMMAND_LOG.md`
+7. `TODO.md`
 
 ## Source of truth
 - Runtime entry: `../proj_cm55/main.c`

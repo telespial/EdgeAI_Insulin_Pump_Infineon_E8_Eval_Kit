@@ -229,3 +229,247 @@
   - Created `failsafe/restore_points/golden_20260408_080340_app_combined.hex`
   - Created `failsafe/restore_points/failsafe_20260408_080340_app_combined.hex`
   - Checksums saved in `failsafe/restore_points/20260408_080340_sha256.txt`
+
+## Dummy Hour Stream + Board Temp Sensor Route (2026-04-08)
+- User-requested UI/data adjustments completed in insulin project:
+  - Center `mg/dL` readout moved up by one rendered text height (scale-2 glyph height).
+  - Glucose stream source changed from long replay file to 1-hour dummy series at 5-minute cadence (12 points) with interpolation between points.
+- Temperature routing update:
+  - Added new platform module:
+    - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/platform/board_temp_sensor.c`
+    - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/platform/board_temp_sensor.h`
+  - Module uses E8 BSP I3C controller (`CYBSP_I3C_CONTROLLER_*`) and probes legacy temp addresses `0x48..0x4B`, register `0x00`, then decodes 12-bit temperature to tenth-C.
+  - Source references reviewed:
+    - BSP generated config/pins (`cycfg_peripherals.h`, `cycfg_pins.h`) show I3C controller and P3.0/P3.1 pin route.
+    - Upstream sample logic confirms static temp target addressing and decode model (`BOARD_TEMP_REG=0x00`, static `0x48` range, P3T1755-style decode).
+  - Runtime behavior:
+    - Terminal temp now prefers hardware board sensor reading each stream step.
+    - Automatic fallback remains to existing simulated `PowerData` temp if hardware read is unavailable.
+- Build + flash:
+  - Fresh image produced: `build/app_combined.hex` (mtime `2026-04-08 08:21` local).
+  - Flashed immediately with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Rebuild/Reflash Verification Pass (2026-04-08)
+- Re-verified that requested turn changes are active in source:
+  - `mg/dL` center text Y shift by one text height.
+  - 1-hour dummy glucose source (12 points at 5-minute cadence).
+  - Board temperature routed through E8 I3C temp path with fallback.
+- Rebuilt with explicit toolchain paths:
+  - `CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7`
+  - `CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc`
+  - `CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools`
+- Reflashed `build/app_combined.hex` with OpenOCD + QSPI loader and verify pass on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Dummy Data Expansion to 800+ Rows (2026-04-08)
+- Expanded dummy glucose source from 12 rows to 864 rows (5-minute interval, ~72 hours equivalent).
+- Replaced static short array with deterministic generator function (`demo_glucose_row`) while keeping existing interpolation pipeline unchanged.
+- Build + flash:
+  - Fresh image: `build/app_combined.hex` (mtime `2026-04-08 08:30` local).
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Stream Freeze Mitigation Pass (2026-04-08)
+- Implemented fail-safe stream runtime update to prevent UI stalls:
+  - decoupled board temp sensor reads from high-rate render updates,
+  - added cached board-temp handling with low-frequency refresh (`TEMP_HW_REFRESH_STEPS=120`) and automatic fallback to `PowerData` temp when hardware refresh fails.
+- Goal: keep CGM/chart/terminal streaming continuous even if I3C temp transactions intermittently fail.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Stream Cadence Visibility Update (2026-04-08)
+- Adjusted stream cadence to avoid apparent value stall around ~100 mg/dL:
+  - `DATA_STREAM_ADVANCE_DS` changed to `3000` (advance one 5-minute row per update),
+  - `STREAM_STEP_FRAME_DIV` changed to `1` (update each frame tick).
+- This keeps replay index and glucose display moving visibly every update while still reading from the 864-row source.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Full Stream/Display Runtime Rewrite (2026-04-08)
+- Reworked the insulin runtime data/display loop for deterministic non-stalling behavior:
+  - replaced frame-div stepping with monotonic scheduled cadences (`STREAM_STEP_US`, `RENDER_STEP_US`, `TOUCH_POLL_US`) and catch-up guard,
+  - changed glucose stepping to strict row-by-row traversal across the 864-row source (no interpolation hold behavior),
+  - rewired temperature update to fallback-first non-blocking path with sparse opportunistic board-temp refresh.
+- Objective: prevent freeze after a few seconds and keep glucose/chart/terminal moving continuously.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Hard Freeze Isolation Pass (2026-04-08)
+- User reported hard freeze with touchscreen stopping simultaneously.
+- Applied isolation change to remove runtime hardware board-temp reads from the live loop (I3C path), leaving non-blocking fallback temperature source from `PowerData` only.
+- Purpose: eliminate I3C blocking as a freeze source while keeping stream/render scheduler rewrite active.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## No-Touch Diagnostic Build (2026-04-08)
+- Because hard freeze persisted (including touch lock-up), created an isolation firmware with runtime touch polling disabled:
+  - `ENABLE_TOUCH_INPUT=0` in `ported_nxp/edgeai_insulin_pump_port.c`.
+- Purpose: determine if the freeze source is touch-bus path versus non-touch runtime.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Deep Isolation Runtime Build (2026-04-08)
+- Additional freeze isolation changes applied in live runtime:
+  - touch polling disabled (`ENABLE_TOUCH_INPUT=0`),
+  - model inference bypassed in loop (`ENABLE_MODEL_INFERENCE=0`),
+  - render cadence reduced to stream-driven updates only (avoid high-frequency display present pressure),
+  - board-temp hardware reads already removed from runtime path.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## Minimal mg/dL-Only UI Build (2026-04-08)
+- Per request, disconnected graph and terminal from runtime render path.
+- Active render now shows only center `mg/dL` text line over static layout background.
+- Build + flash:
+  - Rebuilt fresh `build/app_combined.hex`.
+  - Flashed with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - Write + verify passed on `PSE846GPS2DBZC4A` rev `B0`.
+
+## 2026-04-08T09:00:36-07:00
+- Request handled: print demo data row number under center `mg/dL` line.
+- Code status: row label already present in `draw_center_glucose_readout()` and rendered as `row: <current>/<total>` under the glucose line.
+- Build: `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` (no compile changes; up-to-date build verified).
+- Flash: succeeded using OpenOCD with `-s bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource` and `set QSPI_FLASHLOADER PSE84_SMIF.FLM`.
+- Note: generic OpenOCD flash command without GeneratedSource/SMIF mapping fails for this board image.
+
+## 2026-04-08T09:08:00-07:00
+- Freeze root cause identified: runtime scheduler clock used absolute conversion of 32-bit DWT cycle counter, which wraps at CM55 frequency in ~10-11 seconds; this matched freezing around row 22.
+- Fix applied in `platform/insulin_platform.c`:
+  - `insulin_platform_now_us()` changed to wrap-safe delta accumulation (`now_cycles - prev_cycles`) instead of absolute `cycles_to_us(cycles)`.
+  - Added initialization of timing state in `insulin_platform_init()`.
+- Expected effect: stream/render scheduling remains monotonic across DWT wraps; row counter should continue past 22/864.
+- Build + flash:
+  - Built with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+  - Flashed via OpenOCD with `-s bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource` and `set QSPI_FLASHLOADER PSE84_SMIF.FLM`.
+  - Program + verify succeeded on PSE846GPS2DBZC4A (B0).
+
+## 2026-04-08T09:12:49-07:00
+- Restored UI panels in insulin demo runtime:
+  - `render_screen()` now draws EdgeAI button, right-side CGM stream chart, and AI terminal, in addition to center glucose/readout.
+- Wired temperature path into runtime stream state:
+  - added board sensor integration via `board_temp_sensor_read_c10()`.
+  - stream step now uses board temperature when available; falls back to `PowerData_Get()->temp_c` if sensor read fails.
+  - `PowerData_Tick()` is called on each stream update to keep fallback sample fresh.
+- Freeze fix from previous step retained (monotonic wrap-safe time accumulation).
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - OpenOCD flash+verify with GeneratedSource path + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`
+  - Program + verify passed on PSE846GPS2DBZC4A (B0).
+- Note: touch handling remains compile-disabled (`ENABLE_TOUCH_INPUT=0`), so the EdgeAI button is visual-only in this build.
+
+## 2026-04-08T09:20:00-07:00
+- Freeze-at-32 isolation update after restoring chart/terminal + live temp:
+  - retained chart and terminal rendering.
+  - changed temperature path to avoid repeated board I3C reads in the hot stream loop.
+  - board sensor remains wired-in via startup snapshot (`board_temp_sensor_read_c10()` in init).
+  - per-step temperature now comes from `PowerData_Tick()/PowerData_Get()` fallback path; if board snapshot was valid at startup, that value is retained.
+- Rationale: deterministic freeze at `32/864` strongly indicated repeated live board-temp I3C polling instability.
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - OpenOCD flash+verify with GeneratedSource path + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`
+  - Program + verify passed on PSE846GPS2DBZC4A (B0).
+
+## 2026-04-08T09:22:11-07:00
+- Per request, removed only the graph panel from active rendering.
+- Current render composition: EdgeAI button + AI terminal + center glucose/readout (graph hidden).
+- Code change: removed `draw_chart_panel(stream)` call from `render_screen()` in `ported_nxp/edgeai_insulin_pump_port.c`.
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - OpenOCD flash+verify with GeneratedSource path + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`
+  - Program + verify passed on PSE846GPS2DBZC4A (B0).
+
+## 2026-04-08T09:30:00-07:00
+- Temperature path updated to real live on-board measurement in runtime.
+- `cgm_stream_step()` now attempts `board_temp_sensor_read_c10()` on every stream update.
+- If a read fails, it falls back to last known good board temp; if none exists yet, it falls back to `PowerData_Get()->temp_c`.
+- Graph remains disabled per latest request; terminal and center glucose readout remain active.
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - OpenOCD flash+verify with GeneratedSource path + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`
+  - Program + verify passed on PSE846GPS2DBZC4A (B0).
+
+## 2026-04-08T09:36:00-07:00
+- Terminal label cleanup:
+  - trend line prefix changed from `T` to `ROC`.
+  - temperature line prefix changed from `T` to `TMP`.
+- Board temperature reliability hardening:
+  - retained live runtime reads via `board_temp_sensor_read_c10()` each stream step.
+  - added one-shot re-probe/rebind recovery in `board_temp_sensor_read_c10()` when raw read or decode fails.
+  - probe scans legacy I2C addresses `0x48..0x4B` and reattaches devices to recover from bus/address drift.
+- Graph remains disabled (per user request); terminal and center glucose/readout remain active.
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - OpenOCD flash+verify with GeneratedSource path + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`
+  - Program + verify passed on PSE846GPS2DBZC4A (B0).
+
+## Board Temp Sensor Dynamic-I3C Recovery (2026-04-08)
+- Addressed non-working terminal temperature by updating board temp probe flow in:
+  - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/platform/board_temp_sensor.c`
+- Changes:
+  - Added I3C dynamic-address probe path (`RSTDAA` + `SETDASA`) targeting static temp address `0x48`, assigning dynamic `0x08`.
+  - Init and recovery now try dynamic-I3C first, then legacy I2C probe fallback (`0x48..0x4B`).
+  - Kept existing decode guardrails and runtime re-probe behavior.
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` succeeded.
+  - Flashed fresh `build/app_combined.hex` via OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - OpenOCD verify passed (`verified 1639348 bytes`).
+
+## TMP N/A Resolution Attempt: ADC Thermistor Fallback (2026-04-08)
+- User report: terminal still showed `TMP N/A` after I3C dynamic-address probe update.
+- Hardware doc finding (E84 kit user guide):
+  - onboard thermistor `TH1` exists,
+  - MCU thermistor path is not connected by default and is enabled via board rework,
+  - board also exposes `CYBSP_ADC_6_POT` on `P15[1]` via SAR channel in generated BSP config.
+- Code update in `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/platform/board_temp_sensor.c`:
+  - retained I3C temp probe (`RSTDAA` + `SETDASA`) and legacy I2C probe attempts,
+  - added ADC fallback path using `mtb_hal_adc` with `CYBSP_SAR_ADC_hal_config`,
+  - ADC channel value now converts to estimated temperature via a bounded NTC-like lookup/interpolation table.
+- Expected runtime behavior:
+  - if I3C temp target is absent/unreachable, terminal now shows measured ADC-based temperature instead of `N/A`.
+- Build + flash:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` succeeded.
+  - Flashed fresh `build/app_combined.hex` via OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - OpenOCD verify passed (`verified 1640544 bytes`).
+- Follow-up robustness patch:
+  - if I3C init fails, ADC thermistor fallback is now attempted immediately in `board_temp_sensor_init()`.
+- Rebuild + reflash:
+  - write + verify passed (`verified 1640552 bytes`).
+
+## Blank-Screen Recovery Flash (2026-04-08)
+- User report: display became blank after the ADC thermistor fallback iteration.
+- Recovery action:
+  - rolled temperature implementation back to I3C dynamic probe + legacy I2C fallback only in:
+    - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/platform/board_temp_sensor.c`
+  - removed ADC fallback path from active build.
+- Build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - fresh artifact: `build/app_combined.hex` (mtime `2026-04-08 09:48:33 -0700`).
+- Flash:
+  - flashed `build/app_combined.hex` with OpenOCD + `QSPI_FLASHLOADER=PSE84_SMIF.FLM`.
+  - OpenOCD reported successful write and verify (`verified 1639348 bytes`).
+  - Note: tool exit code returned non-zero despite successful write/verify text; this behavior was also observed via `make program` wrapper because it uses the same OpenOCD runner.
+
+## Golden + Failsafe Restore Point Refresh (2026-04-08)
+- Created fresh restore artifacts from the latest verified build image:
+  - `failsafe/restore_points/golden_20260408_095131_app_combined.hex`
+  - `failsafe/restore_points/failsafe_20260408_095131_app_combined.hex`
+  - `failsafe/restore_points/20260408_095131_sha256.txt`
+- Updated docs for this baseline:
+  - `docs/RESTORE_POINTS.md`
+  - `docs/START_HERE.md`
+  - `docs/OPS_RUNBOOK.md`
+- Baseline for restore points:
+  - Build image: `build/app_combined.hex` (mtime `2026-04-08 09:48:33 -0700`)
+  - Flash verification: OpenOCD write+verify completed on `PSE846GPS2DBZC4A` rev `B0`.

@@ -5,19 +5,79 @@
 #include "pump_bg.h"
 #include "cgm_preprocess.h"
 #include "power_data_source.h"
-#include "../upstream_nxp/src/cgm_replay_subject001.h"
 #include "../platform/insulin_platform.h"
 #include "../platform/display_hal.h"
+#include "../platform/board_temp_sensor.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <limits.h>
 
-#define PORT_FRAME_US 100000u
-#define DATA_STREAM_ADVANCE_DS 600u
+#define PORT_FRAME_US 20000u
+#define STREAM_STEP_US 500000u
+#define RENDER_STEP_US 100000u
+#define TOUCH_POLL_US 250000u
+#define ENABLE_TOUCH_INPUT 0u
+#define ENABLE_MODEL_INFERENCE 0u
+#define DATA_STREAM_ADVANCE_DS 3000u
 #define REPLAY_STEP_DS 3000u
-#define STREAM_STEP_FRAME_DIV 3u
 #define RGB565(r, g, b) (uint16_t)((((uint16_t)(r) & 0xF8u) << 8) | (((uint16_t)(g) & 0xFCu) << 3) | (((uint16_t)(b) & 0xF8u) >> 3))
+
+/* 864 rows of deterministic dummy glucose data at 5-minute spacing (~72 hours). */
+#define DEMO_GLUCOSE_LEN 864u
+
+static int32_t i32_abs(int32_t v)
+{
+    return (v < 0) ? -v : v;
+}
+
+static uint16_t demo_glucose_row(uint32_t idx)
+{
+    uint32_t day = idx % 288u;               /* 24h * 12 samples/hour */
+    uint32_t day_block = (idx / 288u) % 3u;  /* slow multi-day drift */
+    int32_t v = 118;
+    int32_t d;
+    int32_t drift;
+    int32_t jitter;
+
+    /* Breakfast pulse centered at 08:00 (index 96). */
+    d = i32_abs((int32_t)day - 96);
+    if (d < 20)
+    {
+        v += (30 * (20 - d)) / 20;
+    }
+
+    /* Lunch pulse centered at 13:00 (index 156). */
+    d = i32_abs((int32_t)day - 156);
+    if (d < 22)
+    {
+        v += (36 * (22 - d)) / 22;
+    }
+
+    /* Dinner pulse centered at 19:00 (index 228). */
+    d = i32_abs((int32_t)day - 228);
+    if (d < 24)
+    {
+        v += (42 * (24 - d)) / 24;
+    }
+
+    /* Gentle circadian modulation and deterministic jitter. */
+    v += ((int32_t)(day % 72u) - 36) / 3;
+    drift = ((int32_t)day_block - 1) * 6;
+    jitter = (int32_t)((idx * 37u + 17u) % 9u) - 4;
+    v += drift + jitter;
+
+    if (v < 55)
+    {
+        v = 55;
+    }
+    if (v > 260)
+    {
+        v = 260;
+    }
+    return (uint16_t)v;
+}
 
 enum
 {
@@ -64,6 +124,8 @@ typedef struct
     uint8_t confidence_pct;
     uint8_t sqi_pct;
     int16_t temp_c10;
+    bool board_temp_valid;
+    int16_t board_temp_c10;
     uint16_t chart_hist[CHART_MAX_POINTS];
     uint8_t chart_wr;
     uint8_t chart_count;
@@ -373,7 +435,9 @@ static void term_line_trend(char *out, int16_t trend_x100)
     {
         frac = -frac;
     }
-    out[p++] = 'T';
+    out[p++] = 'R';
+    out[p++] = 'O';
+    out[p++] = 'C';
     out[p++] = ' ';
     p = append_i32(out, p, 31u, whole);
     if (p < 31u) out[p++] = '.';
@@ -402,6 +466,19 @@ static void term_line_meta(char *out, uint8_t conf, uint8_t sqi, uint16_t idx)
 static void term_line_temp(char *out, int16_t temp_c10)
 {
     uint8_t p = 0u;
+    if (temp_c10 == INT16_MIN)
+    {
+        out[p++] = 'T';
+        out[p++] = 'M';
+        out[p++] = 'P';
+        out[p++] = ' ';
+        out[p++] = 'N';
+        out[p++] = '/';
+        out[p++] = 'A';
+        out[p] = '\0';
+        return;
+    }
+
     int32_t whole = temp_c10 / 10;
     int32_t frac = temp_c10 % 10;
     if (frac < 0)
@@ -409,6 +486,8 @@ static void term_line_temp(char *out, int16_t temp_c10)
         frac = -frac;
     }
     out[p++] = 'T';
+    out[p++] = 'M';
+    out[p++] = 'P';
     out[p++] = ' ';
     p = append_i32(out, p, 31u, whole);
     if (p < 31u) out[p++] = '.';
@@ -459,10 +538,15 @@ static void draw_terminal_panel(const cgm_stream_state_t *s, bool edgeai_enabled
 static void draw_center_glucose_readout(const cgm_stream_state_t *s)
 {
     char line[24];
+    char row_line[24];
     uint8_t p = 0u;
+    uint8_t rp = 0u;
     uint16_t color = glucose_color_by_threshold(s->glucose_mgdl);
-    int16_t y = 240;
+    int16_t y = (int16_t)(240 - (7 * 2));
     int16_t x;
+    int16_t row_y;
+    int16_t row_x;
+    uint32_t row_num = (uint32_t)s->replay_index + 1u;
 
     p = append_u32(line, p, 23u, s->glucose_mgdl);
     if (p < 23u) line[p++] = ' ';
@@ -475,18 +559,46 @@ static void draw_center_glucose_readout(const cgm_stream_state_t *s)
 
     x = (int16_t)(240 - (((int16_t)strlen(line) * 6 * 2) / 2));
     MedicalHal_DrawText(x, y, line, 2u, color);
+
+    if (rp < 23u) row_line[rp++] = 'r';
+    if (rp < 23u) row_line[rp++] = 'o';
+    if (rp < 23u) row_line[rp++] = 'w';
+    if (rp < 23u) row_line[rp++] = ':';
+    if (rp < 23u) row_line[rp++] = ' ';
+    rp = append_u32(row_line, rp, 23u, row_num);
+    if (rp < 23u) row_line[rp++] = '/';
+    rp = append_u32(row_line, rp, 23u, DEMO_GLUCOSE_LEN);
+    row_line[rp] = '\0';
+
+    row_y = (int16_t)(y + (7 * 2) + 2);
+    row_x = (int16_t)(240 - (((int16_t)strlen(row_line) * 6) / 2));
+    MedicalHal_DrawText(row_x, row_y, row_line, 1u, RGB565(180, 220, 255));
 }
 
 static void cgm_stream_init(cgm_stream_state_t *s, bool edgeai_enabled)
 {
+    int16_t board_temp_c10;
     memset(s, 0, sizeof(*s));
-    s->glucose_mgdl = (CGM_REPLAY_SUBJECT001_LEN > 0u) ? kCgmReplaySubject001Mgdl[0] : 110u;
+    s->glucose_mgdl = (DEMO_GLUCOSE_LEN > 0u) ? demo_glucose_row(0u) : 110u;
     s->pred_15m_mgdl = s->glucose_mgdl;
     s->pred_30m_mgdl = s->glucose_mgdl;
     s->sqi_pct = 85u;
     s->confidence_pct = 60u;
     s->temp_c10 = 250;
     PowerData_Init();
+    board_temp_sensor_init();
+    if (board_temp_sensor_read_c10(&board_temp_c10))
+    {
+        s->temp_c10 = board_temp_c10;
+        s->board_temp_c10 = board_temp_c10;
+        s->board_temp_valid = true;
+    }
+    else
+    {
+        s->temp_c10 = INT16_MIN;
+        s->board_temp_c10 = INT16_MIN;
+        s->board_temp_valid = false;
+    }
     CgmModel_Reset();
     CgmModel_SetEnabled(edgeai_enabled);
     push_chart_point(s, s->glucose_mgdl);
@@ -494,87 +606,49 @@ static void cgm_stream_init(cgm_stream_state_t *s, bool edgeai_enabled)
 
 static void cgm_stream_step(cgm_stream_state_t *s, bool edgeai_enabled)
 {
-    cgm_model_features_t feat;
-    uint32_t total_trace_ds;
     uint32_t base_idx;
-    uint32_t frac_ds;
     uint16_t g_now;
     uint16_t g_prev = s->glucose_mgdl;
-    uint16_t g0;
-    uint16_t g1;
-    int32_t interp;
     int32_t delta;
-    uint16_t p15 = s->glucose_mgdl;
-    uint16_t p30 = s->glucose_mgdl;
-    uint8_t conf = 0u;
-    bool ok;
-    const power_sample_t *ps;
+    int16_t board_temp_c10;
+    (void)edgeai_enabled;
 
-    if (CGM_REPLAY_SUBJECT001_LEN == 0u)
+    if (DEMO_GLUCOSE_LEN == 0u)
     {
         return;
     }
 
-    total_trace_ds = (uint32_t)((CGM_REPLAY_SUBJECT001_LEN - 1u) * REPLAY_STEP_DS);
-    s->epoch_ds += DATA_STREAM_ADVANCE_DS;
-    if (total_trace_ds != 0u)
-    {
-        s->epoch_ds %= total_trace_ds;
-    }
-
-    base_idx = s->epoch_ds / REPLAY_STEP_DS;
-    frac_ds = s->epoch_ds % REPLAY_STEP_DS;
-    if (base_idx >= CGM_REPLAY_SUBJECT001_LEN)
-    {
-        base_idx = 0u;
-    }
+    base_idx = ((uint32_t)s->replay_index + 1u) % DEMO_GLUCOSE_LEN;
     s->replay_index = (uint16_t)base_idx;
+    g_now = demo_glucose_row(base_idx);
+    s->epoch_ds += DATA_STREAM_ADVANCE_DS;
 
-    g0 = kCgmReplaySubject001Mgdl[base_idx];
-    g1 = kCgmReplaySubject001Mgdl[(base_idx + 1u) % CGM_REPLAY_SUBJECT001_LEN];
-    interp = (int32_t)g0 + (((int32_t)g1 - (int32_t)g0) * (int32_t)frac_ds) / (int32_t)REPLAY_STEP_DS;
-    if (interp < 40)
-    {
-        interp = 40;
-    }
-    if (interp > 400)
-    {
-        interp = 400;
-    }
-    g_now = (uint16_t)interp;
     delta = (int32_t)g_now - (int32_t)g_prev;
 
     s->glucose_mgdl = g_now;
     s->trend_x100 = (int16_t)((delta * 60000) / (int32_t)DATA_STREAM_ADVANCE_DS);
     s->sqi_pct = (uint8_t)(85u - (uint8_t)((s->replay_index % 8u) * 3u));
-
     PowerData_Tick();
-    ps = PowerData_Get();
-    if (ps != NULL)
+
+    /* Live on-board temperature measurement each stream step. */
+    if (board_temp_sensor_read_c10(&board_temp_c10))
     {
-        s->temp_c10 = (int16_t)((int16_t)ps->temp_c * 10);
+        s->temp_c10 = board_temp_c10;
+        s->board_temp_c10 = board_temp_c10;
+        s->board_temp_valid = true;
     }
-
-    feat.glucose_mgdl = s->glucose_mgdl;
-    feat.trend_mgdl_min_x100 = s->trend_x100;
-    feat.sqi_pct = s->sqi_pct;
-    feat.sensor_flags = 0u;
-    feat.epoch_ds = s->epoch_ds;
-
-    CgmModel_SetEnabled(edgeai_enabled);
-    ok = CgmModel_Predict(&feat, &p15, &p30, &conf);
-    if (ok)
+    else if (s->board_temp_valid)
     {
-        s->pred_15m_mgdl = p15;
-        s->pred_30m_mgdl = p30;
-        s->confidence_pct = conf;
+        /* Keep last good live board reading if one read fails. */
+        s->temp_c10 = s->board_temp_c10;
     }
     else
     {
-        s->pred_15m_mgdl = s->glucose_mgdl;
-        s->pred_30m_mgdl = s->glucose_mgdl;
-        s->confidence_pct = 0u;
+        s->temp_c10 = INT16_MIN;
     }
+    s->pred_15m_mgdl = s->glucose_mgdl;
+    s->pred_30m_mgdl = s->glucose_mgdl;
+    s->confidence_pct = 0u;
 
     push_chart_point(s, s->glucose_mgdl);
 }
@@ -656,14 +730,18 @@ static bool point_in_rect(int16_t x, int16_t y, int16_t x0, int16_t y0, int16_t 
 static void render_screen(bool edgeai_enabled, const cgm_stream_state_t *stream)
 {
     MedicalLcd_DrawStaticLayout();
-    draw_edgeai_button(edgeai_enabled);
     if (stream != NULL)
     {
-        draw_chart_panel(stream);
+        draw_edgeai_button(edgeai_enabled);
         draw_terminal_panel(stream, edgeai_enabled);
         draw_center_glucose_readout(stream);
     }
     display_hal_present_frame();
+}
+
+static bool time_reached(uint32_t now_us, uint32_t target_us)
+{
+    return ((int32_t)(now_us - target_us) >= 0);
 }
 
 void edgeai_insulin_pump_port_start(void)
@@ -671,7 +749,10 @@ void edgeai_insulin_pump_port_start(void)
     insulin_platform_touch_t touch;
     bool edgeai_enabled = true;
     cgm_stream_state_t stream;
-    uint8_t stream_frame_div = 0u;
+    uint32_t now_us;
+    uint32_t next_stream_us;
+    uint32_t next_render_us;
+    uint32_t next_touch_us;
 
     insulin_platform_init();
 
@@ -686,25 +767,61 @@ void edgeai_insulin_pump_port_start(void)
     cgm_stream_init(&stream, edgeai_enabled);
     render_screen(edgeai_enabled, &stream);
 
+    now_us = insulin_platform_now_us();
+    next_stream_us = now_us + STREAM_STEP_US;
+    next_render_us = now_us + RENDER_STEP_US;
+    next_touch_us = now_us + TOUCH_POLL_US;
+
     for (;;)
     {
         uint32_t tick_start_us = insulin_platform_now_us();
-        insulin_platform_touch_poll(&touch);
+        uint8_t stream_updates = 0u;
+        bool did_render = false;
 
-        if (touch.pressed_edge &&
-            point_in_rect(touch.x, touch.y, EDGEAI_BTN_X0, EDGEAI_BTN_Y0, EDGEAI_BTN_X1, EDGEAI_BTN_Y1))
+        now_us = tick_start_us;
+
+#if ENABLE_TOUCH_INPUT
+        if (time_reached(now_us, next_touch_us))
         {
-            edgeai_enabled = !edgeai_enabled;
-            CgmModel_SetEnabled(edgeai_enabled);
-            render_screen(edgeai_enabled, &stream);
+            next_touch_us += TOUCH_POLL_US;
+            insulin_platform_touch_poll(&touch);
+            if (touch.pressed_edge &&
+                point_in_rect(touch.x, touch.y, EDGEAI_BTN_X0, EDGEAI_BTN_Y0, EDGEAI_BTN_X1, EDGEAI_BTN_Y1))
+            {
+                edgeai_enabled = !edgeai_enabled;
+                CgmModel_SetEnabled(edgeai_enabled);
+                render_screen(edgeai_enabled, &stream);
+                did_render = true;
+            }
+        }
+#endif
+
+        while (time_reached(now_us, next_stream_us))
+        {
+            cgm_stream_step(&stream, edgeai_enabled);
+            next_stream_us += STREAM_STEP_US;
+            stream_updates++;
+            if (stream_updates >= 4u)
+            {
+                /* Catch-up guard after long stalls/jumps. */
+                next_stream_us = now_us + STREAM_STEP_US;
+                break;
+            }
         }
 
-        stream_frame_div++;
-        if (stream_frame_div >= STREAM_STEP_FRAME_DIV)
+        if (stream_updates > 0u)
         {
-            stream_frame_div = 0u;
-            cgm_stream_step(&stream, edgeai_enabled);
             render_screen(edgeai_enabled, &stream);
+            did_render = true;
+        }
+        else if (time_reached(now_us, next_render_us))
+        {
+            next_render_us = now_us + RENDER_STEP_US;
+        }
+
+        if (did_render && !time_reached(now_us, next_render_us))
+        {
+            next_render_us = now_us + RENDER_STEP_US;
         }
 
         insulin_platform_sleep_until_next_tick_us(tick_start_us, PORT_FRAME_US);

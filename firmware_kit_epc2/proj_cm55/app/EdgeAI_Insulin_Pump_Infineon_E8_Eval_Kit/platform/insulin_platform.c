@@ -16,10 +16,14 @@
 #if INSULIN_PLATFORM_ENABLE_TOUCH
 static bool s_touch_prev_active = false;
 #endif
+static uint32_t s_time_prev_cycles = 0u;
+static uint32_t s_time_accum_us = 0u;
 
 void insulin_platform_init(void)
 {
     time_hal_init();
+    s_time_prev_cycles = time_hal_cycles();
+    s_time_accum_us = 0u;
 #if INSULIN_PLATFORM_ENABLE_TOUCH
     touch_hal_init();
 #endif
@@ -27,7 +31,11 @@ void insulin_platform_init(void)
 
 uint32_t insulin_platform_now_us(void)
 {
-    return time_hal_cycles_to_us(time_hal_cycles());
+    uint32_t now_cycles = time_hal_cycles();
+    uint32_t delta_cycles = now_cycles - s_time_prev_cycles;
+    s_time_prev_cycles = now_cycles;
+    s_time_accum_us += time_hal_cycles_to_us(delta_cycles);
+    return s_time_accum_us;
 }
 
 void insulin_platform_sleep_until_next_tick_us(uint32_t tick_start_us, uint32_t tick_period_us)

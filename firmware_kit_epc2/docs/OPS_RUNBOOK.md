@@ -58,3 +58,15 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
 
 ## Flash Rule
 - Always flash only after a successful build in the current source state.
+
+## Create Restore Artifacts (Golden + Failsafe)
+```bash
+STAMP="$(date +%Y%m%d_%H%M%S)"
+mkdir -p failsafe/restore_points
+cp -f build/app_combined.hex "failsafe/restore_points/golden_${STAMP}_app_combined.hex"
+cp -f build/app_combined.hex "failsafe/restore_points/failsafe_${STAMP}_app_combined.hex"
+sha256sum \
+  "failsafe/restore_points/golden_${STAMP}_app_combined.hex" \
+  "failsafe/restore_points/failsafe_${STAMP}_app_combined.hex" \
+  > "failsafe/restore_points/${STAMP}_sha256.txt"
+```
