@@ -151,3 +151,9 @@
 [2026-06-11 14:49:40 PDT] cmd: verify repo status after push | exit=0
 [2026-06-11 14:50:00 PDT] cmd: commit final command log verification note | exit=0
 [2026-06-11 14:50:30 PDT] cmd: note final push completion before cleanup | exit=0
+[2026-06-11 14:51:00 PDT] cmd: document golden restore tag for current aligned glucose card | exit=0
+[2026-06-11 14:51:30 PDT] cmd: simplify golden restore tag note to use tag name only | exit=0
+[2026-06-11 14:52:00 PDT] cmd: commit golden restore point docs | exit=0
+[2026-06-11 14:52:30 PDT] cmd: push golden restore point docs and tag | exit=1
+[2026-06-11 14:53:00 PDT] cmd: move golden restore tag to amended commit | exit=0
+[2026-06-11 14:54:00 PDT] cmd: verify final golden tag alignment | exit=0

@@ -81,6 +81,10 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_proj_cm55.elf`
 
+## Golden Restore Tag (2026-06-11)
+- Tag: `golden-e8-insulin-pump`
+- Meaning: Current aligned glucose-card state, ready for fast restore.
+
 ## Restore Procedure
 1. Fetch tags:
    ```bash

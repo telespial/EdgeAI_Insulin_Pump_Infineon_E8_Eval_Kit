@@ -255,6 +255,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_proj_cm55.elf`
 
+## Update 2026-06-11 16:47
+- Marked the current aligned glucose-card state as the golden restore point with tag `golden-e8-insulin-pump`.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
