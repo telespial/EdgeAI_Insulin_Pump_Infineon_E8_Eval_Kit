@@ -1,5 +1,6 @@
 #include "edgeai_insulin_pump_app.h"
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -23,10 +24,12 @@ typedef struct
     lv_chart_series_t *glucose_series;
     lv_chart_series_t *prediction_series;
     lv_obj_t *prediction_label;
+    lv_obj_t *prediction_accuracy_label;
     lv_obj_t *glucose_unit_label;
     lv_obj_t *glucose_title_label;
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
+    lv_obj_t *status_labels[BAR_GRAPH_COUNT];
     lv_obj_t *status_bars[BAR_GRAPH_COUNT];
     lv_timer_t *timer;
 } cgm_dashboard_t;
@@ -51,6 +54,35 @@ static lv_color_t glucose_status_color(uint16_t glucose_mgdl)
         return lv_color_hex(0xFFD45A);
     }
     return lv_color_hex(0x58E07C);
+}
+
+static lv_color_t metric_bar_color(int32_t percent)
+{
+    if (percent < 85)
+    {
+        return lv_color_hex(0xFF5A5A);
+    }
+    if (percent < 90)
+    {
+        return lv_color_hex(0xFFD45A);
+    }
+    return lv_color_hex(0x58E07C);
+}
+
+static void style_prediction_label(lv_obj_t *label)
+{
+    if (label == NULL)
+    {
+        return;
+    }
+
+    lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_shadow_color(label, lv_color_hex(0xFF4A6A), 0);
+    lv_obj_set_style_shadow_opa(label, LV_OPA_COVER, 0);
+    lv_obj_set_style_shadow_width(label, 8, 0);
+    lv_obj_set_style_shadow_ofs_x(label, 0, 0);
+    lv_obj_set_style_shadow_ofs_y(label, 0, 0);
 }
 
 static int16_t estimate_trend_x100(uint32_t index)
@@ -140,11 +172,17 @@ static int32_t map_range_i32(int32_t value, int32_t in_min, int32_t in_max, int3
     return out_min + ((clamped - in_min) * (out_max - out_min)) / (in_max - in_min);
 }
 
-static void update_status_bars(uint16_t current_mgdl)
+static int32_t calculate_prediction_accuracy_percent(uint16_t current_mgdl, uint16_t predicted_mgdl)
 {
-    uint16_t predicted_mgdl;
-    int32_t trend_delta;
-    int32_t confidence;
+    int32_t accuracy;
+
+    accuracy = 100 - ((int32_t)abs((int32_t)predicted_mgdl - (int32_t)current_mgdl) * 100) / 150;
+    return clamp_i32(accuracy, 0, 100);
+}
+
+static void update_status_bars(uint16_t current_mgdl, uint16_t predicted_mgdl, uint8_t confidence_pct)
+{
+    int32_t accuracy;
     uint32_t i;
 
     if (gDashboard.status_bars[0u] == NULL)
@@ -152,14 +190,14 @@ static void update_status_bars(uint16_t current_mgdl)
         return;
     }
 
-    predicted_mgdl = replay_glucose_at(gDashboard.sample_index + 4u);
-    trend_delta = (int32_t)predicted_mgdl - (int32_t)current_mgdl;
-    confidence = 100 - (trend_delta < 0 ? -trend_delta : trend_delta);
-    confidence = clamp_i32(confidence, 20, 100);
+    accuracy = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
 
     lv_bar_set_value(gDashboard.status_bars[0u], map_range_i32((int32_t)current_mgdl, 40, 400, 12, 100), LV_ANIM_OFF);
-    lv_bar_set_value(gDashboard.status_bars[1u], map_range_i32((int32_t)predicted_mgdl, 40, 400, 12, 100), LV_ANIM_OFF);
-    lv_bar_set_value(gDashboard.status_bars[2u], confidence, LV_ANIM_OFF);
+    lv_bar_set_value(gDashboard.status_bars[1u], confidence_pct, LV_ANIM_OFF);
+    lv_bar_set_value(gDashboard.status_bars[2u], accuracy, LV_ANIM_OFF);
+
+    lv_obj_set_style_bg_color(gDashboard.status_bars[1u], metric_bar_color(confidence_pct), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(gDashboard.status_bars[2u], metric_bar_color(accuracy), LV_PART_INDICATOR);
 
     for (i = 0u; i < BAR_GRAPH_COUNT; ++i)
     {
@@ -199,10 +237,18 @@ static void push_sample(uint16_t current_mgdl)
 {
     uint16_t predicted_mgdl = current_mgdl;
     uint8_t confidence_pct = 0u;
+    int32_t accuracy_pct;
+    char header_buffer[64];
 
     (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
+    accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
     update_glucose_label(current_mgdl);
-    update_status_bars(current_mgdl);
+    update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
+    if (gDashboard.prediction_accuracy_label != NULL)
+    {
+        snprintf(header_buffer, sizeof(header_buffer), "%d%%", (int)accuracy_pct);
+        lv_label_set_text(gDashboard.prediction_accuracy_label, header_buffer);
+    }
 
     if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
     {
@@ -325,6 +371,20 @@ void edgeai_insulin_pump_app_start(void)
     for (uint32_t index = 0u; index < BAR_GRAPH_COUNT; ++index)
     {
         static const lv_coord_t bar_y_positions[BAR_GRAPH_COUNT] = {249, 279, 309};
+        static const char *bar_texts[BAR_GRAPH_COUNT] = {NULL, "CONF", "ACC"};
+
+        if (bar_texts[index] != NULL)
+        {
+            label = lv_label_create(screen);
+            if (label != NULL)
+            {
+                gDashboard.status_labels[index] = label;
+                lv_label_set_text(label, bar_texts[index]);
+                lv_obj_set_pos(label, 498, bar_y_positions[index] - 2);
+                lv_obj_set_style_text_color(label, lv_color_hex(0xC7EFFF), 0);
+                lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
+            }
+        }
 
         bar = lv_bar_create(screen);
         if (bar != NULL)
@@ -380,9 +440,23 @@ void edgeai_insulin_pump_app_start(void)
         {
             gDashboard.prediction_label = label;
             lv_label_set_text(label, "EdgeAI Prediction");
-            lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 2);
-            lv_obj_set_style_text_color(label, lv_color_hex(0xD6A9FF), 0);
+            lv_obj_align(label, LV_ALIGN_TOP_LEFT, 18, -10);
+            style_prediction_label(label);
+        }
+
+        label = lv_label_create(chart);
+        if (label != NULL)
+        {
+            gDashboard.prediction_accuracy_label = label;
+            lv_label_set_text(label, "0%");
+            lv_obj_align_to(label, gDashboard.prediction_label, LV_ALIGN_OUT_RIGHT_MID, 18, 0);
+            lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
             lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+            lv_obj_set_style_shadow_color(label, lv_color_hex(0xFF4A6A), 0);
+            lv_obj_set_style_shadow_opa(label, LV_OPA_COVER, 0);
+            lv_obj_set_style_shadow_width(label, 8, 0);
+            lv_obj_set_style_shadow_ofs_x(label, 0, 0);
+            lv_obj_set_style_shadow_ofs_y(label, 0, 0);
         }
     }
 

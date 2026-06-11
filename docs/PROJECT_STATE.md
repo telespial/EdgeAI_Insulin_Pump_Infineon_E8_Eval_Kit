@@ -329,6 +329,38 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 16:57
 - Build hit one LVGL constant mismatch while adding the bars; switching the bar track opacity to `LV_OPA_10` and rebuilding.
 
+## Update 2026-06-11 15:20 PDT
+- Updated the `EdgeAI Prediction` label to use a bluish text color with a red glow effect.
+- Reworked the right-side bars so the second row shows model confidence and the third row shows a derived prediction-accuracy score.
+- Rebuilt and flashed the updated UI successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 15:24 PDT
+- Renamed the second metric label to `CONF` and the third metric label to `ACC`.
+- Left the first metric bar unlabeled for future use.
+- Applied the shared confidence/accuracy color scale so values below `90%` turn yellow and values below `85%` turn red.
+
+## Update 2026-06-11 15:26 PDT
+- Removed numeric readouts from the `CONF` and `ACC` metric labels.
+- Shifted the metric labels left so they sit closer to the bargraph edges.
+- Rebuilt and flashed the updated metric-label layout successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 15:29 PDT
+- Moved the `EdgeAI Prediction` header up one text height and left-aligned it within the chart box.
+- Added a live accuracy percentage badge to the right of the header text.
+- Rebuilt and flashed the updated chart header successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 15:31 PDT
+- Shifted the chart header text and the live accuracy badge right by about two character widths.
+
+## Update 2026-06-11 15:42 PDT
+- Flashed the latest build to the board after the header/badge shift.
+
+## Update 2026-06-11 15:45 PDT
+- Created `docs/MODEL_CODE_EXPORT.md` as a single Markdown export of the model-related source for review.
+
+## Update 2026-06-11 15:46 PDT
+- Marked the current insulin-pump checkpoint as the golden/failsafe restore point set in `docs/RESTORE_POINTS.md`.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

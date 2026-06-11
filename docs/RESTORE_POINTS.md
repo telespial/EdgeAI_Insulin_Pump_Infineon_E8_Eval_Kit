@@ -8,6 +8,10 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - Meaning: Last known-stable Smart Pong restore point for rapid recovery.
 - `golden-e8-smart-pong`
   - Meaning: Current development base for Smart Pong feature work.
+- `failsafe-e8-insulin-pump`
+  - Meaning: Last known-stable insulin-pump checkpoint for rapid recovery.
+- `golden-e8-insulin-pump`
+  - Meaning: Current development base for the insulin-pump CGM dashboard and model export work.
 
 ## Expected Behavior At Current Baseline
 - Boot shows centered `SMART` / `PONG` banner then enters gameplay.
