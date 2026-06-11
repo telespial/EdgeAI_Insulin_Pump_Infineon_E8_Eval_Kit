@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "cgm_model_runtime.h"
 #include "cgm_replay_subject001.h"
 #include "lvgl.h"
 #include "pump_background_image_rgb565.h"
@@ -11,6 +12,7 @@ enum
 {
     CGM_GRAPH_POINTS = 32u,
     CGM_REPLAY_STEP_MS = 1400u,
+    CGM_REPLAY_SAMPLE_MINUTES = 5u,
     BAR_GRAPH_COUNT = 3u,
 };
 
@@ -19,6 +21,8 @@ typedef struct
     uint32_t sample_index;
     lv_obj_t *chart;
     lv_chart_series_t *glucose_series;
+    lv_chart_series_t *prediction_series;
+    lv_obj_t *prediction_label;
     lv_obj_t *glucose_unit_label;
     lv_obj_t *glucose_title_label;
     lv_obj_t *glucose_label;
@@ -32,6 +36,86 @@ static cgm_dashboard_t gDashboard;
 static uint16_t replay_glucose_at(uint32_t index)
 {
     return kCgmReplaySubject001Mgdl[index % CGM_REPLAY_SUBJECT001_LEN];
+}
+
+static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum);
+
+static lv_color_t glucose_status_color(uint16_t glucose_mgdl)
+{
+    if ((glucose_mgdl < 70u) || (glucose_mgdl > 250u))
+    {
+        return lv_color_hex(0xFF5A5A);
+    }
+    if ((glucose_mgdl < 80u) || (glucose_mgdl > 180u))
+    {
+        return lv_color_hex(0xFFD45A);
+    }
+    return lv_color_hex(0x58E07C);
+}
+
+static int16_t estimate_trend_x100(uint32_t index)
+{
+    int32_t current;
+    int32_t delta;
+    int32_t accum = 0;
+    uint32_t count = 0u;
+    uint32_t lag;
+
+    if (index == 0u)
+    {
+        return 0;
+    }
+
+    current = (int32_t)replay_glucose_at(index);
+    for (lag = 1u; lag <= 3u; ++lag)
+    {
+        if (index < lag)
+        {
+            break;
+        }
+
+        delta = current - (int32_t)replay_glucose_at(index - lag);
+        accum += (delta * 100) / ((int32_t)lag * (int32_t)CGM_REPLAY_SAMPLE_MINUTES);
+        count++;
+    }
+
+    if (count == 0u)
+    {
+        return 0;
+    }
+
+    return (int16_t)clamp_i32(accum / (int32_t)count, -2500, 2500);
+}
+
+static bool predict_glucose_from_model(uint32_t sample_index,
+                                       uint16_t current_mgdl,
+                                       uint16_t *predicted_15m_mgdl,
+                                       uint8_t *confidence_pct)
+{
+    cgm_model_features_t features;
+    uint16_t pred_30m_mgdl;
+    uint8_t model_confidence;
+
+    if ((predicted_15m_mgdl == NULL) || (confidence_pct == NULL))
+    {
+        return false;
+    }
+
+    features.glucose_mgdl = current_mgdl;
+    features.trend_mgdl_min_x100 = estimate_trend_x100(sample_index);
+    features.sqi_pct = 92u;
+    features.sensor_flags = 0u;
+    features.epoch_ds = sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 600u;
+
+    if (CgmModel_Predict(&features, predicted_15m_mgdl, &pred_30m_mgdl, &model_confidence))
+    {
+        *confidence_pct = model_confidence;
+        return true;
+    }
+
+    *predicted_15m_mgdl = replay_glucose_at(sample_index + 4u);
+    *confidence_pct = 70u;
+    return false;
 }
 
 static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum)
@@ -83,6 +167,17 @@ static void update_status_bars(uint16_t current_mgdl)
     }
 }
 
+static void update_chart_colors(uint16_t current_mgdl)
+{
+    if ((gDashboard.chart == NULL) || (gDashboard.glucose_series == NULL) || (gDashboard.prediction_series == NULL))
+    {
+        return;
+    }
+
+    lv_chart_set_series_color(gDashboard.chart, gDashboard.glucose_series, glucose_status_color(current_mgdl));
+    lv_chart_set_series_color(gDashboard.chart, gDashboard.prediction_series, lv_color_hex(0x4CC7FF));
+}
+
 static void update_glucose_label(uint16_t current_mgdl)
 {
     char buffer[48];
@@ -102,12 +197,21 @@ static void update_glucose_label(uint16_t current_mgdl)
 
 static void push_sample(uint16_t current_mgdl)
 {
+    uint16_t predicted_mgdl = current_mgdl;
+    uint8_t confidence_pct = 0u;
+
+    (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
     update_glucose_label(current_mgdl);
     update_status_bars(current_mgdl);
 
     if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
     {
         lv_chart_set_next_value(gDashboard.chart, gDashboard.glucose_series, (int32_t)current_mgdl);
+        if (gDashboard.prediction_series != NULL)
+        {
+            lv_chart_set_next_value(gDashboard.chart, gDashboard.prediction_series, (int32_t)predicted_mgdl);
+        }
+        update_chart_colors(current_mgdl);
         lv_chart_refresh(gDashboard.chart);
     }
 
@@ -266,8 +370,24 @@ void edgeai_insulin_pump_app_start(void)
         {
             lv_chart_set_all_value(chart, gDashboard.glucose_series, 100);
         }
+        gDashboard.prediction_series = lv_chart_add_series(chart, lv_color_hex(0x4CC7FF), LV_CHART_AXIS_PRIMARY_Y);
+        if (gDashboard.prediction_series != NULL)
+        {
+            lv_chart_set_all_value(chart, gDashboard.prediction_series, 100);
+        }
+        label = lv_label_create(chart);
+        if (label != NULL)
+        {
+            gDashboard.prediction_label = label;
+            lv_label_set_text(label, "EdgeAI Prediction");
+            lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 2);
+            lv_obj_set_style_text_color(label, lv_color_hex(0xD6A9FF), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+        }
     }
 
+    CgmModel_Reset();
+    CgmModel_SetEnabled(true);
     gDashboard.sample_index = 0u;
     seed_chart();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);

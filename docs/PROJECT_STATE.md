@@ -303,6 +303,26 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_proj_cm55.elf`
 
+## Update 2026-06-11 17:11
+- Restoring the embedded prediction model into the lower-right chart.
+- Adding an `EdgeAI Prediction` header and dynamic color coding for the actual glucose trace and the prediction trace.
+
+## Update 2026-06-11 17:12
+- Fixed the chart helper ordering issue while wiring the prediction model back into the dashboard.
+
+## Update 2026-06-11 17:13
+- Rebuilt and flashed the prediction-enabled chart successfully on `PSE846GPS2DBZC4A`.
+- The lower-right graph now has an `EdgeAI Prediction` label, an actual glucose trace, and a prediction trace driven by the embedded model helper.
+- The actual trace now color-codes by glucose range, and the prediction trace renders in blue.
+
+## Update 2026-06-11 17:14
+- Retrained the NXP exported CGM model from the repository training data using the NXP virtualenv.
+- Copied the refreshed trained header into the Infineon project and corrected the replay-to-model cadence to 5-minute sample spacing so the trend input is stable.
+
+## Update 2026-06-11 15:09 PDT
+- Flash/programming completed successfully after the retrained model import and cadence fix.
+- The board was reprogrammed with the refreshed CGM model and the 5-minute replay timing correction.
+
 ## Update 2026-06-11 16:56
 - Added three adjustable horizontal bar graphs aligned to the right-side glass boxes in the background image for testing.
 
