@@ -157,3 +157,76 @@
 [2026-06-11 14:52:30 PDT] cmd: push golden restore point docs and tag | exit=1
 [2026-06-11 14:53:00 PDT] cmd: move golden restore tag to amended commit | exit=0
 [2026-06-11 14:54:00 PDT] cmd: verify final golden tag alignment | exit=0
+[2026-06-11 14:55:10 PDT] cmd: generate preview from RGB565 background image asset | exit=0
+[2026-06-11 14:56:10 PDT] cmd: add three adjustable horizontal bar graphs to the right-side glass boxes | exit=0
+[2026-06-11 14:57:10 PDT] cmd: build three bar graphs for right-side boxes | exit=2
+
+[14:39:22 PDT] git status --short
+
+[14:39:28 PDT] inspect runbook for build and flash commands
+
+[14:39:33 PDT] list project docs after correcting path
+
+[14:39:37 PDT] inspect runbook for build and flash commands
+
+[14:39:41 PDT] inspect build recipe in runbook
+
+[14:39:47 PDT] build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+
+[14:40:12 PDT] program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+
+[14:40:23 PDT] inspect project state before flash update
+
+[14:40:32 PDT] final repo status check after bar-graph flash
+
+[14:40:37 PDT] capture bar-graph line numbers
+
+[14:40:41 PDT] capture project state line numbers
+
+[14:41:56 PDT] inspect bar layout before spacing tweak
+
+[14:42:08 PDT] inspect project state for spacing note
+
+[14:42:44 PDT] build after bar spacing tweak
+
+[14:43:09 PDT] program after bar spacing tweak
+
+[14:44:31 PDT] inspect bar row positions before 20px spacing
+
+[14:44:50 PDT] build after 20px bar spacing tweak
+
+[14:45:10 PDT] program after 20px bar spacing tweak
+
+[14:45:36 PDT] inspect bar spacing before 30px tweak
+
+[14:46:15 PDT] build after 30px bar spacing tweak
+
+[14:46:39 PDT] program after 30px bar spacing tweak
+
+[14:47:19 PDT] inspect bar positions before moving down 10px
+
+[14:47:39 PDT] build after moving bars down 10px
+
+[14:47:59 PDT] program after moving bars down 10px
+
+[14:48:37 PDT] inspect bar positions before 5px up and 10px right shift
+
+[14:49:11 PDT] build after moving bars up 5px and right 10px
+
+[14:49:36 PDT] program after moving bars up 5px and right 10px
+
+[14:51:57 PDT] inspect bar/graph layout before golden restore tweak
+
+[14:52:20 PDT] inspect restore points before creating a new golden snapshot
+
+[14:53:03 PDT] build after bar/graph box resize
+
+[14:53:27 PDT] program after bar/graph box resize
+
+[14:53:39 PDT] captured golden restore snapshot for tightened bars
+
+[14:53:57 PDT] capture final line references for tightened bar restore
+
+[14:54:55 PDT] revert generated ninja log from publish scope
+
+[14:55:00 PDT] inspect final diff before branching

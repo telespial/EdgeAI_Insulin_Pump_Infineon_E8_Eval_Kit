@@ -11,6 +11,7 @@ enum
 {
     CGM_GRAPH_POINTS = 32u,
     CGM_REPLAY_STEP_MS = 1400u,
+    BAR_GRAPH_COUNT = 3u,
 };
 
 typedef struct
@@ -22,6 +23,7 @@ typedef struct
     lv_obj_t *glucose_title_label;
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
+    lv_obj_t *status_bars[BAR_GRAPH_COUNT];
     lv_timer_t *timer;
 } cgm_dashboard_t;
 
@@ -30,6 +32,55 @@ static cgm_dashboard_t gDashboard;
 static uint16_t replay_glucose_at(uint32_t index)
 {
     return kCgmReplaySubject001Mgdl[index % CGM_REPLAY_SUBJECT001_LEN];
+}
+
+static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum)
+{
+    if (value < minimum)
+    {
+        return minimum;
+    }
+
+    if (value > maximum)
+    {
+        return maximum;
+    }
+
+    return value;
+}
+
+static int32_t map_range_i32(int32_t value, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max)
+{
+    int32_t clamped = clamp_i32(value, in_min, in_max);
+
+    return out_min + ((clamped - in_min) * (out_max - out_min)) / (in_max - in_min);
+}
+
+static void update_status_bars(uint16_t current_mgdl)
+{
+    uint16_t predicted_mgdl;
+    int32_t trend_delta;
+    int32_t confidence;
+    uint32_t i;
+
+    if (gDashboard.status_bars[0u] == NULL)
+    {
+        return;
+    }
+
+    predicted_mgdl = replay_glucose_at(gDashboard.sample_index + 4u);
+    trend_delta = (int32_t)predicted_mgdl - (int32_t)current_mgdl;
+    confidence = 100 - (trend_delta < 0 ? -trend_delta : trend_delta);
+    confidence = clamp_i32(confidence, 20, 100);
+
+    lv_bar_set_value(gDashboard.status_bars[0u], map_range_i32((int32_t)current_mgdl, 40, 400, 12, 100), LV_ANIM_OFF);
+    lv_bar_set_value(gDashboard.status_bars[1u], map_range_i32((int32_t)predicted_mgdl, 40, 400, 12, 100), LV_ANIM_OFF);
+    lv_bar_set_value(gDashboard.status_bars[2u], confidence, LV_ANIM_OFF);
+
+    for (i = 0u; i < BAR_GRAPH_COUNT; ++i)
+    {
+        lv_obj_invalidate(gDashboard.status_bars[i]);
+    }
 }
 
 static void update_glucose_label(uint16_t current_mgdl)
@@ -52,6 +103,7 @@ static void update_glucose_label(uint16_t current_mgdl)
 static void push_sample(uint16_t current_mgdl)
 {
     update_glucose_label(current_mgdl);
+    update_status_bars(current_mgdl);
 
     if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
     {
@@ -93,6 +145,7 @@ void edgeai_insulin_pump_app_start(void)
     lv_obj_t *panel;
     lv_obj_t *row;
     lv_obj_t *chart;
+    lv_obj_t *bar;
     lv_obj_t *label;
 
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
@@ -165,16 +218,39 @@ void edgeai_insulin_pump_app_start(void)
         update_glucose_label(replay_glucose_at(0u));
     }
 
+    for (uint32_t index = 0u; index < BAR_GRAPH_COUNT; ++index)
+    {
+        static const lv_coord_t bar_y_positions[BAR_GRAPH_COUNT] = {249, 279, 309};
+
+        bar = lv_bar_create(screen);
+        if (bar != NULL)
+        {
+            gDashboard.status_bars[index] = bar;
+            lv_obj_set_size(bar, 142, 14);
+            lv_obj_set_pos(bar, 620, bar_y_positions[index]);
+            lv_bar_set_range(bar, 0, 100);
+            lv_bar_set_value(bar, 60, LV_ANIM_OFF);
+            lv_obj_set_style_radius(bar, 8, LV_PART_MAIN);
+            lv_obj_set_style_radius(bar, 8, LV_PART_INDICATOR);
+            lv_obj_set_style_border_width(bar, 0, LV_PART_MAIN);
+            lv_obj_set_style_pad_all(bar, 0, LV_PART_MAIN);
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x0A1620), LV_PART_MAIN);
+            lv_obj_set_style_bg_opa(bar, LV_OPA_10, LV_PART_MAIN);
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x46DFFF), LV_PART_INDICATOR);
+            lv_obj_set_style_bg_opa(bar, LV_OPA_COVER, LV_PART_INDICATOR);
+        }
+    }
+
     chart = lv_chart_create(screen);
     if (chart != NULL)
     {
         gDashboard.chart = chart;
-        lv_obj_set_size(chart, 238, 138);
+        lv_obj_set_size(chart, 238, 128);
         lv_obj_align(chart, LV_ALIGN_BOTTOM_RIGHT, -16, -16);
         lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
         lv_chart_set_point_count(chart, CGM_GRAPH_POINTS);
         lv_chart_set_update_mode(chart, LV_CHART_UPDATE_MODE_SHIFT);
-        lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 40, 400);
+        lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 50, 390);
         lv_chart_set_div_line_count(chart, 4, 4);
         lv_obj_set_style_radius(chart, 14, 0);
         lv_obj_set_style_border_width(chart, 2, 0);

@@ -258,6 +258,57 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 16:47
 - Marked the current aligned glucose-card state as the golden restore point with tag `golden-e8-insulin-pump`.
 
+## Update 2026-06-11 16:58
+- Added three adjustable horizontal bar graphs aligned to the three empty glass boxes on the right side of the background image.
+- The bars are currently driven by replayed CGM data for testing and render on the LCD without disturbing the existing glucose panel.
+- Rebuilt and flashed the updated image successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 16:59
+- Tightened the vertical spacing between the three test bars so they step downward by exactly one bar height.
+
+## Update 2026-06-11 17:00
+- Rebuilt and flashed the one-bar-height vertical spacing tweak successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 17:01
+- Increased the vertical spacing between the three test bars to `20 px` between rows.
+
+## Update 2026-06-11 17:02
+- Rebuilt and flashed the `20 px` bar-row spacing update successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 17:03
+- Changed the three test bars to `30 px` vertical spacing between rows.
+
+## Update 2026-06-11 17:04
+- Rebuilt and flashed the `30 px` bar-row spacing update successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 17:05
+- Moved the three test bars down by `10 px` as a group while keeping their relative spacing unchanged.
+
+## Update 2026-06-11 17:06
+- Rebuilt and flashed the `10 px` downward shift for the bar group successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 17:07
+- Moved the three test bars up by `5 px` and right by `10 px` as a group.
+
+## Update 2026-06-11 17:08
+- Rebuilt and flashed the `5 px` up / `10 px` right bar shift successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 17:09
+- Tightened the bar set by moving all three bars up `1 px`, reducing each bar width by about `5%`, and shortening the chart box top edge by `10 px`.
+- Adjusted the chart y-range to fit the new shorter graph box cleanly.
+
+## Update 2026-06-11 17:10
+- Rebuilt and flashed the tightened bar/graph-box layout successfully on `PSE846GPS2DBZC4A`.
+- Captured a new failsafe restore snapshot:
+  - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_proj_cm55.elf`
+
+## Update 2026-06-11 16:56
+- Added three adjustable horizontal bar graphs aligned to the right-side glass boxes in the background image for testing.
+
+## Update 2026-06-11 16:57
+- Build hit one LVGL constant mismatch while adding the bars; switching the bar track opacity to `LV_OPA_10` and rebuilding.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

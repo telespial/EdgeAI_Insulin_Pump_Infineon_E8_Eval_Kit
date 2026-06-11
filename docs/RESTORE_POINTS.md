@@ -83,7 +83,17 @@ Known-good checkpoints for fast recovery when development changes break boot, di
 
 ## Golden Restore Tag (2026-06-11)
 - Tag: `golden-e8-insulin-pump`
-- Meaning: Current aligned glucose-card state, ready for fast restore.
+- Meaning: Current aligned glucose-card state with tightened bar graphs and the shortened lower-right chart box, ready for fast restore.
+
+## Latest Verified Restore Artifact (2026-06-11, tightened bar graphs and chart box)
+- Board: `PSE846GPS2DBZC4A` (Rev `B0`)
+- Build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Flash:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_proj_cm55.elf`
 
 ## Restore Procedure
 1. Fetch tags:
