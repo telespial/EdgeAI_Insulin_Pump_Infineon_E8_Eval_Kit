@@ -98,7 +98,11 @@
 [2026-06-11 13:57:27 PDT] cmd: build replay-based CGM overlay with glucose label and graph | exit=0
 [2026-06-11 13:57:55 PDT] cmd: flash replay CGM overlay with glucose label and graph | exit=0
 [2026-06-11 13:59:28 PDT] cmd: create golden/failsafe restore snapshot for replay CGM overlay | exit=0
-[2026-06-11 14:01:23 PDT] cmd: search repo for codemaster mentions before publish | exit=0
+[2026-06-11 14:01:23 PDT] cmd: search repo for internal mentions before publish | exit=0
 [2026-06-11 14:01:45 PDT] cmd: confirm git root before publishing insulin pump repo | exit=0
 [2026-06-11 14:02:29 PDT] cmd: inspect tools folder before publishing standalone repo | exit=0
 [2026-06-11 14:02:51 PDT] cmd: initialize standalone firmware_kit_epc2 git repo for GitHub publish | exit=0
+[2026-06-11 14:03:17 PDT] cmd: commit standalone EdgeAI insulin pump snapshot | exit=0
+[2026-06-11 14:03:41 PDT] cmd: force-push standalone EdgeAI insulin pump repo to GitHub | exit=0
+[2026-06-11 14:03:41 PDT] cmd: verify remote main points at published snapshot | exit=0
+[2026-06-11 14:04:05 PDT] cmd: final public-repo wording check before handoff | exit=1

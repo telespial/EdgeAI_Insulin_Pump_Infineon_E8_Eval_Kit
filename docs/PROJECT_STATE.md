@@ -132,6 +132,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `../failsafe/e8_insulin_pump_20260611_135902_cgm_overlay_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260611_135902_cgm_overlay_proj_cm55.elf`
 
+## Update 2026-06-11 15:40
+- Initialized a standalone `firmware_kit_epc2` git repo and force-pushed it to `git@github.com:telespial/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit.git`.
+- Published commit: `88a50fc` (`Publish EdgeAI insulin pump overlay`).
+- Remote `main` now points at the new insulin-pump snapshot.
+
 ## Update 2026-06-11 14:50
 - Updated the glucose card to show `Glucose: xxx MG/DL` with the numeric value larger than the label text.
 - Added color-state behavior so the glucose box and value switch red, yellow, or green based on the current reading.
