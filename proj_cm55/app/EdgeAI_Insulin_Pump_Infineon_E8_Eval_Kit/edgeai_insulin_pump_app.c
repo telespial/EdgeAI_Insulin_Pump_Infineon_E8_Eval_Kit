@@ -10,7 +10,7 @@
 enum
 {
     CGM_GRAPH_POINTS = 32u,
-    CGM_REPLAY_STEP_MS = 350u,
+    CGM_REPLAY_STEP_MS = 1400u,
 };
 
 typedef struct
@@ -18,7 +18,10 @@ typedef struct
     uint32_t sample_index;
     lv_obj_t *chart;
     lv_chart_series_t *glucose_series;
+    lv_obj_t *glucose_unit_label;
+    lv_obj_t *glucose_title_label;
     lv_obj_t *glucose_label;
+    lv_obj_t *glucose_shadow_label;
     lv_timer_t *timer;
 } cgm_dashboard_t;
 
@@ -38,7 +41,11 @@ static void update_glucose_label(uint16_t current_mgdl)
         return;
     }
 
-    snprintf(buffer, sizeof(buffer), "GLUCOSE  %u MG/DL", (unsigned int)current_mgdl);
+    snprintf(buffer, sizeof(buffer), "%u", (unsigned int)current_mgdl);
+    if (gDashboard.glucose_shadow_label != NULL)
+    {
+        lv_label_set_text(gDashboard.glucose_shadow_label, buffer);
+    }
     lv_label_set_text(gDashboard.glucose_label, buffer);
 }
 
@@ -84,6 +91,7 @@ void edgeai_insulin_pump_app_start(void)
     lv_obj_t *screen = lv_screen_active();
     lv_obj_t *image;
     lv_obj_t *panel;
+    lv_obj_t *row;
     lv_obj_t *chart;
     lv_obj_t *label;
 
@@ -98,28 +106,63 @@ void edgeai_insulin_pump_app_start(void)
     panel = lv_obj_create(screen);
     if (panel != NULL)
     {
-        lv_obj_set_size(panel, 260, 56);
-        lv_obj_align(panel, LV_ALIGN_CENTER, 0, 88);
+        lv_obj_set_size(panel, 168, 96);
+        lv_obj_align(panel, LV_ALIGN_CENTER, 0, 178);
         lv_obj_set_style_radius(panel, 16, 0);
         lv_obj_set_style_border_width(panel, 2, 0);
         lv_obj_set_style_border_color(panel, lv_color_hex(0x78D8FF), 0);
         lv_obj_set_style_bg_color(panel, lv_color_hex(0x08111A), 0);
         lv_obj_set_style_bg_opa(panel, LV_OPA_70, 0);
-        lv_obj_set_style_pad_left(panel, 14, 0);
-        lv_obj_set_style_pad_right(panel, 14, 0);
-        lv_obj_set_style_pad_top(panel, 10, 0);
-        lv_obj_set_style_pad_bottom(panel, 10, 0);
+        lv_obj_set_style_pad_left(panel, 10, 0);
+        lv_obj_set_style_pad_right(panel, 10, 0);
+        lv_obj_set_style_pad_top(panel, 8, 0);
+        lv_obj_set_style_pad_bottom(panel, 8, 0);
         lv_obj_clear_flag(panel, LV_OBJ_FLAG_SCROLLABLE);
+
+        row = lv_obj_create(panel);
+        if (row != NULL)
+        {
+            lv_obj_set_size(row, LV_PCT(100), LV_SIZE_CONTENT);
+            lv_obj_align(row, LV_ALIGN_TOP_MID, 0, 0);
+            lv_obj_set_style_bg_opa(row, LV_OPA_TRANSP, 0);
+            lv_obj_set_style_border_width(row, 0, 0);
+            lv_obj_set_style_pad_all(row, 0, 0);
+            lv_obj_set_style_pad_column(row, 4, 0);
+            lv_obj_clear_flag(row, LV_OBJ_FLAG_SCROLLABLE);
+            lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW);
+            lv_obj_set_flex_align(row, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+            label = lv_label_create(row);
+            if (label != NULL)
+            {
+                gDashboard.glucose_label = label;
+                lv_label_set_text(label, "0");
+                lv_obj_set_style_text_color(label, lv_color_hex(0xEAF6FF), 0);
+                lv_obj_set_style_text_font(label, &lv_font_montserrat_42, 0);
+            }
+
+            label = lv_label_create(row);
+            if (label != NULL)
+            {
+                gDashboard.glucose_unit_label = label;
+                lv_label_set_text(label, "MG/DL");
+                lv_obj_set_style_text_color(label, lv_color_hex(0xC7EFFF), 0);
+                lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
+            }
+        }
 
         label = lv_label_create(panel);
         if (label != NULL)
         {
-            gDashboard.glucose_label = label;
-            lv_obj_center(label);
-            lv_obj_set_style_text_color(label, lv_color_hex(0xEAF6FF), 0);
-            lv_obj_set_style_text_font(label, LV_FONT_DEFAULT, 0);
-            update_glucose_label(replay_glucose_at(0u));
+            gDashboard.glucose_title_label = label;
+            lv_label_set_text(label, "GLUCOSE LEVEL");
+            lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 52);
+            lv_obj_set_style_text_color(label, lv_color_hex(0xC7EFFF), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
         }
+
+        gDashboard.glucose_shadow_label = NULL;
+        update_glucose_label(replay_glucose_at(0u));
     }
 
     chart = lv_chart_create(screen);

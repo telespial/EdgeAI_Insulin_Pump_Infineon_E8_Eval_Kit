@@ -195,6 +195,66 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
     - `../failsafe/e8_smart_pong_20260324_095648_top_role_labels_app_combined.hex`
     - `../failsafe/e8_smart_pong_20260324_095648_top_role_labels_proj_cm55.elf`
 
+## Update 2026-06-11 15:50
+- Slowed the replay-driven CGM playback by 4x by changing the timer cadence from `350 ms` to `1400 ms`.
+- The current glucose label and lower-right graph still step through the same saved replay data, just at the slower pace.
+- The updated slower replay build was rebuilt and flashed successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 16:00
+- Reworked the glucose box into a two-line title/value layout so the numeric glucose readout stands out more clearly.
+- Enabled the larger `28pt` LVGL font for the glucose number and added a subtle offset shadow to make it feel bolder.
+
+## Update 2026-06-11 16:20
+- Rebuilt and flashed the larger glucose-value update successfully on `PSE846GPS2DBZC4A`.
+- Created a new golden restore snapshot:
+  - `../failsafe/e8_insulin_pump_20260611_141240_glucose_bigger_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_141240_glucose_bigger_proj_cm55.elf`
+
+## Update 2026-06-11 16:25
+- Refactoring the glucose panel again so the first row reads `{value} MG/DL` and the second row reads `GLUCOSE LEVEL`.
+- Shrinking the panel width further so the box is about 40% narrower than the previous layout.
+
+## Update 2026-06-11 16:26
+- The glucose panel was rebuilt and flashed with the new `{value} MG/DL` top row, `GLUCOSE LEVEL` second row, and a narrower panel width.
+
+## Update 2026-06-11 16:28
+- Tightened the vertical spacing between the glucose value row and the `GLUCOSE LEVEL` row.
+- Reduced the panel height slightly so the two rows sit closer together.
+
+## Update 2026-06-11 16:31
+- Rebuilt and flashed the tighter glucose layout successfully.
+- Saved a new golden restore snapshot:
+  - `../failsafe/e8_insulin_pump_20260611_141829_glucose_tighter_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_141829_glucose_tighter_proj_cm55.elf`
+
+## Update 2026-06-11 16:33
+- Shaved one text line off the glucose panel height so the bottom border sits closer to the `GLUCOSE LEVEL` row.
+
+## Update 2026-06-11 16:36
+- Rebuilt and flashed the lowered glucose panel height successfully.
+- Saved a new golden restore snapshot:
+  - `../failsafe/e8_insulin_pump_20260611_142346_glucose_lower_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_142346_glucose_lower_proj_cm55.elf`
+
+## Update 2026-06-11 16:38
+- Moving the glucose panel down by one panel height so it sits lower on the screen.
+
+## Update 2026-06-11 16:41
+- Scaled the glucose number to `42pt` and the `MG/DL` / `GLUCOSE LEVEL` text to `18pt`.
+- Increased the glucose panel height slightly so the larger text stays readable.
+
+## Update 2026-06-11 16:43
+- Rebuilt and flashed the 1.5x glucose font sizing successfully on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-11 16:44
+- Shifting the glucose panel down by about 25% of its box height so the whole card sits lower on the screen.
+
+## Update 2026-06-11 16:46
+- Rebuilt and flashed the lowered glucose panel successfully on `PSE846GPS2DBZC4A`.
+- Saved a new golden restore snapshot:
+  - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_proj_cm55.elf`
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

@@ -41,6 +41,46 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - `../failsafe/e8_insulin_pump_20260611_135902_cgm_overlay_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260611_135902_cgm_overlay_proj_cm55.elf`
 
+## Latest Verified Restore Artifact (2026-06-11, glucose text refresh)
+- Board: `PSE846GPS2DBZC4A` (Rev `B0`)
+- Build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Flash:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260611_141240_glucose_bigger_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_141240_glucose_bigger_proj_cm55.elf`
+
+## Latest Verified Restore Artifact (2026-06-11, tighter glucose card spacing)
+- Board: `PSE846GPS2DBZC4A` (Rev `B0`)
+- Build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Flash:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260611_141829_glucose_tighter_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_141829_glucose_tighter_proj_cm55.elf`
+
+## Latest Verified Restore Artifact (2026-06-11, lower glucose box border)
+- Board: `PSE846GPS2DBZC4A` (Rev `B0`)
+- Build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Flash:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260611_142346_glucose_lower_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_142346_glucose_lower_proj_cm55.elf`
+
+## Latest Verified Restore Artifact (2026-06-11, panel lowered)
+- Board: `PSE846GPS2DBZC4A` (Rev `B0`)
+- Build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Flash:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260611_143018_panel_lower_proj_cm55.elf`
+
 ## Restore Procedure
 1. Fetch tags:
    ```bash
