@@ -465,6 +465,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Confirmed that the repository landing page on GitHub will still show the `main` branch README until the default branch or `main` is updated.
 - Kept the project history and baseline-preservation narrative intact in the branch README.
 
+## Update 2026-06-11 20:52 PDT
+- Recorded the README verification so the repo history shows both the branch content and the default-branch masking behavior.
+- Confirmed the working tree is clean after pushing the documentation-only verification update.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

@@ -742,3 +742,7 @@ PY
   - Working tree clean after the final push.
 [2026-06-11 20:49:00 PDT] COMMAND: printf 'BRANCH: '; git branch --show-current; printf '\\n--- ROOT README HEAD ---\\n'; sed -n '1,220p' README.md; printf '\\n--- DIFF vs main ---\\n'; git diff --stat main...HEAD -- README.md; printf '\\n--- README diff summary ---\\n'; git diff --unified=40 main...HEAD -- README.md
 [2026-06-11 20:50:00 PDT] COMMAND: printf 'MAIN README ---\\n'; git show main:README.md | sed -n '1,220p'; printf '\\n--- README HISTORY ---\\n'; git log --oneline --decorate -- README.md | head -n 12
+[2026-06-11 20:51:00 PDT] COMMAND: git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Record README verification" && git push origin codex/bar-graph-tuning
+  - Recorded the README verification result and pushed it to the branch.
+[2026-06-11 20:52:00 PDT] COMMAND: git status --short
+  - Working tree clean after the verification push.
