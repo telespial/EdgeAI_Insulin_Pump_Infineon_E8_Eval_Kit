@@ -113,3 +113,11 @@
 - [ ] Confirm no real pump-control claims
 - [ ] Confirm safety layer always wins
 - [ ] Write final summary
+
+## Milestone 11 — RTOS Readiness Planning
+- [ ] Add RTOS migration plan documentation
+- [ ] Add OSAL plan documentation
+- [ ] Record RTOS-ready architecture decisions
+- [ ] Keep the current firmware behavior unchanged
+- [ ] Avoid dynamic allocation in firmware modules
+- [ ] Preserve regression outputs during future migration work

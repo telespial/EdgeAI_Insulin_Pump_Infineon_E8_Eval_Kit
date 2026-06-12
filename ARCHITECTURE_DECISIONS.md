@@ -49,3 +49,33 @@ Using one execution path keeps CSV replay, synthetic testing, and audit logging 
 
 Status:
 Accepted
+
+## ADR-006 — RTOS readiness
+Decision:
+The APS architecture shall remain RTOS-ready but not RTOS-dependent.
+
+Reason:
+This keeps the current research loop stable while allowing a later migration to a safety-oriented RTOS without rewriting predictor, controller, safety, or simulation behavior.
+
+Status:
+Accepted
+
+## ADR-007 — Static allocation
+Decision:
+Firmware modules shall avoid dynamic allocation.
+
+Reason:
+Static allocation keeps memory use bounded and deterministic, which is important for both current research work and future safety-oriented runtime plans.
+
+Status:
+Accepted
+
+## ADR-008 — Safety priority
+Decision:
+The Safety Supervisor shall always have the highest scheduling priority.
+
+Reason:
+Safety must remain the final authority and be able to override any lower-priority decision before output is committed.
+
+Status:
+Accepted

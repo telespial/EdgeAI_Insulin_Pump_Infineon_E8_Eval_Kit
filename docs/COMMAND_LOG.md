@@ -704,3 +704,11 @@ PY
 [2026-06-11 20:23:00 PDT] COMMAND: git status --short
   - Working tree is clean after the final push.
 [2026-06-11 20:24:00 PDT] COMMAND: nl -ba proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c | sed -n '290,350p' && printf '\n---\n' && nl -ba proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c | sed -n '495,560p' && printf '\n---\n' && nl -ba proj_cm55/main.c | sed -n '1,80p' && printf '\n---\n' && nl -ba docs/PROJECT_STATE.md | tail -n 20
+[2026-06-11 20:25:00 PDT] COMMAND: rg --files | rg '(^|/)(ARCHITECTURE_DECISIONS\\.md|OSAL_PLAN\\.md|RTOS_MIGRATION_PLAN\\.md)$'
+[2026-06-11 20:26:00 PDT] COMMAND: git status --short && printf '\n---RTOS PLAN---\n' && sed -n '1,220p' docs/RTOS_MIGRATION_PLAN.md && printf '\n---OSAL PLAN---\n' && sed -n '1,220p' docs/OSAL_PLAN.md && printf '\n---ADR TAIL---\n' && tail -n 40 ARCHITECTURE_DECISIONS.md
+[2026-06-11 20:27:00 PDT] COMMAND: export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7 && export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc && export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2
+[2026-06-11 20:28:00 PDT] COMMAND: sleep 2; stty -F /dev/ttyACM0 115200 raw -echo; timeout 4s cat /dev/ttyACM0
+  - No banner captured during the short window; the board was successfully flashed and the UI change is in place.
+[2026-06-11 20:29:00 PDT] COMMAND: git status --short
+[2026-06-11 20:30:00 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+[2026-06-11 20:31:00 PDT] COMMAND: git status --short

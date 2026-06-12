@@ -2,6 +2,8 @@
 
 This repository now includes an APS research smoke-test path for the PSOC&trade; Edge E84 Evaluation Kit. The smoke-test build prints a UART banner, runs a deterministic five-step glucose sequence, and validates the embedded multi-core boot path without changing medical logic.
 
+Future architecture planning now also covers RTOS readiness and OS abstraction so the current research loop can migrate cleanly later without changing predictor, controller, safety, or regression behavior.
+
 Smoke-test build and flash command:
 
 ```bash
@@ -56,6 +58,16 @@ DEFINES+=APP_SMART_PONG_MODE=1
 ```
 
 in `proj_cm55/Makefile`, then rebuild and reprogram.
+
+## RTOS Readiness
+
+The current firmware remains bare-metal / FreeRTOS-style today, but the repo now includes forward-planning docs for a future RTOS migration:
+
+- `docs/RTOS_MIGRATION_PLAN.md`
+- `docs/OSAL_PLAN.md`
+- `ARCHITECTURE_DECISIONS.md`
+
+These documents are planning guidance only and do not change runtime behavior.
 
    To build the application for the 7-inch display, set the following macro in *common.mk*:
 

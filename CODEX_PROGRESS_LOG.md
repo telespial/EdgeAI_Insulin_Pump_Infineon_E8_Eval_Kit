@@ -198,3 +198,20 @@ Result:
 
 Next recommended step:
 - Keep the smoke lane as a lightweight boot guard and resume higher-level regression work on the host side.
+
+## 2026-06-11 — RTOS planning documentation pass
+
+Changed:
+- Added an RTOS migration plan covering candidate kernels, task architecture, priority model, memory rules, watchdog strategy, and a proposed E84 core split.
+- Added an OSAL plan that defines the minimal abstraction layer APIs needed to keep firmware modules runtime-agnostic.
+- Recorded ADRs for RTOS readiness, static allocation, and safety-first scheduling.
+
+Tests:
+- Documentation-only update; no build or regression behavior changed.
+
+Known gaps:
+- The project is not RTOS-ported yet, and no application logic was changed.
+- The OSAL APIs are planning targets only and still need implementation when migration work begins.
+
+Next recommended step:
+- Keep the current firmware stable and only revisit OSAL implementation after the embedded bring-up milestone is complete.

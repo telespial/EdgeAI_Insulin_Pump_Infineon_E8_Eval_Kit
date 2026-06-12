@@ -434,6 +434,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The normal graphics image remains the active flashed path; the smoke-only blank-screen shortcut is still removed.
 - UART capture did not yield a fresh banner in the short window, so the next operator check is the visual graph movement on the LCD.
 
+## Update 2026-06-11 20:25 PDT
+- Added RTOS readiness planning docs for a future safety-oriented migration path.
+- Documented an OSAL concept so predictor, controller, and safety modules can stay runtime-agnostic later.
+- Recorded ADRs that keep the current firmware architecture RTOS-ready without changing current behavior.
+
+## Update 2026-06-11 20:28 PDT
+- Moved the `CONF` label one character width left to tighten the metric row alignment beside the horizontal bar.
+- Flashed the updated CM55 image so the live UI reflects the adjusted label placement.
+- Kept the new RTOS migration and OSAL documents as planning-only material with no runtime behavior changes.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
