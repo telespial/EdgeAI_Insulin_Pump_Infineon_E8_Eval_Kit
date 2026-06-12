@@ -278,6 +278,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Final verification confirmed the docs branch is clean at `54092c1`.
 - The repository homepage is now aligned on the docs branch without merging the full APS feature branch.
 
+## Update 2026-06-11 21:38
+- Logged the final homepage verification push in the repo docs.
+- Left `update-main-aps-readme` as the docs-only landing-page branch for PR creation.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
