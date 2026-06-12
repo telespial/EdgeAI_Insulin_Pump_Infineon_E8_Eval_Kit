@@ -1,10 +1,12 @@
 # Build Report
 
+> Detailed evidence report: `docs/BUILD_FLASH_VERIFICATION.md`
+
 ## Branch
 - `embedded-bringup-smoke-test`
 
 ## Commit
-- `working tree`
+- `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
 
 ## Target
 - `APP_KIT_PSE84_EVAL_EPC2`
@@ -32,6 +34,8 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 - UART smoke banner: success
 - UART smoke sequence: success
 - Observed on UART after the cooperative-sidecar fix: steps 0 through 3 printed cleanly without LCD loss during the watch window
+- Portable APS modules are now linked into the CM55 image, but they are not runtime-called on hardware yet
+- For the current verification pass, the more complete build/flash evidence is captured in `docs/BUILD_FLASH_VERIFICATION.md`
 
 ## Artifact Paths
 - `build/app_combined.hex`
@@ -47,7 +51,8 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 - RRAM: `159,744 / 524,288`
 - SOCMEM_RAM: `4,446,208 / 5,242,880`
 - SRAM: `399,882 / 1,048,576`
-- m55 NVM region: `246,416 / 3,932,160`
+- m55 NVM region: `250,496 / 3,932,160`
+- `build/app_combined.hex`: `5,206,276` bytes
 
 ## Warnings
 - `ClampF32` unused warning in `cgm_model_runtime.c`

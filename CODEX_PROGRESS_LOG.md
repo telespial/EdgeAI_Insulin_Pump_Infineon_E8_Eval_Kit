@@ -87,6 +87,48 @@ Known gaps:
 Next recommended step:
 - Keep the comparison loop stable while adding one or two representative replay CSV fixtures for regression checks.
 
+## 2026-06-12 — Verification evidence pass
+
+Changed:
+- Collected a full build/flash verification evidence report for the current E84 tree.
+- Separated host-only APS framework coverage from the embedded GUI/LCD path.
+- Captured recovery/reset, host regression, embedded build, flash, verify, and UART boot evidence in `docs/BUILD_FLASH_VERIFICATION.md`.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD recovery/reset-run before and after flash
+
+Known gaps:
+- APS framework remains host-only in this repo.
+- No fresh LCD photo was taken during the evidence pass.
+
+Next recommended step:
+- Use the evidence report as the handoff reference for any future host-to-embedded integration work.
+
+## 2026-06-12 — Embedded APS module link
+
+Changed:
+- Linked the portable APS firmware modules into the CM55 embedded build.
+- Kept the embedded image behavior unchanged: no APS runtime call path was added.
+- Updated the build/flash verification report to distinguish embedded-linked modules from host-only simulator modules.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD recovery/reset-run before and after flash
+
+Known gaps:
+- APS modules are linked in the CM55 image, but they are not runtime called on hardware yet.
+- No fresh LCD photo was taken during this integration pass.
+
+Next recommended step:
+- Add the first carefully gated APS runtime entrypoint only after the embedded link path is fully trusted.
+
 ## 2026-06-11 — Fixture and workflow pass
 
 Changed:

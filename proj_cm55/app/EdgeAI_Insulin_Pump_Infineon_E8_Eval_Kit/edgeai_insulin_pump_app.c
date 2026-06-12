@@ -380,7 +380,7 @@ void edgeai_insulin_pump_app_start(void)
             {
                 gDashboard.status_labels[index] = label;
                 lv_label_set_text(label, bar_texts[index]);
-                lv_obj_set_pos(label, 498, bar_y_positions[index] - 2);
+                lv_obj_set_pos(label, 580, bar_y_positions[index] - 2);
                 lv_obj_set_style_text_color(label, lv_color_hex(0xC7EFFF), 0);
                 lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
             }

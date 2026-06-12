@@ -278,6 +278,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Increased the vertical spacing between the three test bars to `20 px` between rows.
 
 ## Update 2026-06-11 17:02
+
+## Update 2026-06-12
+- Board recovery note: after repeated known-good flashes left the LCD dark, an OpenOCD session with the generated QSPI bank layout loaded confirmed `PSE846GPS2DBZC4A`, `Boot Status : CYBOOT_SUCCESS`, visible RRAM and SMIF flash banks, then issued `reset run`.
+- Result: LCD/display came back on without requiring a flash erase. Recovery path appears to be debugger acquire plus reset-run, not a corrupted golden image.
 - Rebuilt and flashed the `20 px` bar-row spacing update successfully on `PSE846GPS2DBZC4A`.
 
 ## Update 2026-06-11 17:03
@@ -653,7 +657,51 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 22:34 PDT
 - The exact-baseline cleanup was committed and pushed as `dfb4117` on `embedded-bringup-smoke-test`.
 
+## Update 2026-06-11 22:36 PDT
+- The `failsafe-e8-insulin-pump` restore-point tag and the current build artifacts under `build/` have both been verified for the baseline source/image reference.
+
+## Update 2026-06-11 22:40 PDT
+- The exact failsafe restore-point image has now been programmed to the board and verified at the flash tool level.
+
+## Update 2026-06-11 22:43 PDT
+- The authoritative `40aaf3f` restore-point commit was flashed from a clean detached worktree, preserving the current branch state while validating the exact source/image pair.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
 3. Keep 4.3-inch EPC2 path as the only supported and release-pinned target.
+
+## Update 2026-06-12
+- The LCD recovery path is confirmed: OpenOCD acquired `PSE846GPS2DBZC4A`, reported `Boot Status : CYBOOT_SUCCESS`, and `reset run` restored the display without any flash erase.
+- The exact-commit restore point remains `40aaf3f` and is still the reference source/image pair for recovery work.
+- The exact `40aaf3f` source/image pair was rebuilt and programmed from the detached worktree, and flash verify completed successfully on the board.
+- The LCD recovery workflow is now documented in `docs/LCD_RECOVERY_REPORT.md` and `docs/OPS_RUNBOOK.md`.
+
+## Update 2026-06-12 06:30 PDT
+- Rebuilt the exact `40aaf3f` restore-point image from a detached worktree so the active branch stayed untouched.
+- Ran the LCD-safe sequence again: OpenOCD acquire + `reset run`, `flash write_image erase` for `build/app_combined.hex`, `verify_image`, then a final `reset run`.
+- Flashing and verify both succeeded on `PSE846GPS2DBZC4A`, with `Boot Status : CYBOOT_SUCCESS` throughout the session.
+
+## Update 2026-06-12 06:48 PDT
+- Built and flashed commit `82f5dd1` from a detached worktree, preserving the active branch state.
+- The flashed artifact was the larger full build image (`build/app_combined.hex`) for the newer insulin-pump code path.
+- OpenOCD acquire + `reset run` before flash and after verify both succeeded, and flash verify passed on `PSE846GPS2DBZC4A`.
+
+## Update 2026-06-12 07:00 PDT
+- Built and flashed commit `06b0fdd` from the detached worktree, which adds the physiology engine context layer.
+- Used the LCD-safe OpenOCD flow with the correct GeneratedSource tree so both `cat1d.cm33.main_ns` and `cat1d.cm33.smif1_ns` banks were visible.
+- Flash verify passed on `PSE846GPS2DBZC4A`, and the final `reset run` completed cleanly to keep the LCD alive.
+
+## Update 2026-06-12 07:15 PDT
+- Linked the portable APS firmware modules into the CM55 build without adding any runtime APS execution path.
+- Rebuilt, programmed, and reset-run the board successfully; the LVGL demo banner still appeared on UART after reboot.
+- The CM55 image size stayed in the same reported band as the prior capture, so this is a link-integration milestone rather than a behavior change.
+
+## Update 2026-06-12 07:30 PDT
+- Collected the full verification evidence set for the current `embedded-bringup-smoke-test` tree at commit `11f430ded92c0127f72c52ff7d69dbdceb75ff42`.
+- Documented host-only APS coverage versus embedded GUI coverage in `docs/BUILD_FLASH_VERIFICATION.md`.
+- Confirmed the board recovery/reset workflow, embedded build, flash, verify, and UART boot banner for the current tree.
+
+## Update 2026-06-12 07:45 PDT
+- Shifted the `CONF` and `ACC` labels closer to the left edges of their horizontal status bars in the CM55 dashboard.
+- Rebuilt the firmware successfully after the label move; no LCD or build regressions were observed.

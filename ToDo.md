@@ -115,6 +115,13 @@
 - [ ] Confirm safety layer always wins
 - [ ] Write final summary
 
+## Milestone 13 — Verification Evidence Report
+- [x] Collect recovery/reset evidence
+- [x] Collect host test and regression evidence
+- [x] Collect embedded build/flash/verify evidence
+- [x] Document host-only vs embedded-linked modules
+- [x] Write `docs/BUILD_FLASH_VERIFICATION.md`
+
 ## Milestone 11 — RTOS Readiness Planning
 - [ ] Add RTOS migration plan documentation
 - [ ] Add OSAL plan documentation
@@ -137,3 +144,10 @@
 - [x] Verify the APS UART banner
 - [x] Verify the five-step deterministic smoke sequence
 - [x] Confirm low-glucose safety response in smoke mode
+
+## Milestone 14 — Embedded APS Module Link
+- [x] Link portable APS modules into `proj_cm55`
+- [x] Keep APS runtime execution out of the hardware boot path
+- [x] Reflash the CM55 image and confirm the LCD/GUI stays alive
+- [x] Refresh the verification evidence report
+- [ ] Add the first gated APS runtime entrypoint

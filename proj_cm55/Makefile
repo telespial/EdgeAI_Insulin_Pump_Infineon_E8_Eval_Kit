@@ -78,12 +78,23 @@ CORE_NAME=CM55_0
 # manually add source code to the build process from a location not searched
 # by default, or otherwise not found by the build system.
 SOURCES+=
+SOURCES+=../firmware/src/aps_log.c
+SOURCES+=../firmware/src/activity_engine.c
+SOURCES+=../firmware/src/aps_physiology.c
+SOURCES+=../firmware/src/cob_engine.c
+SOURCES+=../firmware/src/controller_openaps.c
+SOURCES+=../firmware/src/iob_engine.c
+SOURCES+=../firmware/src/metrics.c
+SOURCES+=../firmware/src/predictor_v2.c
+SOURCES+=../firmware/src/predictor_v2_generated.c
+SOURCES+=../firmware/src/safety_supervisor.c
 
 # Like SOURCES, but for include directories. Value should be paths to
 # directories (without a leading -I).
 INCLUDES+=
 INCLUDES+=./app/EdgeAI_Smart_Pong_demo_Infineon_E8_Eval_Kit
 INCLUDES+=./app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit
+INCLUDES+=../firmware/include
 
 # Keep upstream NXP snapshot as reference-only (not compiled in Infineon build).
 CY_IGNORE += ./app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/upstream_nxp
