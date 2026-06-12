@@ -174,3 +174,7 @@
   - Verified the new README removes Pong/Smart Pong/LVGL demo framing; the legacy terms no longer appear in `README.md`.
 [2026-06-11 21:34:00 PDT] COMMAND: rm -rf host_build out && git status --short
   - Removed generated host build and regression outputs so the branch stays docs-only.
+[2026-06-11 21:35:00 PDT] COMMAND: git add README.md docs/PROJECT_HISTORY.md docs/LEGACY_DISPLAY_BRINGUP.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Align main README with APS landing page" && git push origin update-main-aps-readme
+  - The docs-only branch was committed as `2a8b877` and pushed to `origin/update-main-aps-readme`.
+[2026-06-11 21:36:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD && git branch --show-current
+  - Confirmed the branch is clean after push and the current branch is `update-main-aps-readme` at `2a8b877`.
