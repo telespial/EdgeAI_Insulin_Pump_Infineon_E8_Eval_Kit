@@ -1,16 +1,23 @@
 #include "edgeai_insulin_pump_app.h"
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include "controller_openaps.h"
+#include "cgm_model_runtime.h"
 #include "cgm_replay_subject001.h"
+#include "predictor_v2.h"
 #include "lvgl.h"
+#include "safety_supervisor.h"
 #include "pump_background_image_rgb565.h"
 
 enum
 {
     CGM_GRAPH_POINTS = 32u,
     CGM_REPLAY_STEP_MS = 1400u,
+    CGM_REPLAY_SAMPLE_MINUTES = 5u,
+    BAR_GRAPH_COUNT = 3u,
 };
 
 typedef struct
@@ -18,18 +25,278 @@ typedef struct
     uint32_t sample_index;
     lv_obj_t *chart;
     lv_chart_series_t *glucose_series;
+    lv_chart_series_t *prediction_series;
+    lv_obj_t *prediction_label;
+    lv_obj_t *prediction_accuracy_label;
     lv_obj_t *glucose_unit_label;
     lv_obj_t *glucose_title_label;
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
+    lv_obj_t *status_labels[BAR_GRAPH_COUNT];
+    lv_obj_t *status_bars[BAR_GRAPH_COUNT];
     lv_timer_t *timer;
 } cgm_dashboard_t;
 
 static cgm_dashboard_t gDashboard;
 
+#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
+static bool gApsProbeRan;
+
+static const char *action_to_string(aps_action_t action)
+{
+    switch (action)
+    {
+        case APS_ACTION_NO_CHANGE:
+            return "NO_CHANGE";
+        case APS_ACTION_REDUCE_BASAL:
+            return "REDUCE";
+        case APS_ACTION_SUSPEND_BASAL:
+            return "SUSPEND";
+        case APS_ACTION_INCREASE_BASAL:
+            return "INCREASE";
+        case APS_ACTION_CORRECTION_SUGGESTION:
+            return "CORRECTION";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+void ApsEmbeddedProbe_RunOnce(void)
+{
+    predictor_v2_input_t input = {0};
+    predictor_v2_output_t prediction = {0};
+    aps_controller_output_t command = {0};
+    bool prediction_ok;
+    bool controller_ok;
+    bool safety_ok;
+
+    input.cgm.epoch_s = 1u;
+    input.cgm.age_s = 0u;
+    input.cgm.glucose_mgdl = 120u;
+    input.cgm.trend_mgdl_min_x100 = 0;
+    input.cgm.sqi_pct = 95u;
+    input.cgm.sensor_flags = 0u;
+    input.cgm.valid = true;
+
+    input.physiology.iob_u = 0.5f;
+    input.physiology.insulin_activity_u_per_hr = 0.0f;
+    input.physiology.cob_g = 10.0f;
+    input.physiology.carb_absorption_g_per_hr = 0.0f;
+    input.physiology.basal_u_per_hr = 0.8f;
+    input.physiology.insulin_30m_u = 0.0f;
+    input.physiology.insulin_120m_u = 0.0f;
+    input.physiology.carbs_30m_g = 0.0f;
+    input.physiology.carbs_120m_g = 0.0f;
+    input.physiology.minutes_since_bolus = 0u;
+    input.physiology.minutes_since_meal = 0u;
+    input.physiology.activity_state = (uint8_t)ACTIVITY_SEDENTARY;
+    input.physiology.activity_confidence_pct = 95u;
+    input.physiology.motion_rms_5m = 0.0f;
+    input.physiology.motion_rms_15m = 0.0f;
+    input.physiology.active_minutes = 0u;
+    input.physiology.post_exercise_minutes = 0u;
+    input.physiology_present = true;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    OpenApsController_Reset();
+
+    prediction_ok = PredictorV2_Update(&input, &prediction);
+    controller_ok = prediction_ok && OpenApsController_DetermineBasal(&input, &prediction, &command);
+    safety_ok = controller_ok && SafetySupervisor_Apply(1u, &input, &prediction, &command);
+
+    printf("APS probe: BG=120 P15=%u P30=%u P60=%u ACTION=%s SAFETY=0x%08lX OK=%u%u%u\n",
+           (unsigned int)prediction.pred_15m_mgdl,
+           (unsigned int)prediction.pred_30m_mgdl,
+           (unsigned int)prediction.pred_60m_mgdl,
+           action_to_string(command.action),
+           (unsigned long)command.reason_flags,
+           prediction_ok ? 1u : 0u,
+           controller_ok ? 1u : 0u,
+           safety_ok ? 1u : 0u);
+
+    gApsProbeRan = true;
+}
+#endif
+
 static uint16_t replay_glucose_at(uint32_t index)
 {
     return kCgmReplaySubject001Mgdl[index % CGM_REPLAY_SUBJECT001_LEN];
+}
+
+static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum);
+
+static lv_color_t glucose_status_color(uint16_t glucose_mgdl)
+{
+    if ((glucose_mgdl < 70u) || (glucose_mgdl > 250u))
+    {
+        return lv_color_hex(0xFF5A5A);
+    }
+    if ((glucose_mgdl < 80u) || (glucose_mgdl > 180u))
+    {
+        return lv_color_hex(0xFFD45A);
+    }
+    return lv_color_hex(0x58E07C);
+}
+
+static lv_color_t metric_bar_color(int32_t percent)
+{
+    if (percent < 85)
+    {
+        return lv_color_hex(0xFF5A5A);
+    }
+    if (percent < 90)
+    {
+        return lv_color_hex(0xFFD45A);
+    }
+    return lv_color_hex(0x58E07C);
+}
+
+static void style_prediction_label(lv_obj_t *label)
+{
+    if (label == NULL)
+    {
+        return;
+    }
+
+    lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_shadow_color(label, lv_color_hex(0xFF4A6A), 0);
+    lv_obj_set_style_shadow_opa(label, LV_OPA_COVER, 0);
+    lv_obj_set_style_shadow_width(label, 8, 0);
+    lv_obj_set_style_shadow_ofs_x(label, 0, 0);
+    lv_obj_set_style_shadow_ofs_y(label, 0, 0);
+}
+
+static int16_t estimate_trend_x100(uint32_t index)
+{
+    int32_t current;
+    int32_t delta;
+    int32_t accum = 0;
+    uint32_t count = 0u;
+    uint32_t lag;
+
+    if (index == 0u)
+    {
+        return 0;
+    }
+
+    current = (int32_t)replay_glucose_at(index);
+    for (lag = 1u; lag <= 3u; ++lag)
+    {
+        if (index < lag)
+        {
+            break;
+        }
+
+        delta = current - (int32_t)replay_glucose_at(index - lag);
+        accum += (delta * 100) / ((int32_t)lag * (int32_t)CGM_REPLAY_SAMPLE_MINUTES);
+        count++;
+    }
+
+    if (count == 0u)
+    {
+        return 0;
+    }
+
+    return (int16_t)clamp_i32(accum / (int32_t)count, -2500, 2500);
+}
+
+static bool predict_glucose_from_model(uint32_t sample_index,
+                                       uint16_t current_mgdl,
+                                       uint16_t *predicted_15m_mgdl,
+                                       uint8_t *confidence_pct)
+{
+    cgm_model_features_t features;
+    uint16_t pred_30m_mgdl;
+    uint8_t model_confidence;
+
+    if ((predicted_15m_mgdl == NULL) || (confidence_pct == NULL))
+    {
+        return false;
+    }
+
+    features.glucose_mgdl = current_mgdl;
+    features.trend_mgdl_min_x100 = estimate_trend_x100(sample_index);
+    features.sqi_pct = 92u;
+    features.sensor_flags = 0u;
+    features.epoch_ds = sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 600u;
+
+    if (CgmModel_Predict(&features, predicted_15m_mgdl, &pred_30m_mgdl, &model_confidence))
+    {
+        *confidence_pct = model_confidence;
+        return true;
+    }
+
+    *predicted_15m_mgdl = replay_glucose_at(sample_index + 4u);
+    *confidence_pct = 70u;
+    return false;
+}
+
+static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum)
+{
+    if (value < minimum)
+    {
+        return minimum;
+    }
+
+    if (value > maximum)
+    {
+        return maximum;
+    }
+
+    return value;
+}
+
+static int32_t map_range_i32(int32_t value, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max)
+{
+    int32_t clamped = clamp_i32(value, in_min, in_max);
+
+    return out_min + ((clamped - in_min) * (out_max - out_min)) / (in_max - in_min);
+}
+
+static int32_t calculate_prediction_accuracy_percent(uint16_t current_mgdl, uint16_t predicted_mgdl)
+{
+    int32_t accuracy;
+
+    accuracy = 100 - ((int32_t)abs((int32_t)predicted_mgdl - (int32_t)current_mgdl) * 100) / 150;
+    return clamp_i32(accuracy, 0, 100);
+}
+
+static void update_status_bars(uint16_t current_mgdl, uint16_t predicted_mgdl, uint8_t confidence_pct)
+{
+    int32_t accuracy;
+    uint32_t i;
+
+    if (gDashboard.status_bars[0u] == NULL)
+    {
+        return;
+    }
+
+    accuracy = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
+
+    lv_bar_set_value(gDashboard.status_bars[0u], map_range_i32((int32_t)current_mgdl, 40, 400, 12, 100), LV_ANIM_OFF);
+    lv_bar_set_value(gDashboard.status_bars[1u], confidence_pct, LV_ANIM_OFF);
+    lv_bar_set_value(gDashboard.status_bars[2u], accuracy, LV_ANIM_OFF);
+
+    lv_obj_set_style_bg_color(gDashboard.status_bars[1u], metric_bar_color(confidence_pct), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(gDashboard.status_bars[2u], metric_bar_color(accuracy), LV_PART_INDICATOR);
+
+    for (i = 0u; i < BAR_GRAPH_COUNT; ++i)
+    {
+        lv_obj_invalidate(gDashboard.status_bars[i]);
+    }
+}
+
+static void update_chart_colors(uint16_t current_mgdl)
+{
+    if ((gDashboard.chart == NULL) || (gDashboard.glucose_series == NULL) || (gDashboard.prediction_series == NULL))
+    {
+        return;
+    }
+
+    lv_chart_set_series_color(gDashboard.chart, gDashboard.glucose_series, glucose_status_color(current_mgdl));
+    lv_chart_set_series_color(gDashboard.chart, gDashboard.prediction_series, lv_color_hex(0x4CC7FF));
 }
 
 static void update_glucose_label(uint16_t current_mgdl)
@@ -51,11 +318,29 @@ static void update_glucose_label(uint16_t current_mgdl)
 
 static void push_sample(uint16_t current_mgdl)
 {
+    uint16_t predicted_mgdl = current_mgdl;
+    uint8_t confidence_pct = 0u;
+    int32_t accuracy_pct;
+    char header_buffer[64];
+
+    (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
+    accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
     update_glucose_label(current_mgdl);
+    update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
+    if (gDashboard.prediction_accuracy_label != NULL)
+    {
+        snprintf(header_buffer, sizeof(header_buffer), "%d%%", (int)accuracy_pct);
+        lv_label_set_text(gDashboard.prediction_accuracy_label, header_buffer);
+    }
 
     if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
     {
         lv_chart_set_next_value(gDashboard.chart, gDashboard.glucose_series, (int32_t)current_mgdl);
+        if (gDashboard.prediction_series != NULL)
+        {
+            lv_chart_set_next_value(gDashboard.chart, gDashboard.prediction_series, (int32_t)predicted_mgdl);
+        }
+        update_chart_colors(current_mgdl);
         lv_chart_refresh(gDashboard.chart);
     }
 
@@ -93,6 +378,7 @@ void edgeai_insulin_pump_app_start(void)
     lv_obj_t *panel;
     lv_obj_t *row;
     lv_obj_t *chart;
+    lv_obj_t *bar;
     lv_obj_t *label;
 
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
@@ -165,16 +451,53 @@ void edgeai_insulin_pump_app_start(void)
         update_glucose_label(replay_glucose_at(0u));
     }
 
+    for (uint32_t index = 0u; index < BAR_GRAPH_COUNT; ++index)
+    {
+        static const lv_coord_t bar_y_positions[BAR_GRAPH_COUNT] = {249, 279, 309};
+        static const char *bar_texts[BAR_GRAPH_COUNT] = {NULL, "CONF", "ACC"};
+
+        if (bar_texts[index] != NULL)
+        {
+            label = lv_label_create(screen);
+            if (label != NULL)
+            {
+                gDashboard.status_labels[index] = label;
+                lv_label_set_text(label, bar_texts[index]);
+                lv_obj_set_pos(label, 580, bar_y_positions[index] - 2);
+                lv_obj_set_style_text_color(label, lv_color_hex(0xC7EFFF), 0);
+                lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
+            }
+        }
+
+        bar = lv_bar_create(screen);
+        if (bar != NULL)
+        {
+            gDashboard.status_bars[index] = bar;
+            lv_obj_set_size(bar, 142, 14);
+            lv_obj_set_pos(bar, 620, bar_y_positions[index]);
+            lv_bar_set_range(bar, 0, 100);
+            lv_bar_set_value(bar, 60, LV_ANIM_OFF);
+            lv_obj_set_style_radius(bar, 8, LV_PART_MAIN);
+            lv_obj_set_style_radius(bar, 8, LV_PART_INDICATOR);
+            lv_obj_set_style_border_width(bar, 0, LV_PART_MAIN);
+            lv_obj_set_style_pad_all(bar, 0, LV_PART_MAIN);
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x0A1620), LV_PART_MAIN);
+            lv_obj_set_style_bg_opa(bar, LV_OPA_10, LV_PART_MAIN);
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x46DFFF), LV_PART_INDICATOR);
+            lv_obj_set_style_bg_opa(bar, LV_OPA_COVER, LV_PART_INDICATOR);
+        }
+    }
+
     chart = lv_chart_create(screen);
     if (chart != NULL)
     {
         gDashboard.chart = chart;
-        lv_obj_set_size(chart, 238, 138);
+        lv_obj_set_size(chart, 238, 128);
         lv_obj_align(chart, LV_ALIGN_BOTTOM_RIGHT, -16, -16);
         lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
         lv_chart_set_point_count(chart, CGM_GRAPH_POINTS);
         lv_chart_set_update_mode(chart, LV_CHART_UPDATE_MODE_SHIFT);
-        lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 40, 400);
+        lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 50, 390);
         lv_chart_set_div_line_count(chart, 4, 4);
         lv_obj_set_style_radius(chart, 14, 0);
         lv_obj_set_style_border_width(chart, 2, 0);
@@ -190,8 +513,38 @@ void edgeai_insulin_pump_app_start(void)
         {
             lv_chart_set_all_value(chart, gDashboard.glucose_series, 100);
         }
+        gDashboard.prediction_series = lv_chart_add_series(chart, lv_color_hex(0x4CC7FF), LV_CHART_AXIS_PRIMARY_Y);
+        if (gDashboard.prediction_series != NULL)
+        {
+            lv_chart_set_all_value(chart, gDashboard.prediction_series, 100);
+        }
+        label = lv_label_create(chart);
+        if (label != NULL)
+        {
+            gDashboard.prediction_label = label;
+            lv_label_set_text(label, "EdgeAI Prediction");
+            lv_obj_align(label, LV_ALIGN_TOP_LEFT, 18, -10);
+            style_prediction_label(label);
+        }
+
+        label = lv_label_create(chart);
+        if (label != NULL)
+        {
+            gDashboard.prediction_accuracy_label = label;
+            lv_label_set_text(label, "0%");
+            lv_obj_align_to(label, gDashboard.prediction_label, LV_ALIGN_OUT_RIGHT_MID, 18, 0);
+            lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+            lv_obj_set_style_shadow_color(label, lv_color_hex(0xFF4A6A), 0);
+            lv_obj_set_style_shadow_opa(label, LV_OPA_COVER, 0);
+            lv_obj_set_style_shadow_width(label, 8, 0);
+            lv_obj_set_style_shadow_ofs_x(label, 0, 0);
+            lv_obj_set_style_shadow_ofs_y(label, 0, 0);
+        }
     }
 
+    CgmModel_Reset();
+    CgmModel_SetEnabled(true);
     gDashboard.sample_index = 0u;
     seed_chart();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);

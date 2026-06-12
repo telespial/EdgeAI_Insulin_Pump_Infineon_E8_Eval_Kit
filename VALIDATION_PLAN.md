@@ -1,0 +1,107 @@
+# Validation Plan
+
+## Predictor Validation
+- Replay historical CGM traces through the predictor.
+- Compare 15m, 30m, and 60m outputs against labels.
+- Compare baseline trend predictions against Predictor V2 on the same replay rows.
+- Validate the fixed 36-feature Predictor V2 export schema and generated per-horizon tables.
+- Verify deterministic physiology context reaches Predictor V2 feature construction for IOB, COB, and activity state.
+- Verify missing-history features use documented median/default fallbacks.
+- Verify missing or invalid physiology context falls back safely and emits status flags.
+- Measure MAE, RMSE, and low-miss rate.
+
+Pass criteria:
+- No NaN or Inf outputs.
+- Each horizon remains within safe clamp limits.
+- 30m and 60m are independently generated.
+
+## Controller Validation
+- Run stable, rising, falling, meal, and bolus scenarios.
+- Verify controller action matches expected conservative behavior.
+
+Pass criteria:
+- No unsafe increase during low-confidence or rapid-fall cases.
+- Corrections remain simulation-only.
+
+## Safety Validation
+- Inject stale CGM, bad SQI, and impossible values.
+- Verify the safety supervisor overrides controller output.
+- Verify physiology context remains advisory only and never directly commands insulin.
+
+Pass criteria:
+- Safety always wins over controller recommendations.
+- Unsafe requests are reduced, clamped, or blocked.
+
+## Replay Validation
+- Run the Python replay harness against saved sample data.
+- Confirm deterministic CSV outputs.
+- Validate parser errors for impossible timestamps and glucose values.
+- Validate missing optional CSV columns use safe defaults.
+- Confirm the audit CSV includes actual future values, prediction errors, controller decisions, and reason codes.
+- Run the committed `data/sample_replay_*.csv` fixtures through the host simulator.
+- Run the full fixture matrix script to ensure every committed replay stays covered.
+- The matrix now performs build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric metric envelope checks.
+- Run the gold fixture matrix to lock down a smaller, higher-signal regression lane.
+
+Pass criteria:
+- Same inputs produce same outputs.
+- Logs contain prediction, controller, and safety fields.
+- Invalid replay rows are rejected with clear errors.
+
+## Synthetic Scenario Validation
+- Generate synthetic meals, boluses, and activity cases.
+- Compare controller behavior across scenarios.
+- Confirm each built-in scenario reaches the intended safety branch.
+- Exercise the `meal_rise` alias alongside the long-form scenario name.
+- Exercise the new deterministic physiology smoke scenario.
+- Verify IOB, COB, and activity feature generation remain bounded and deterministic.
+
+Pass criteria:
+- Low glucose leads to reduce/suspend behavior.
+- High IOB blocks aggressive recommendations.
+- Scenario runs emit auditable safety reason codes.
+
+## Host Unit Tests
+- Test predictor feature extraction.
+- Test physiology accumulation.
+- Test physiology feature propagation into Predictor V2.
+- Test controller action selection.
+- Test safety override logic.
+- Test replay summary metrics and audit CSV header coverage.
+- Test every committed replay fixture for expected safety behavior.
+- Test the scripted fixture matrix output and failure conditions.
+
+Pass criteria:
+- Tests pass consistently on the host platform.
+
+## Regression Tests
+- Lock a small set of canonical replay traces.
+- Re-run them after every meaningful change.
+- Keep the broader sample matrix and the narrower gold matrix separate so each catches different drift modes.
+- Keep the gold envelopes broad enough to catch drift without overfitting the current placeholder coefficients.
+
+Pass criteria:
+- No regression in safety behavior.
+- Prediction metrics do not unexpectedly degrade.
+
+## E84 Embedded Smoke Tests Later
+- Build the firmware for the E84 target.
+- Run replay-only mode first.
+- Verify logs and watchdog behavior.
+
+Pass criteria:
+- Firmware boots reliably.
+- No real pump integration is introduced.
+
+## E84 Embedded Smoke Tests
+- Build the firmware with `APP_APS_SMOKE_TEST=1`.
+- Flash the three-core image to `APP_KIT_PSE84_EVAL_EPC2`.
+- Verify the UART banner and five deterministic glucose steps.
+
+Pass criteria:
+- UART banner appears after flash.
+- Smoke sequence prints all five samples.
+- No crash or reset occurs during the smoke window.
+
+Status:
+- Verified on `embedded-bringup-smoke-test` with explicit `APP_INSULIN_PUMP_MODE=1` and `APP_SMART_PONG_MODE=0` build/program flags.

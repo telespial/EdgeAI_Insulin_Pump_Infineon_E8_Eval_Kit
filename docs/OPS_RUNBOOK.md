@@ -43,3 +43,30 @@ During flash logs, confirm:
 - If build cannot find tools, re-export env vars above.
 - If flash works but no display, validate hardware jumpers and `CONFIG_DISPLAY`.
 - If `CONFIG_DISPLAY` is not `W4P3INCH_DISP`, build is expected to fail by design.
+
+## E84 LCD Recovery / Flash Procedure
+
+When the LCD is dark, use OpenOCD acquire + reset-run first:
+
+```bash
+cd /home/user/projects/embedded/codemaster/projects/Infineon/PSOC_EDGE_E8_EVAL/firmware_kit_epc2
+
+OPENOCD=/opt/Tools/ModusToolboxProgtools-1.7/openocd/bin/openocd
+SCRIPTS=/opt/Tools/ModusToolboxProgtools-1.7/openocd/scripts
+QSPIDIR=$PWD/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource
+
+$OPENOCD -s "$SCRIPTS" -s "$QSPIDIR" \
+  -c 'set QSPI_FLASHLOADER ../flm/infineon/pse8xxgp/PSE84_SMIF.FLM' \
+  -f interface/kitprog3.cfg \
+  -c 'transport select swd' \
+  -f target/infineon/pse84xgxs2.cfg \
+  -c 'init; flash banks; reset run; sleep 2000; shutdown'
+```
+
+Expected healthy signs:
+- `Detected Device: PSE846GPS2DBZC4A`
+- `Boot Status : CYBOOT_SUCCESS`
+- banks visible: `cat1d.cm33.main_ns` and `cat1d.cm33.smif1_ns`
+
+If the LCD is still dark after a valid flash, rerun the command above before erasing anything.
+Only consider erase if both recovery reset-run and normal reprogramming fail.
