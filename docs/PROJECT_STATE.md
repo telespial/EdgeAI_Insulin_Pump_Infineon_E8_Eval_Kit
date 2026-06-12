@@ -405,6 +405,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Documented the stable feature schema in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md` and extended host tests for feature, bounds, and fallback coverage.
 - `make -f host.mk regression` passes again after widening two gold ML envelopes that were too tight for the new predictor coefficients.
 
+## Update 2026-06-11 19:10 PDT
+- Added an embedded APS smoke-test hook to the CM55 path with a UART boot banner and deterministic five-step glucose sequence.
+- The smoke-test mode is guarded by `APP_APS_SMOKE_TEST=1` and reuses the existing dashboard path for display/serial validation.
+- Embedded build, flash, and UART verification were completed on the hardware path.
+
+## Update 2026-06-11 19:35 PDT
+- Verified the final smoke-test image builds, flashes, and boots on `APP_KIT_PSE84_EVAL_EPC2`.
+- UART output now shows the APS banner plus five deterministic smoke steps.
+- The smoke-test path skips the LVGL graphics task so the boot trace stays minimal and repeatable.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

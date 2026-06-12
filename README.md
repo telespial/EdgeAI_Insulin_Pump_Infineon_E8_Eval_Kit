@@ -1,4 +1,25 @@
-# PSOC&trade; Edge MCU: Graphics LVGL demo
+# APS Research Platform: E84 Embedded Smoke Test
+
+This repository now includes an APS research smoke-test path for the PSOC&trade; Edge E84 Evaluation Kit. The smoke-test build prints a UART banner, runs a deterministic five-step glucose sequence, and validates the embedded multi-core boot path without changing medical logic.
+
+Smoke-test build and flash command:
+
+```bash
+make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+```
+
+Smoke-test UART output includes:
+
+- `APS Research Platform`
+- `Build: <date/time>`
+- `Core: CM55`
+- `Predictor: present`
+- `Controller: present`
+- `Safety: present`
+- `Mode: smoke test only`
+
+## Original LVGL graphics demo
 
 This code example demonstrates how to render a 2D graphics demo using the Light and Versatile Graphics (LVGL) on the PSOC&trade; Edge MCU with the following supported displays.
 

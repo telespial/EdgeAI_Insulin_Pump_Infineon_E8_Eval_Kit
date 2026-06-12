@@ -107,6 +107,7 @@
 - [x] Document Predictor V2 feature schema and export-ready model tables
 
 ## Milestone 10 — Final Review
+- [x] Verify embedded smoke build, flash, and UART boot sequence
 - [ ] Run all tests
 - [ ] Confirm all generated code compiles
 - [ ] Confirm no real pump-control claims

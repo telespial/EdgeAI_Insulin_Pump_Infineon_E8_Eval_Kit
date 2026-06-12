@@ -97,6 +97,8 @@ DEFINES+=CY_RETARGET_IO_CONVERT_LF_TO_CRLF _BAREMETAL=0
 # APP_SMART_PONG_MODE=1 boots Smart Pong when insulin mode is disabled.
 DEFINES+=APP_INSULIN_PUMP_MODE=1
 DEFINES+=APP_SMART_PONG_MODE=0
+# Smoke-test validation hook. Override to 1 on the command line for embedded APS smoke runs.
+DEFINES+=APP_APS_SMOKE_TEST=0
 
 # Check which kit is being used
 ifeq (APP_KIT_PSE84_AI, $(TARGET))

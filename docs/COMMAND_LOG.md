@@ -573,3 +573,93 @@
 [2026-06-11 18:50 PDT] cmd: final git status after push | pending
 
 [2026-06-11 18:50 PDT] cmd: commit/push command log follow-up | pending
+
+[2026-06-11 18:52 PDT] cmd: inspect embedded build files for flash flow | exit=0
+
+[2026-06-11 18:52 PDT] cmd: inspect cm55 entry point and project makefiles | exit=0
+
+[2026-06-11 18:52 PDT] cmd: inspect cm55 main boot flow and current banner | exit=0
+
+[2026-06-11 18:52 PDT] cmd: inspect insulin pump research app and target references | exit=0
+
+[2026-06-11 18:52 PDT] cmd: confirm AI target support and inspect cm55 app start | exit=0
+
+[2026-06-11 18:52 PDT] cmd: inspect AI target support and cm55 app selection | exit=0
+
+[2026-06-11 18:52 PDT] cmd: inspect dashboard update loop for smoke-test injection points | exit=0
+
+[2026-06-11 18:54 PDT] cmd: export mtb env and build embedded firmware smoke test | pending
+
+[2026-06-11 18:56:36 PDT] COMMAND: ps -ef | grep -E "[m]ake build|[c]make|[n]inja|[g]cc-arm|[e]dgeprotect"
+
+[2026-06-11 18:56:46 PDT] COMMAND: ps -ef | grep -E "[m]ake build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES\+=APP_APS_SMOKE_TEST=1|[n]inja -f .*proj_cm55.ninja|[a]rm-none-eabi-gcc -c .*proj_cm55"
+
+[2026-06-11 18:56:51 PDT] COMMAND: pgrep -a -f "make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES\+=APP_APS_SMOKE_TEST=1|ninja -f .*proj_cm55.ninja|arm-none-eabi-gcc -c .*proj_cm55"
+
+[2026-06-11 18:56:59 PDT] COMMAND: find proj_cm33_s proj_cm33_ns proj_cm55 -maxdepth 4 \( -name "*.elf" -o -name "*.hex" -o -name "*.map" -o -name "*.elf_size" \) | sort
+
+[2026-06-11 18:57:10 PDT] COMMAND: /home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc/bin/arm-none-eabi-size -B proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_s.elf proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_ns.elf proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf
+
+[2026-06-11 18:57:16 PDT] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+
+[2026-06-11 18:57:49 PDT] COMMAND: ls -l /dev/serial/by-id /dev/ttyACM* /dev/ttyUSB* 2>/dev/null
+
+[2026-06-11 18:57:55 PDT] COMMAND: stty -F /dev/ttyACM0 115200 cs8 -cstopb -parenb; timeout 20 cat /dev/ttyACM0
+
+[2026-06-11 18:58:30 PDT] COMMAND: python3 - <<PY
+import time
+import serial
+port = "/dev/ttyACM0"
+ser = serial.Serial(port, 115200, timeout=0.5)
+ser.dtr = False
+ser.rts = False
+time.sleep(0.5)
+ser.dtr = True
+ser.rts = True
+end = time.time() + 20
+while time.time() < end:
+    data = ser.read(4096)
+    if data:
+        print(data.decode(errors="replace"), end="")
+ser.close()
+PY
+
+[2026-06-11 18:59:03 PDT] COMMAND: rg -n "reset|uart|serial|program" docs/OPS_RUNBOOK.md Makefile common.mk proj_cm55/Makefile
+
+[2026-06-11 18:59:10 PDT] COMMAND: rg -n "APP_APS_SMOKE_TEST" proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug 2>/dev/null | head -n 20
+
+[2026-06-11 18:59:27 PDT] COMMAND: bash -lc ...
+
+[2026-06-11 19:00:13 PDT] COMMAND: wc -l out/smoke_uart.log && sed -n "1,120p" out/smoke_uart.log
+
+[2026-06-11 19:00:22 PDT] COMMAND: rg -n "APP_APS_SMOKE_TEST|dashboard_timer_cb|edgeai_insulin_pump_app_start|push_sample|gSmokeCompleted" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/main.c proj_cm55/Makefile
+
+[2026-06-11 19:00:26 PDT] COMMAND: sed -n "280,410p;540,590p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-11 19:00:49 PDT] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+
+[2026-06-11 19:01:04 PDT] COMMAND: bash -lc ...
+
+[2026-06-11 19:01:58 PDT] COMMAND: sed -n "700,780p" proj_cm55/main.c
+
+[2026-06-11 19:02:03 PDT] COMMAND: rg -n "cm55_gfx_task|edgeai_insulin_pump_app_start|Smart Pong|music" proj_cm55/main.c proj_cm55/app -g'*.c'
+
+[2026-06-11 19:02:06 PDT] COMMAND: sed -n "440,650p" proj_cm55/main.c
+
+[2026-06-11 19:02:23 PDT] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+
+[2026-06-11 19:02:56 PDT] COMMAND: bash -lc ...
+
+[2026-06-11 19:03:38 PDT] COMMAND: sed -n "1,80p" README.md
+
+[2026-06-11 19:03:56 PDT] COMMAND: /home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc/bin/arm-none-eabi-size -B proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_s.elf proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_ns.elf proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf
+
+[2026-06-11 19:04:05 PDT] COMMAND: tail -n 20 README.md ToDo.md VALIDATION_PLAN.md CODEX_PROGRESS_LOG.md docs/PROJECT_STATE.md
+
+[2026-06-11 19:05:00 PDT] COMMAND: git status --short
+
+[2026-06-11 19:05:06 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log && rm -rf out
+
+[2026-06-11 19:05:09 PDT] COMMAND: git status --short
+
+[2026-06-11 19:05:17 PDT] COMMAND: git add ... && git commit -m "Add APS embedded smoke-test validation" && git push

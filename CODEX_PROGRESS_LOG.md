@@ -178,3 +178,23 @@ Known gaps:
 
 Next recommended step:
 - Replace the placeholder horizon coefficients with trained export tables once the training/export pipeline is ready.
+
+## 2026-06-11 — Embedded smoke-test validation
+
+Changed:
+- Added `APP_APS_SMOKE_TEST=1` handling on the CM55 path with a UART banner and a deterministic five-step glucose smoke sequence.
+- Short-circuited the CM55 graphics task in smoke mode so the board boots directly into the smoke loop without launching the LVGL demo.
+- Updated the README so the APS smoke-test path is the first section users see.
+
+Checks:
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1`
+- UART capture at `115200 8N1` on `/dev/ttyACM0`
+
+Result:
+- Smoke banner printed.
+- Five deterministic glucose steps printed.
+- Firmware stayed up for the smoke window.
+
+Next recommended step:
+- Keep the smoke lane as a lightweight boot guard and resume higher-level regression work on the host side.

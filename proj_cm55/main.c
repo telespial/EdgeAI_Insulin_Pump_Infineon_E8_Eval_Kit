@@ -728,6 +728,21 @@ int main(void)
     /* Initialize retarget-io middleware */
     init_retarget_io();
 
+#if (APP_APS_SMOKE_TEST == 1U)
+    printf("APS Research Platform\r\n");
+    printf("Build: %s %s\r\n", __DATE__, __TIME__);
+    printf("Core: CM55\r\n");
+    printf("Predictor: present\r\n");
+    printf("Controller: present\r\n");
+    printf("Safety: present\r\n");
+    printf("Mode: smoke test only\r\n");
+    edgeai_insulin_pump_app_start();
+    while (1)
+    {
+        __WFI();
+    }
+#endif
+
     /* Enable global interrupts */
     __enable_irq();
 

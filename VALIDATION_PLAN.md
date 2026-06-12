@@ -86,3 +86,13 @@ Pass criteria:
 Pass criteria:
 - Firmware boots reliably.
 - No real pump integration is introduced.
+
+## E84 Embedded Smoke Tests
+- Build the firmware with `APP_APS_SMOKE_TEST=1`.
+- Flash the three-core image to `APP_KIT_PSE84_EVAL_EPC2`.
+- Verify the UART banner and five deterministic glucose steps.
+
+Pass criteria:
+- UART banner appears after flash.
+- Smoke sequence prints all five samples.
+- No crash or reset occurs during the smoke window.
