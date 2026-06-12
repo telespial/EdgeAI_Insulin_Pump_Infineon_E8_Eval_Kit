@@ -158,3 +158,23 @@ Known gaps:
 
 Next recommended step:
 - Run `make -f host.mk regression` and review the gold lane metrics before making any envelope tighter.
+
+## 2026-06-11 — Predictor V2 export-ready pass
+
+Changed:
+- Reworked Predictor V2 around a fixed 30-feature vector with stable feature ordering and explicit per-horizon generated model tables.
+- Added `PredictorV2_BuildFeatureVector`, `PredictorV2_EvaluateHorizon`, and test hooks for generated-model overrides and fallback validation.
+- Added `docs/PREDICTOR_V2_FEATURE_SCHEMA.md` to lock the export schema and fallback rules.
+- Extended the host tests to cover feature construction, invalid-feature fallback, invalid-model fallback, bounds, and bad-SQI/stale-CGM behavior.
+
+Tests:
+- `cmake --build host_build -j2`
+- `./host_build/e84_aps_host_tests`
+- `make -f host.mk regression`
+
+Known gaps:
+- The generated coefficients are still placeholder research values, not trained export coefficients.
+- Predictor V1 is still not preserved as a separate implementation path.
+
+Next recommended step:
+- Replace the placeholder horizon coefficients with trained export tables once the training/export pipeline is ready.

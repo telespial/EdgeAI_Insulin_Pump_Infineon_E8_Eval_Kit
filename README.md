@@ -262,6 +262,10 @@ make -f host.mk gold
 
 Gold fixtures are software regression guards, not clinical validation.
 
+### Predictor V2 feature schema
+
+Predictor V2 now uses a stable 30-feature export-ready vector with explicit generated model tables for 15m, 30m, and 60m horizons. The feature order and fallback rules are documented in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`.
+
 5. Build and program the application
 
 6. After programming, the application starts automatically. Confirm that "PSOC Edge MCU: Graphics LVGL Demo" is displayed on the UART terminal

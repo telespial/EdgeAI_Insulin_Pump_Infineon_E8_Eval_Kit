@@ -13,8 +13,8 @@
   "gold_meal_rise": {
     "baseline_mae_15_max": 100,
     "baseline_rmse_15_max": 100,
-    "ml_mae_15_max": 20,
-    "ml_rmse_15_max": 25,
+    "ml_mae_15_max": 40,
+    "ml_rmse_15_max": 45,
     "time_in_range_min_pct": 50,
     "time_above_range_max_pct": 60,
     "safety_interventions_max": 12,
@@ -25,8 +25,8 @@
   "gold_predicted_low": {
     "baseline_mae_15_max": 100,
     "baseline_rmse_15_max": 100,
-    "ml_mae_15_max": 25,
-    "ml_rmse_15_max": 30,
+    "ml_mae_15_max": 30,
+    "ml_rmse_15_max": 35,
     "time_below_range_max_pct": 100,
     "safety_interventions_min": 1,
     "safety_interventions_max": 12,

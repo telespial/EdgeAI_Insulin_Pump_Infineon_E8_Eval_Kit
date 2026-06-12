@@ -4,6 +4,8 @@
 - Replay historical CGM traces through the predictor.
 - Compare 15m, 30m, and 60m outputs against labels.
 - Compare baseline trend predictions against Predictor V2 on the same replay rows.
+- Validate the fixed 30-feature Predictor V2 export schema and generated per-horizon tables.
+- Verify missing-history features use documented median/default fallbacks.
 - Measure MAE, RMSE, and low-miss rate.
 
 Pass criteria:
@@ -70,6 +72,7 @@ Pass criteria:
 - Lock a small set of canonical replay traces.
 - Re-run them after every meaningful change.
 - Keep the broader sample matrix and the narrower gold matrix separate so each catches different drift modes.
+- Keep the gold envelopes broad enough to catch drift without overfitting the current placeholder coefficients.
 
 Pass criteria:
 - No regression in safety behavior.

@@ -523,3 +523,49 @@
 [2026-06-11 18:45 PDT] cmd: commit gold regression lane and attempt push | exit=128
 
 [2026-06-11 18:46 PDT] cmd: successful push for gold regression lane | exit=0
+
+[2026-06-11 18:50 PDT] cmd: check branch sync against origin | exit=0
+
+[2026-06-11 18:55 PDT] cmd: inspect predictor v2 implementation before export-ready refactor | exit=0
+
+[2026-06-11 18:38 PDT] cmd: inspect predictor v2 interfaces and tests | exit=0
+
+[2026-06-11 18:38 PDT] cmd: inspect build and predictor structs | exit=0
+
+[2026-06-11 18:38 PDT] cmd: inspect predictor output consumers and no-malloc usage | exit=0
+
+[2026-06-11 18:39 PDT] cmd: inspect remaining simulation runner and tests | exit=0
+
+[2026-06-11 18:39 PDT] cmd: inspect replay step and scenario structs | exit=0
+
+[2026-06-11 18:39 PDT] cmd: inspect replay loader tail and audit trace schema | exit=0
+
+[2026-06-11 18:47 PDT] cmd: inspect predictor and test additions before build | exit=0
+
+[2026-06-11 18:47 PDT] cmd: inspect remaining predictor tests | exit=0
+
+[2026-06-11 18:47 PDT] cmd: inspect predictor_v2 tail for compile issues | exit=0
+
+[2026-06-11 18:47 PDT] cmd: make -f host.mk test | pending
+
+[2026-06-11 18:48 PDT] cmd: make -f host.mk test (rerun) | pending
+
+[2026-06-11 18:48 PDT] cmd: make -f host.mk regression | pending
+
+[2026-06-11 18:48 PDT] cmd: inspect gold expectations before widening | exit=0
+
+[2026-06-11 18:48 PDT] cmd: make -f host.mk regression (rerun) | pending
+
+[2026-06-11 18:48 PDT] cmd: inspect docs and git status before doc updates | exit=0
+
+[2026-06-11 18:48 PDT] cmd: inspect README and plan docs for predictor milestone updates | exit=0
+
+[2026-06-11 18:49 PDT] cmd: make -f host.mk clean | pending
+
+[2026-06-11 18:49 PDT] cmd: git status --short before commit | pending
+
+[2026-06-11 18:49 PDT] cmd: inspect github yeet publish workflow | pending
+
+[2026-06-11 18:49 PDT] cmd: inspect branch and gh auth before publish | pending
+
+[2026-06-11 18:50 PDT] cmd: git add/commit/push predictor v2 milestone | pending

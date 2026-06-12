@@ -288,6 +288,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
 
         dataset->steps[dataset->count].now_s = (uint32_t)timestamp;
         dataset->steps[dataset->count].input.cgm.epoch_s = (cgm_age_s > 0) ? (uint32_t)((timestamp > cgm_age_s) ? (timestamp - cgm_age_s) : 0) : (uint32_t)timestamp;
+        dataset->steps[dataset->count].input.cgm.age_s = (uint32_t)cgm_age_s;
         dataset->steps[dataset->count].input.cgm.glucose_mgdl = (uint16_t)glucose;
         dataset->steps[dataset->count].input.cgm.trend_mgdl_min_x100 = (int16_t)(trend * 100);
         dataset->steps[dataset->count].input.cgm.sqi_pct = (uint8_t)sqi;

@@ -46,6 +46,7 @@
 typedef struct
 {
     uint32_t epoch_s;
+    uint32_t age_s;
     uint16_t glucose_mgdl;
     int16_t trend_mgdl_min_x100;
     uint8_t sqi_pct;
@@ -96,6 +97,7 @@ typedef struct
     int16_t delta_60m_mgdl;
     uint8_t confidence_pct;
     uint16_t risk_flags;
+    uint16_t model_status_flags;
 } predictor_v2_output_t;
 
 typedef enum

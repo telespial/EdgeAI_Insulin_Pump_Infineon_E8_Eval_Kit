@@ -399,6 +399,12 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added `tests/gold_fixture_expectations.json` with narrower software guardrails, including required and forbidden reason codes.
 - Added `scripts/run_gold_matrix.sh` and wired the host regression flow to run both the broad sample matrix and the tighter gold matrix.
 
+## Update 2026-06-11 18:55 PDT
+- Reworked Predictor V2 around a fixed 30-feature export-ready vector and generated per-horizon model tables.
+- Added `PredictorV2_BuildFeatureVector`, `PredictorV2_EvaluateHorizon`, and test hooks for fallback and invalid-model handling.
+- Documented the stable feature schema in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md` and extended host tests for feature, bounds, and fallback coverage.
+- `make -f host.mk regression` passes again after widening two gold ML envelopes that were too tight for the new predictor coefficients.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

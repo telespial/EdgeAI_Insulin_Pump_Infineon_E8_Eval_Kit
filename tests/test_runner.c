@@ -39,6 +39,7 @@ static predictor_v2_input_t make_input(uint32_t epoch_s,
 
     memset(&input, 0, sizeof(input));
     input.cgm.epoch_s = epoch_s;
+    input.cgm.age_s = 0u;
     input.cgm.glucose_mgdl = glucose_mgdl;
     input.cgm.trend_mgdl_min_x100 = trend_mgdl_min_x100;
     input.cgm.sqi_pct = sqi_pct;
@@ -49,6 +50,56 @@ static predictor_v2_input_t make_input(uint32_t epoch_s,
     input.physiology.basal_u_per_hr = 0.8f;
     input.physiology_present = physiology_present;
     return input;
+}
+
+static const predictor_v2_generated_bundle_t *feature_fallback_bundle(void)
+{
+    static predictor_v2_generated_model_t model;
+    static predictor_v2_generated_bundle_t bundle;
+    size_t feature_index;
+
+    memset(&model, 0, sizeof(model));
+    for (feature_index = 0u; feature_index < PREDICTOR_V2_FEATURE_COUNT; ++feature_index)
+    {
+        model.feature_scale[feature_index] = 1.0f;
+        model.feature_mean[feature_index] = 0.0f;
+        model.feature_median[feature_index] = 0.0f;
+        model.coefficients[feature_index] = 0.0f;
+    }
+    model.feature_median[PREDICTOR_V2_FEATURE_LAG_1] = 111.0f;
+    model.coefficients[PREDICTOR_V2_FEATURE_LAG_1] = 1.0f;
+    model.valid = true;
+    bundle.horizon_15m = &model;
+    bundle.horizon_30m = &model;
+    bundle.horizon_60m = &model;
+    return &bundle;
+}
+
+static const predictor_v2_generated_bundle_t *invalid_model_bundle(void)
+{
+    static predictor_v2_generated_model_t model;
+    static predictor_v2_generated_bundle_t bundle;
+    size_t feature_index;
+
+    memset(&model, 0, sizeof(model));
+    for (feature_index = 0u; feature_index < PREDICTOR_V2_FEATURE_COUNT; ++feature_index)
+    {
+        model.feature_scale[feature_index] = 1.0f;
+        model.feature_mean[feature_index] = 0.0f;
+        model.feature_median[feature_index] = 0.0f;
+        model.coefficients[feature_index] = 0.0f;
+    }
+    model.feature_scale[PREDICTOR_V2_FEATURE_CURRENT_GLUCOSE] = 0.0f;
+    model.valid = true;
+    bundle.horizon_15m = &model;
+    bundle.horizon_30m = &model;
+    bundle.horizon_60m = &model;
+    return &bundle;
+}
+
+static void clear_predictor_bundle_override(void)
+{
+    PredictorV2_SetModelBundleForTesting(NULL);
 }
 
 static void write_text_file(const char *path, const char *contents)
@@ -83,6 +134,136 @@ static void test_predictor_outputs(void)
     require_true("predictor produces 30m", output.pred_30m_mgdl > 0u);
     require_true("predictor produces 60m", output.pred_60m_mgdl > 0u);
     require_true("predictor horizons differ", (output.pred_15m_mgdl != output.pred_30m_mgdl) || (output.pred_30m_mgdl != output.pred_60m_mgdl));
+}
+
+static void test_predictor_feature_vector_construction(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_feature_vector_t features;
+    bool valid;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    input = make_input(300u, 145u, 0, 95u, 0u, 0.2f, 4.0f, true);
+    valid = PredictorV2_BuildFeatureVector(&input, &features);
+    require_true("feature vector builds", valid);
+    require_true("feature current glucose", (uint16_t)features.values[PREDICTOR_V2_FEATURE_CURRENT_GLUCOSE] == 145u);
+    require_true("feature lag1 defaults to current", (uint16_t)features.values[PREDICTOR_V2_FEATURE_LAG_1] == 145u);
+    require_true("feature lag1 marked invalid", (features.valid_mask & (1u << PREDICTOR_V2_FEATURE_LAG_1)) == 0u);
+    require_true("feature tod sin finite", features.values[PREDICTOR_V2_FEATURE_TOD_SIN] >= -1.0f && features.values[PREDICTOR_V2_FEATURE_TOD_SIN] <= 1.0f);
+    require_true("predictor no dynamic memory", !PredictorV2_UsesDynamicMemory());
+}
+
+static void test_predictor_invalid_feature_fallback(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_horizon_eval_t evaluation;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    PredictorV2_SetModelBundleForTesting(feature_fallback_bundle());
+
+    input = make_input(600u, 150u, 0, 95u, 0u, 0.0f, 0.0f, true);
+    require_true("invalid feature input accepted", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_15M, &evaluation));
+    require_true("invalid features flagged", (evaluation.status_flags & PREDICTOR_V2_STATUS_INVALID_FEATURES) != 0u);
+    require_true("median fallback applied", evaluation.prediction_mgdl == 261u);
+    require_true("linear fallback not forced", (evaluation.status_flags & PREDICTOR_V2_STATUS_FALLBACK_LINEAR) == 0u);
+    clear_predictor_bundle_override();
+}
+
+static void test_predictor_independent_horizons(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_horizon_eval_t eval_15m;
+    predictor_v2_horizon_eval_t eval_30m;
+    predictor_v2_horizon_eval_t eval_60m;
+    predictor_v2_output_t warm_output;
+    uint32_t sample_index;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    for (sample_index = 0u; sample_index < 12u; ++sample_index)
+    {
+        input = make_input(300u * sample_index, (uint16_t)(110u + (sample_index * 2u)), 18, 95u, 0u, 0.2f, 4.0f, true);
+        require_true("horizon warm-up", PredictorV2_Update(&input, &warm_output));
+    }
+
+    input = make_input(4000u, 160u, 22, 95u, 0u, 0.4f, 6.0f, true);
+    require_true("15m horizon eval", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_15M, &eval_15m));
+    require_true("30m horizon eval", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_30M, &eval_30m));
+    require_true("60m horizon eval", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_60M, &eval_60m));
+    require_true("horizons differ",
+                 eval_15m.prediction_mgdl != eval_30m.prediction_mgdl &&
+                 eval_15m.prediction_mgdl != eval_60m.prediction_mgdl &&
+                 eval_30m.prediction_mgdl != eval_60m.prediction_mgdl);
+}
+
+static void test_predictor_output_bounds(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_output_t output;
+    uint32_t sample_index;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    for (sample_index = 0u; sample_index < 12u; ++sample_index)
+    {
+        input = make_input(300u * sample_index, 380u, 50, 95u, 0u, 0.1f, 0.0f, true);
+        require_true("bounds warm-up", PredictorV2_Update(&input, &output));
+    }
+
+    input = make_input(5000u, 400u, 80, 95u, 0u, 0.0f, 0.0f, true);
+    require_true("bounds update", PredictorV2_Update(&input, &output));
+    require_true("pred 15 bounds", output.pred_15m_mgdl >= 40u && output.pred_15m_mgdl <= 400u);
+    require_true("pred 30 bounds", output.pred_30m_mgdl >= 40u && output.pred_30m_mgdl <= 400u);
+    require_true("pred 60 bounds", output.pred_60m_mgdl >= 40u && output.pred_60m_mgdl <= 400u);
+}
+
+static void test_predictor_invalid_model_fallback(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_horizon_eval_t evaluation;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    PredictorV2_SetModelBundleForTesting(invalid_model_bundle());
+
+    input = make_input(600u, 150u, 20, 95u, 0u, 0.0f, 0.0f, true);
+    require_true("invalid model fallback", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_15M, &evaluation));
+    require_true("invalid model flagged", (evaluation.status_flags & PREDICTOR_V2_STATUS_INVALID_MODEL) != 0u);
+    require_true("linear fallback used", (evaluation.status_flags & PREDICTOR_V2_STATUS_FALLBACK_LINEAR) != 0u);
+    require_true("baseline prediction preserved", evaluation.prediction_mgdl == 153u);
+    clear_predictor_bundle_override();
+}
+
+static void test_predictor_bad_sqi_and_stale_fallback(void)
+{
+    predictor_v2_input_t bad_sqi_input;
+    predictor_v2_input_t stale_input;
+    predictor_v2_horizon_eval_t bad_sqi_eval;
+    predictor_v2_horizon_eval_t stale_eval;
+    predictor_v2_output_t warm_output;
+    uint32_t sample_index;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    PredictorV2_SetModelBundleForTesting(NULL);
+    for (sample_index = 0u; sample_index < 12u; ++sample_index)
+    {
+        bad_sqi_input = make_input(300u * sample_index, 130u, -5, 95u, 0u, 0.1f, 2.0f, true);
+        require_true("fallback warm-up", PredictorV2_Update(&bad_sqi_input, &warm_output));
+    }
+
+    bad_sqi_input = make_input(4000u, 130u, -5, 45u, 0u, 0.1f, 2.0f, true);
+    require_true("bad sqi fallback eval", PredictorV2_EvaluateHorizon(&bad_sqi_input, PREDICTOR_V2_HORIZON_15M, &bad_sqi_eval));
+    require_true("bad sqi fallback used", (bad_sqi_eval.status_flags & PREDICTOR_V2_STATUS_FALLBACK_LINEAR) != 0u);
+    require_true("bad sqi status", (bad_sqi_eval.status_flags & PREDICTOR_V2_STATUS_BAD_SQI) != 0u);
+
+    stale_input = make_input(5000u, 130u, -5, 95u, APS_SENSOR_FLAG_STALE_CGM, 0.1f, 2.0f, true);
+    stale_input.cgm.age_s = 1200u;
+    require_true("stale fallback eval", PredictorV2_EvaluateHorizon(&stale_input, PREDICTOR_V2_HORIZON_15M, &stale_eval));
+    require_true("stale fallback used", (stale_eval.status_flags & PREDICTOR_V2_STATUS_FALLBACK_LINEAR) != 0u);
+    require_true("stale status", (stale_eval.status_flags & PREDICTOR_V2_STATUS_STALE_CGM) != 0u);
 }
 
 static void configure_modules(void)
@@ -378,7 +559,14 @@ int main(void)
 {
     ApsPhysiology_Reset();
     PredictorV2_SetEnabled(true);
+    PredictorV2_SetModelBundleForTesting(NULL);
     test_predictor_outputs();
+    test_predictor_feature_vector_construction();
+    test_predictor_invalid_feature_fallback();
+    test_predictor_independent_horizons();
+    test_predictor_output_bounds();
+    test_predictor_invalid_model_fallback();
+    test_predictor_bad_sqi_and_stale_fallback();
     test_controller_and_safety();
     test_metrics_module();
     test_replay_loader_success();

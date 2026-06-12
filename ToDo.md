@@ -25,6 +25,10 @@
 - [x] Add slope/variance/volatility features
 - [x] Add confidence and stale-CGM handling
 - [x] Add unit tests
+- [x] Add explicit 30-feature Predictor V2 vector
+- [x] Add generated model tables for 15m/30m/60m
+- [x] Add export-ready horizon evaluator with bounded fallback
+- [x] Document the stable feature schema
 
 ## Milestone 3 — Physiology State
 - [x] Add insulin event buffer
@@ -100,6 +104,7 @@
 - [x] Document fixture matrix and host regression workflow
 - [x] Document numeric envelope validation checks
 - [x] Document gold fixture regression lane
+- [x] Document Predictor V2 feature schema and export-ready model tables
 
 ## Milestone 10 — Final Review
 - [ ] Run all tests

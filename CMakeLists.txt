@@ -11,6 +11,7 @@ add_library(e84_aps_framework
     firmware/src/controller_openaps.c
     firmware/src/metrics.c
     firmware/src/predictor_v2.c
+    firmware/src/predictor_v2_generated.c
     firmware/src/safety_supervisor.c
     sim/audit_trace.c
     sim/replay_loader.c
