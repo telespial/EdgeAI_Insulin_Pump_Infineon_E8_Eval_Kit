@@ -6945,3 +6945,9 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12 11:35 PDT: Staged the host-only Predictor V2 training/export milestone, including the new pipeline scripts, smoke data, docs, and the `generated/` reproducibility policy files.
 - 2026-06-12 11:40 PDT: Re-added the command log after the final note edit so the staged milestone includes the complete command trail.
 - 2026-06-12 11:45 PDT: Committed the host-only Predictor V2 training/export pipeline as `67d0ab0` and pushed `recover-lcd-after-aps-probe` to `origin`.
+- 2026-06-12 12:00 PDT: Added `tools/generate_predictor_v2_synthetic_data.py` and generated `data/training/synthetic_predictor_v2.csv` with 252 deterministic rows across seven scenario blocks.
+- 2026-06-12 12:00 PDT: Ran the larger synthetic train/export/validate loop against `data/training/synthetic_predictor_v2.csv`; generated host artifacts remained under ignored `generated/` outputs.
+- 2026-06-12 12:00 PDT: Reran `make -f host.mk test` and `make -f host.mk regression`; both host suites still passed after the dataset expansion.
+- 2026-06-12 12:05 PDT: Verified the final source-only diff before commit; only the generator script, committed synthetic CSV, and docs remained in scope for the dataset-expansion milestone.
+- 2026-06-12 12:10 PDT: Committed the dataset-expansion milestone and published the updated `recover-lcd-after-aps-probe` branch so the synthetic training CSV and generator are preserved remotely.
+- 2026-06-12 12:15 PDT: Verified the final published dataset-expansion hash on `origin/recover-lcd-after-aps-probe` as `aea27fb9e31d0b61e2147478a0378ee3e33409ee`.

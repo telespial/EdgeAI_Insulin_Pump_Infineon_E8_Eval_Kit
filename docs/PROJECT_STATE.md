@@ -796,3 +796,12 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-12 11:25 PDT
 - Reran the host-only Predictor V2 help checks plus `make -f host.mk test` and `make -f host.mk regression` after setting the generated-output policy.
 - All host validations still passed, and no embedded/LCD/runtime code changed.
+
+## Update 2026-06-12 11:40 PDT
+- Added `tools/generate_predictor_v2_synthetic_data.py` and generated `data/training/synthetic_predictor_v2.csv` with `252` rows across seven deterministic scenario blocks.
+- Ran the Predictor V2 train/export/validate pipeline on the synthetic dataset; the larger replay set is still host-only and does not touch embedded runtime behavior.
+- The generated artifacts remain disposable under `generated/`, while the synthetic dataset itself is committed as reproducible host evidence.
+
+## Update 2026-06-12 12:00 PDT
+- Reran `make -f host.mk test` and `make -f host.mk regression` after the dataset expansion; both host suites still passed.
+- The working tree remains free of embedded/LCD/runtime changes for this milestone.

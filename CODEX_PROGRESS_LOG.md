@@ -450,3 +450,53 @@ Known gaps:
 
 Next recommended step:
 - Commit the source scripts, smoke data, and policy docs as the standalone host-only milestone.
+
+## 2026-06-12 — Host Predictor V2 dataset expansion
+
+Changed:
+- Added a deterministic synthetic dataset generator for larger replay-style training CSVs.
+- Generated and committed `data/training/synthetic_predictor_v2.csv` with 252 rows across seven scenario blocks.
+- Ran the training/export/validation loop against the synthetic dataset and kept the outputs under `generated/` as disposable host artifacts.
+
+Tests:
+- `python3 tools/generate_predictor_v2_synthetic_data.py --help`
+- `python3 tools/generate_predictor_v2_synthetic_data.py --output data/training/synthetic_predictor_v2.csv`
+- `python3 tools/train_predictor_v2.py --input data/training/synthetic_predictor_v2.csv --output generated/predictor_v2_training.json`
+- `python3 tools/export_predictor_v2.py --artifact generated/predictor_v2_training.json --output-dir generated`
+- `python3 tools/validate_predictor_export.py --model generated/predictor_v2_model.json --input data/training/synthetic_predictor_v2.csv --output generated/predictor_v2_validation_report.md`
+
+Known gaps:
+- The new dataset is deterministic and larger, but it is still synthetic and not medically useful.
+- Predictor V2 still does not change embedded runtime behavior in this milestone.
+
+Next recommended step:
+- Run the host regression suites again, then commit the dataset expansion as a separate milestone.
+
+## 2026-06-12 — Host Predictor V2 dataset expansion validation
+
+Changed:
+- Confirmed the larger synthetic replay dataset still passes the host regression suite and does not touch embedded runtime behavior.
+- Kept the generated training artifacts disposable under `generated/` and the committed synthetic CSV deterministic.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+
+Known gaps:
+- Predictor V2 short-horizon holdout error is still mixed on the synthetic set; this is acceptable for a host-only data-expansion milestone but should be revisited with real replay data.
+
+Next recommended step:
+- Commit the dataset-expansion files as a standalone source-only milestone, then move on only if a larger real dataset becomes available.
+
+## 2026-06-12 — Host Predictor V2 dataset expansion commit
+
+Changed:
+- Locked the deterministic synthetic dataset and generator into the branch as a standalone host-only milestone.
+- Kept generated model outputs ignored and left embedded runtime behavior untouched.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+
+Next recommended step:
+- Move on only if the team wants a bigger real replay dataset; otherwise the host-only expansion milestone is complete.

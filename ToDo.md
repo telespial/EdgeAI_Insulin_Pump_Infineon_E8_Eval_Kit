@@ -173,3 +173,10 @@
 - [x] Add a synthetic smoke CSV for pipeline sanity checks
 - [x] Document the training/export workflow and smoke-data limitations
 - [x] Run help checks, train the smoke model, and validate the export
+
+## Milestone 18 — Predictor V2 Dataset Expansion
+- [x] Add a deterministic synthetic dataset generator
+- [x] Generate a larger committed synthetic training CSV
+- [x] Train/export/validate on the expanded synthetic dataset
+- [x] Re-run host regression suites
+- [x] Commit the dataset expansion as its own milestone

@@ -11,6 +11,7 @@ The goal is to train and export the linear Predictor V2 tables from replay-style
 - `tools/train_predictor_v2.py`
 - `tools/export_predictor_v2.py`
 - `tools/validate_predictor_export.py`
+- `tools/generate_predictor_v2_synthetic_data.py`
 
 ## Supported Inputs
 
@@ -57,3 +58,24 @@ The `generated/` directory is treated as reproducible build output and is ignore
 
 The committed `data/training/smoke_predictor_v2.csv` file is only a pipeline smoke test.
 It is not a real training corpus and should not be used for medical claims.
+
+## Synthetic Dataset
+
+The committed `data/training/synthetic_predictor_v2.csv` file is generated deterministically and currently contains `252` rows.
+It includes the following scenario blocks:
+
+- stable overnight
+- meal rise
+- falling after bolus
+- exercise with IOB
+- post-exercise recovery
+- bad SQI
+- stale CGM
+
+Generate it again with:
+
+```bash
+python3 tools/generate_predictor_v2_synthetic_data.py --output data/training/synthetic_predictor_v2.csv
+```
+
+The synthetic dataset is committed because it is small enough to review and reproduce locally, but it remains host-only evidence rather than embedded runtime data.
