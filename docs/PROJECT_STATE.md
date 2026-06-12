@@ -623,6 +623,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The cooperative APS image is now advancing through multiple smoke steps on UART while the baseline GUI timer remains active.
 - The remaining check is a longer capture to confirm the final smoke step and completion banner, plus an LCD visual sanity check from the board side.
 
+## Update 2026-06-11 22:50 PDT
+- The LCD-safe APS sidecar fix has been committed and pushed as `386fd35` on `embedded-bringup-smoke-test`.
+- Current validated UART behavior shows the APS banner plus smoke steps 0 through 3 while the GUI timer stays enabled; the final step should be confirmed on a longer capture if needed.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
