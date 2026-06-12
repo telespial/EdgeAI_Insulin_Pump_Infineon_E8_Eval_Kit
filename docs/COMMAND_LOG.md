@@ -182,6 +182,7 @@
 [2026-06-11 22:50:00 PDT] cmd: commit and push LCD-safe APS sidecar fix | git add docs/BUILD_REPORT.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h proj_cm55/main.c && git commit -m "Make APS smoke sidecar LCD-safe" && git push origin embedded-bringup-smoke-test | exit=0 (commit 386fd35 pushed)
 [2026-06-11 22:51:00 PDT] cmd: commit and push follow-up LCD-safe validation notes | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Record LCD-safe APS sidecar validation" && git push origin embedded-bringup-smoke-test | exit=0 (commit 882f5fd pushed)
 [2026-06-11 22:52:00 PDT] cmd: commit and push hash-alignment note | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Align validation notes with latest push" && git push origin embedded-bringup-smoke-test | exit=0 (commit 78c43dc pushed)
+[2026-06-11 22:53:00 PDT] cmd: finalize LCD-safe APS validation notes | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Finalize LCD-safe APS validation notes" && git push origin embedded-bringup-smoke-test | exit=0 (commit cd581fc pushed)
 
 [14:39:22 PDT] git status --short
 
