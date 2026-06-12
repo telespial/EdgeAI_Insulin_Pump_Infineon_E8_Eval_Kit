@@ -667,3 +667,35 @@ PY
 [2026-06-11 19:05:24 PDT] COMMAND: git status --short
 
 [2026-06-11 19:05:32 PDT] COMMAND: git add docs/COMMAND_LOG.md && git commit -m "Update command log" && git push
+
+[2026-06-11 19:08:36 PDT] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+
+[2026-06-11 19:10:14 PDT] COMMAND: bash -lc ...
+
+[2026-06-11 19:11:06 PDT] COMMAND: sed -n "650,740p" proj_cm55/main.c
+
+[2026-06-11 19:12:16 PDT] COMMAND: git status --short
+
+[2026-06-11 19:12:21 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log && rm -rf out
+
+[2026-06-11 19:12:57 PDT] COMMAND: bash -lc ...
+
+[2026-06-11 19:13:19 PDT] COMMAND: rg -n "smoke_action_to_string|smoke_reason_codes|push_sample" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-11 19:13:24 PDT] COMMAND: sed -n "210,260p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-11 19:13:49 PDT] COMMAND: bash -lc ...
+
+[2026-06-11 19:15:29 PDT] COMMAND: sed -n "1,80p" out/ui_uart.log
+
+[2026-06-11 19:15:35 PDT] COMMAND: python3 - <<PY ...
+
+[2026-06-11 19:16:00 PDT] COMMAND: git status --short
+
+[2026-06-11 19:16:05 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+[2026-06-11 20:18:00 PDT] COMMAND: export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7 && export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc && export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2
+[2026-06-11 20:19:00 PDT] COMMAND: timeout 5s cat /dev/ttyACM0
+  - Read only a stray escape character; likely need a delayed reopen or an explicit serial configuration before capturing the banner.
+[2026-06-11 20:20:00 PDT] COMMAND: sleep 2; stty -F /dev/ttyACM0 115200 raw -echo; timeout 5s cat /dev/ttyACM0
+  - No banner captured during this window; the flash itself completed successfully, so the next check should be a longer serial window or a screen-side confirmation.
+[2026-06-11 20:21:00 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log

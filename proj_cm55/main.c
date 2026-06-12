@@ -736,11 +736,6 @@ int main(void)
     printf("Controller: present\r\n");
     printf("Safety: present\r\n");
     printf("Mode: smoke test only\r\n");
-    edgeai_insulin_pump_app_start();
-    while (1)
-    {
-        __WFI();
-    }
 #endif
 
     /* Enable global interrupts */

@@ -415,6 +415,25 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - UART output now shows the APS banner plus five deterministic smoke steps.
 - The smoke-test path skips the LVGL graphics task so the boot trace stays minimal and repeatable.
 
+## Update 2026-06-11 19:50 PDT
+- Restored the normal CM55 graphics task path so the existing LVGL screens and live views remain visible.
+- Kept the APS boot banner in smoke mode, but removed the early smoke-only shortcut that blanked the display.
+- Reflashed the board to verify the UI path is back on the active display stack.
+
+## Update 2026-06-11 20:05 PDT
+- Flashed the plain graphics image without the smoke shortcut and confirmed the normal LVGL boot banner appears on `/dev/ttyACM0`.
+- The board is now back on the standard graphics path instead of the blank smoke-only boot path.
+
+## Update 2026-06-11 20:15 PDT
+- Restored live chart refresh to the normal UI path so the replay graphs continue moving outside smoke mode.
+- Moved the CONF and ACC labels closer to the right-side bars for a tighter live dashboard layout.
+- Rebuilding the CM55 image now to verify the graphs animate instead of staying at zero.
+
+## Update 2026-06-11 20:21 PDT
+- Rebuilt and reflashed the CM55 image with the live chart refresh fix.
+- The normal graphics image remains the active flashed path; the smoke-only blank-screen shortcut is still removed.
+- UART capture did not yield a fresh banner in the short window, so the next operator check is the visual graph movement on the LCD.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
