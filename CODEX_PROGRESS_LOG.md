@@ -86,3 +86,21 @@ Known gaps:
 
 Next recommended step:
 - Keep the comparison loop stable while adding one or two representative replay CSV fixtures for regression checks.
+
+## 2026-06-11 — Fixture and workflow pass
+
+Changed:
+- Added committed replay fixtures for stable, meal-rise, falling-bolus, bad-SQI, and stale-CGM regressions.
+- Added host regression tests that load each fixture, verify the audit CSV schema, and check the expected safety behavior.
+- Added a dedicated `host.mk` workflow with `configure`, `build`, `test`, `sim`, and `clean` targets.
+- Documented the stable audit CSV schema and the one-command host workflow in the README.
+
+Tests:
+- Pending host rebuild after the fixture and workflow additions.
+
+Known gaps:
+- The replay fixtures are intentionally small and do not yet try to be physiologically faithful.
+- The top-level embedded `Makefile` still serves the firmware build path; the host workflow lives in `host.mk`.
+
+Next recommended step:
+- Rebuild the host path, run the fixture regression tests, and confirm `make -f host.mk sim` writes both `out/audit.csv` and `out/summary.txt`.

@@ -464,3 +464,16 @@
 [2026-06-11 17:24 PDT] cmd: final git status check before commit/push | exit=0
 
 [2026-06-11 17:26 PDT] cmd: check git branch and GitHub auth before publish | exit=1
+
+[2026-06-11 17:27 PDT] cmd: commit and push replay comparison metrics update | exit=0
+
+[2026-06-11 17:35 PDT] cmd: inspect host workflow, replay loader, sim main, and regression test edits | exit=0
+
+[2026-06-11 17:40 PDT] cmd: run host.mk test workflow end to end | exit=0
+
+[2026-06-11 17:42 PDT] cmd: run host.mk sim workflow and generate audit/summary outputs | exit=0
+[2026-06-11 17:42 PDT] cmd: inspect generated audit CSV header and summary text | exit=0
+
+[2026-06-11 17:43 PDT] cmd: run host.mk clean workflow | exit=0
+
+[2026-06-11 17:45 PDT] cmd: commit and push replay fixtures and host workflow milestone | exit=0

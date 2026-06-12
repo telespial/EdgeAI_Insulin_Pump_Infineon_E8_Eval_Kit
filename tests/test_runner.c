@@ -298,6 +298,67 @@ static void test_simulation_summary_and_audit_header(void)
     }
 }
 
+static void test_replay_fixture_regressions(void)
+{
+    const struct
+    {
+        const char *path;
+        const char *name;
+        uint32_t required_reason_mask;
+        int expect_disagreement;
+    } cases[] = {
+        {"data/sample_replay_stable.csv", "stable", 0u, 0},
+        {"data/sample_replay_meal_rise.csv", "meal_rise", 0u, 1},
+        {"data/sample_replay_falling_bolus.csv", "falling_bolus", APS_SAFETY_REASON_PREDICTED_LOW_15M | APS_SAFETY_REASON_PREDICTED_LOW_30M | APS_SAFETY_REASON_RAPID_FALL, 1},
+        {"data/sample_replay_bad_sqi.csv", "bad_sqi", APS_SAFETY_REASON_BAD_SQI | APS_SAFETY_REASON_CONTROLLER_BLOCKED, 0},
+        {"data/sample_replay_stale_cgm.csv", "stale_cgm", APS_SAFETY_REASON_STALE_CGM | APS_SAFETY_REASON_CONTROLLER_BLOCKED, 0},
+    };
+    size_t case_index;
+
+    for (case_index = 0u; case_index < sizeof(cases) / sizeof(cases[0]); ++case_index)
+    {
+        replay_dataset_t dataset;
+        char error[128];
+        sim_step_result_t results[REPLAY_LOADER_MAX_STEPS];
+        simulation_summary_t summary;
+        size_t result_count = 0u;
+        FILE *audit_file;
+        char header_line[512];
+
+        memset(&dataset, 0, sizeof(dataset));
+        memset(&summary, 0, sizeof(summary));
+        memset(error, 0, sizeof(error));
+        require_true("fixture loads", ReplayLoader_LoadCsv(cases[case_index].path, &dataset, error, sizeof(error)));
+        require_true("fixture count", dataset.count > 0u);
+        configure_modules();
+        require_true("fixture run", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, &summary, error, sizeof(error)));
+        require_true("fixture result count", result_count == dataset.count);
+        require_true("fixture baseline metric present", summary.baseline_15m.mae >= 0.0f);
+        require_true("fixture ml metric present", summary.ml_15m.mae >= 0.0f);
+        require_true("fixture disagreement present", summary.controller_disagreement_count >= (uint32_t)(cases[case_index].expect_disagreement ? 1 : 0));
+
+        if (cases[case_index].required_reason_mask != 0u)
+        {
+            require_true("fixture safety reason present",
+                         (results[result_count - 1u].safety_final_output.reason_flags & cases[case_index].required_reason_mask) != 0u);
+        }
+
+        audit_file = tmpfile();
+        require_true("fixture audit tmpfile", audit_file != NULL);
+        if (audit_file != NULL)
+        {
+            memset(header_line, 0, sizeof(header_line));
+            AuditTrace_PrintHeader(audit_file);
+            rewind(audit_file);
+            require_true("fixture audit header", fgets(header_line, sizeof(header_line), audit_file) != NULL);
+            require_true("fixture audit column 1", strstr(header_line, "timestamp,glucose_mgdl,sqi_pct") != NULL);
+            require_true("fixture audit column 2", strstr(header_line, "baseline_pred_15") != NULL);
+            require_true("fixture audit column 3", strstr(header_line, "safety_reason_codes") != NULL);
+            fclose(audit_file);
+        }
+    }
+}
+
 static void test_bad_data_rejected_safely(void)
 {
     replay_dataset_t dataset;
@@ -326,6 +387,7 @@ int main(void)
     test_safety_reason_codes();
     test_missing_physiology_reason();
     test_simulation_summary_and_audit_header();
+    test_replay_fixture_regressions();
     test_bad_data_rejected_safely();
 
     if (g_failures != 0)

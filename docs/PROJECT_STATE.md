@@ -379,6 +379,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The simulator now accepts `--scenario stable`, `--scenario meal_rise`, and `--replay data/sample_replay.csv --out out/audit.csv`.
 - Host validation confirmed the new CSV header, summary metrics, and synthetic scenario alias on the desktop build.
 
+## Update 2026-06-11 17:30 PDT
+- Added committed replay fixtures for stable, meal-rise, falling-bolus, bad-SQI, and stale-CGM regression coverage.
+- Added a dedicated host workflow file: `host.mk` with `configure`, `build`, `test`, `sim`, and `clean` targets.
+- Documented the stable audit CSV schema and the committed replay fixture set in the project README.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

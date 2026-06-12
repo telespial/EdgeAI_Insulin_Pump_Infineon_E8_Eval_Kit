@@ -33,6 +33,7 @@ Pass criteria:
 - Validate parser errors for impossible timestamps and glucose values.
 - Validate missing optional CSV columns use safe defaults.
 - Confirm the audit CSV includes actual future values, prediction errors, controller decisions, and reason codes.
+- Run the committed `data/sample_replay_*.csv` fixtures through the host simulator.
 
 Pass criteria:
 - Same inputs produce same outputs.
@@ -56,6 +57,7 @@ Pass criteria:
 - Test controller action selection.
 - Test safety override logic.
 - Test replay summary metrics and audit CSV header coverage.
+- Test every committed replay fixture for expected safety behavior.
 
 Pass criteria:
 - Tests pass consistently on the host platform.

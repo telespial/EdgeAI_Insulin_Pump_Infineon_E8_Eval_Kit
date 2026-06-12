@@ -16,3 +16,4 @@ Current foundation status:
 - Host tests cover predicted-low, bad-SQI, and conservative override behavior.
 - Replay and scenario runs now share one audited simulation path.
 - Baseline-vs-ML comparison mode is now available in the host simulator.
+- Replay fixtures now lock down stale-CGM, bad-SQI, meal-rise, and falling-bolus regressions.

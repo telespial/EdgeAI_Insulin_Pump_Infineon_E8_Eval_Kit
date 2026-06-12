@@ -73,6 +73,8 @@
 - [x] Add comparison mode: controller without ML vs controller with ML
 - [x] Add replay audit CSV with actual/future values and error columns
 - [x] Add replay metrics summary for MAE/RMSE, TIR/TBR/TAR, and disagreement counts
+- [x] Add committed replay fixtures for regression testing
+- [x] Add stable host workflows for configure/build/test/sim/clean
 
 ## Milestone 8 — E84 Portability
 - [ ] Add memory estimate
@@ -91,6 +93,7 @@
 - [x] Update validation docs
 - [x] Add known limitations
 - [x] Add research-only warning
+- [x] Lock the audit CSV schema in docs
 
 ## Milestone 10 — Final Review
 - [ ] Run all tests

@@ -216,7 +216,27 @@ Host simulation examples:
 ./host_build/e84_aps_sim --replay data/sample_replay.csv --out out/audit.csv
 ```
 
+One-command host workflow:
+
+```bash
+make -f host.mk configure
+make -f host.mk build
+make -f host.mk test
+make -f host.mk sim
+make -f host.mk clean
+```
+
 The host framework is research-only, intentionally separate from the embedded LVGL demo path, and emits baseline-vs-ML comparison metrics plus an auditable CSV trace.
+
+### Audit CSV schema
+
+The audit CSV schema is stable for this research loop unless it is intentionally versioned. Columns:
+
+```text
+timestamp,glucose_mgdl,sqi_pct,iob_u,cob_g,baseline_pred_15,baseline_pred_30,baseline_pred_60,ml_pred_15,ml_pred_30,ml_pred_60,actual_15,actual_30,actual_60,baseline_error_15,baseline_error_30,baseline_error_60,ml_error_15,ml_error_30,ml_error_60,controller_without_ml,controller_with_ml,safety_final_action,safety_reason_codes
+```
+
+The replay loader also accepts an optional `cgm_age_s` helper column for stale-CGM fixtures.
 
 5. Build and program the application
 

@@ -11,6 +11,7 @@ typedef struct
     int glucose;
     int sqi;
     int trend;
+    int age;
     int carbs;
     int insulin;
     int basal;
@@ -176,6 +177,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
     cols.glucose = find_header_index(headers, header_count, "glucose_mgdl");
     cols.sqi = find_header_index(headers, header_count, "sqi_pct");
     cols.trend = find_header_index(headers, header_count, "trend_mgdl_min");
+    cols.age = find_header_index(headers, header_count, "cgm_age_s");
     cols.carbs = find_header_index(headers, header_count, "carbs_g");
     cols.insulin = find_header_index(headers, header_count, "insulin_u");
     cols.basal = find_header_index(headers, header_count, "basal_u_per_hr");
@@ -195,6 +197,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
         int glucose = 0;
         int sqi = 100;
         int trend = 0;
+        int cgm_age_s = 0;
         float carbs = 0.0f;
         float insulin = 0.0f;
         float basal = 0.0f;
@@ -240,6 +243,15 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
                 return false;
             }
         }
+        if (cols.age >= 0 && field_or_empty(fields, field_count, cols.age)[0] != '\0')
+        {
+            if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.age), &cgm_age_s) || cgm_age_s < 0)
+            {
+                fclose(file);
+                set_error_row(error, error_length, "invalid cgm_age_s value", line_number - 1u);
+                return false;
+            }
+        }
         if (cols.carbs >= 0 && field_or_empty(fields, field_count, cols.carbs)[0] != '\0')
         {
             if (!parse_float_field((char *)field_or_empty(fields, field_count, cols.carbs), &carbs) || carbs < 0.0f)
@@ -275,7 +287,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
         }
 
         dataset->steps[dataset->count].now_s = (uint32_t)timestamp;
-        dataset->steps[dataset->count].input.cgm.epoch_s = (uint32_t)timestamp;
+        dataset->steps[dataset->count].input.cgm.epoch_s = (cgm_age_s > 0) ? (uint32_t)((timestamp > cgm_age_s) ? (timestamp - cgm_age_s) : 0) : (uint32_t)timestamp;
         dataset->steps[dataset->count].input.cgm.glucose_mgdl = (uint16_t)glucose;
         dataset->steps[dataset->count].input.cgm.trend_mgdl_min_x100 = (int16_t)(trend * 100);
         dataset->steps[dataset->count].input.cgm.sqi_pct = (uint8_t)sqi;

@@ -157,6 +157,13 @@ int main(int argc, char **argv)
         fclose(audit_stream);
     }
 
-    SimulationRunner_PrintSummary(stderr, &summary);
+    if (output_path != NULL)
+    {
+        SimulationRunner_PrintSummary(stdout, &summary);
+    }
+    else
+    {
+        SimulationRunner_PrintSummary(stderr, &summary);
+    }
     return 0;
 }
