@@ -792,3 +792,5 @@ PY
   - The release-readiness audit was committed as `3caa7cb` and pushed to `origin/codex/bar-graph-tuning`.
 [2026-06-11 21:26:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD
   - Confirmed the worktree is clean after the release-readiness push and the current branch HEAD is `3caa7cb`.
+[2026-06-11 21:27:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD
+  - Final verification showed a clean worktree and HEAD `7f5d05f` after the final bookkeeping push.
