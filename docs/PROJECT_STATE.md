@@ -809,3 +809,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-12 12:20 PDT
 - Documented the real training-data source path for future Predictor V2 work:
   - `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`
+
+## Update 2026-06-12 13:20 PDT
+- Added a feature-enrichment pass for the real insulin-pump dataset so Predictor V2 now trains on series-aware proxy physiology instead of flat constant defaults.
+- Regenerated `data/training/predictor_v2_real_dataset.csv` with decay-based IOB/COB, SQI, CGM-age, and activity proxies plus glucose-dynamics helpers.
+- Retrained and revalidated Predictor V2 on the enriched real dataset; the new pass materially improved both holdout and validation metrics while remaining host-only.
+- `make -f host.mk test` and `make -f host.mk regression` still pass after the enrichment pass.

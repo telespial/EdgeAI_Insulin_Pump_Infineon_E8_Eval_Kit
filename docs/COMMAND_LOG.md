@@ -6963,3 +6963,12 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12 12:50 PDT: Confirmed the final real-data training pass file list before staging: docs updates plus the importer script and converted real dataset CSV.
 - 2026-06-12 12:55 PDT: Committed the real-data Predictor V2 training pass as `ead8028` on `recover-lcd-after-aps-probe`.
 - 2026-06-12 13:00 PDT: Amended and pushed the real-data Predictor V2 training pass as `aea2b4e` to `origin/recover-lcd-after-aps-probe`.
+- 2026-06-12 13:05 PDT: Regenerated `data/training/predictor_v2_real_dataset.csv` with series-aware proxies for IOB, COB, SQI, CGM age, and activity from the real insulin-pump source.
+- 2026-06-12 13:10 PDT: Retrained Predictor V2 on the feature-enriched real dataset; holdout and validation metrics improved materially versus the earlier sparse-proxy pass.
+- 2026-06-12 13:15 PDT: Reran `python3 tools/train_predictor_v2.py --help`, `python3 tools/export_predictor_v2.py --help`, `python3 tools/validate_predictor_export.py --help`, `make -f host.mk test`, and `make -f host.mk regression`; all host checks passed after the feature enrichment pass.
+- 2026-06-12 13:20 PDT: Checked the feature-enrichment diff set, then removed transient build directories so the working tree stays source-focused before commit.
+- 2026-06-12 13:22 PDT: Feature-enriched validation improved Predictor V2 to 15m 7.55/14.72 vs baseline 8.08/16.09, 30m 15.51/24.04 vs 18.55/30.52, and 60m 29.52/41.39 vs 42.96/65.53; earlier sparse-proxy real-data validation had been much worse.
+- 2026-06-12 13:25 PDT: Reran the real-data retrain after wiring source epochs into the feature vector; final validation landed at 15m 7.52/14.71, 30m 15.38/23.98, and 60m 29.22/41.16 with baseline 8.08/16.09, 18.55/30.52, and 42.96/65.53.
+- 2026-06-12 13:30 PDT: Reran `make -f host.mk test` and `make -f host.mk regression` after the final feature-vector tweak; both host suites still pass.
+- 2026-06-12 13:35 PDT: Removed transient build/output directories again after the final host-suite rerun; the remaining diff is source/docs/data only.
+- 2026-06-12 13:40 PDT: Committed the feature-enrichment pass as `47ba6dc` on `recover-lcd-after-aps-probe`.

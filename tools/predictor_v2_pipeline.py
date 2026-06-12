@@ -138,7 +138,9 @@ def _parse_activity_state(value: object) -> int:
 
 @dataclass(frozen=True)
 class Sample:
+    series_id: str
     timestamp: int
+    source_epoch_s: int
     glucose_mgdl: float
     sqi_pct: float
     cgm_age_s: float = 0.0
@@ -166,7 +168,9 @@ def load_series_from_csv(path: Path) -> List[Sample]:
         if missing:
             raise ValueError(f"{path}: missing required columns: {', '.join(missing)}")
         for raw in reader:
+            series_id = str(raw.get("series_id") or path.stem).strip() or path.stem
             timestamp = _parse_int(raw.get("timestamp"))
+            source_epoch_s = _parse_int(raw.get("source_epoch_s"), timestamp)
             glucose_mgdl = _parse_float(raw.get("glucose_mgdl"), float("nan"))
             sqi_pct = _parse_float(raw.get("sqi_pct"), 0.0)
             if math.isnan(glucose_mgdl):
@@ -208,7 +212,9 @@ def load_series_from_csv(path: Path) -> List[Sample]:
                 )
             rows.append(
                 Sample(
+                    series_id=series_id,
                     timestamp=timestamp,
+                    source_epoch_s=source_epoch_s,
                     glucose_mgdl=glucose_mgdl,
                     sqi_pct=sqi_pct,
                     cgm_age_s=optional_values["cgm_age_s"],
@@ -228,7 +234,7 @@ def load_series_from_csv(path: Path) -> List[Sample]:
                     physiology_present=physiology_present,
                 )
             )
-    rows.sort(key=lambda sample: sample.timestamp)
+    rows.sort(key=lambda sample: (sample.series_id, sample.timestamp))
     return rows
 
 
@@ -257,14 +263,23 @@ def group_samples(paths: Sequence[Path], holdout_ratio: float) -> Tuple[List[Sam
             training_rows.extend(train_part)
             holdout_rows.extend(holdout_part)
         source_names.append(str(path))
-    training_rows.sort(key=lambda sample: sample.timestamp)
-    holdout_rows.sort(key=lambda sample: sample.timestamp)
+    training_rows.sort(key=lambda sample: (sample.series_id, sample.timestamp))
+    holdout_rows.sort(key=lambda sample: (sample.series_id, sample.timestamp))
     return training_rows, holdout_rows, source_names
 
 
 def _window(samples: Sequence[Sample], index: int, width: int) -> List[Sample]:
-    start = max(0, index - width + 1)
-    return list(samples[start : index + 1])
+    current_series = samples[index].series_id
+    window: List[Sample] = []
+    cursor = index
+    while cursor >= 0 and len(window) < width:
+        sample = samples[cursor]
+        if sample.series_id != current_series:
+            break
+        window.append(sample)
+        cursor -= 1
+    window.reverse()
+    return window
 
 
 def _mean(values: Sequence[float]) -> float:
@@ -291,8 +306,17 @@ def _time_of_day_components(timestamp_s: int) -> Tuple[float, float]:
 
 
 def _history_sample(samples: Sequence[Sample], index: int, lag: int) -> Sample:
-    if index - lag >= 0:
-        return samples[index - lag]
+    current_series = samples[index].series_id
+    seen = 0
+    cursor = index - 1
+    while cursor >= 0:
+        sample = samples[cursor]
+        if sample.series_id != current_series:
+            break
+        seen += 1
+        if seen == lag:
+            return sample
+        cursor -= 1
     return samples[index]
 
 
@@ -325,7 +349,7 @@ def build_feature_vector(samples: Sequence[Sample], index: int) -> List[float]:
     var_6 = _variance([sample.glucose_mgdl for sample in roll_6])
     stddev_6 = math.sqrt(var_6)
     volatility = stddev_6 + (abs(delta_3) * 0.25) + (abs(delta_6) * 0.125)
-    tod_sin, tod_cos = _time_of_day_components(current.timestamp)
+    tod_sin, tod_cos = _time_of_day_components(current.source_epoch_s)
 
     values = [
         current_glucose,
@@ -414,10 +438,10 @@ def build_training_pairs(
 ) -> List[Tuple[List[float], float]]:
     if not samples:
         return []
-    lookup = {sample.timestamp: index for index, sample in enumerate(samples)}
+    lookup = {(sample.series_id, sample.timestamp): index for index, sample in enumerate(samples)}
     pairs: List[Tuple[List[float], float]] = []
     for index, sample in enumerate(samples):
-        target_index = lookup.get(sample.timestamp + horizon_seconds)
+        target_index = lookup.get((sample.series_id, sample.timestamp + horizon_seconds))
         if target_index is None:
             continue
         target = samples[target_index]

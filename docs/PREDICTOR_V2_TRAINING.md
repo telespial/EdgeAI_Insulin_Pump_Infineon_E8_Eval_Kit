@@ -85,3 +85,18 @@ The synthetic dataset is committed because it is small enough to review and repr
 The larger real training data is located at:
 
 `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`
+
+The real-data importer is series-aware and now derives proxy physiology values for:
+
+- `iob_u`
+- `cob_g`
+- `activity_state`
+- `activity_confidence_pct`
+- `motion_rms_5m`
+- `motion_rms_15m`
+- `active_minutes`
+- `post_exercise_minutes`
+- `sqi_pct`
+- `cgm_age_s`
+
+It also adds glucose-dynamics helpers such as rolling volatility, acceleration, range exposure, and recent excursion magnitude before training the existing 36-feature Predictor V2 model.

@@ -49,10 +49,10 @@ Reasoning:
 - The datasets contain useful glucose and insulin history for sequence modeling.
 - They do not contain direct carbohydrate, activity, exercise, or sensor-quality fields required for the full Predictor V2 feature set.
 - A host-side importer can still derive a usable training CSV by applying documented defaults and proxies, but the result is not yet a full-fidelity real-world physiology dataset.
+- The current importer is series-aware and uses proxy physiology fields derived from raw glucose/insulin dynamics, timestamp gaps, and glucose type.
 
 ## Notes
 
 - The preferred real training source path is:
   - `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`
 - Synthetic and smoke datasets remain pipeline-validation only.
-

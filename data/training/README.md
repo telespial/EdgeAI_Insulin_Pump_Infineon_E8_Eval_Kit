@@ -28,5 +28,7 @@ The main repository location for training data is:
 
 - `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`
 
+The real-data import path is series-aware and now derives proxy physiology values from the raw glucose/insulin signals before training Predictor V2.
+
 Use the smoke dataset only as a build and CLI sanity check.
 Use the synthetic dataset as a host-only pipeline exercise, not a medical training corpus.

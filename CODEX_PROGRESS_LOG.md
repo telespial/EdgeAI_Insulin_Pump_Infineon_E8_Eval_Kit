@@ -500,3 +500,17 @@ Tests:
 
 Next recommended step:
 - Move on only if the team wants a bigger real replay dataset; otherwise the host-only expansion milestone is complete.
+
+## 2026-06-12 — Predictor V2 feature enrichment pass
+
+Changed:
+- Added a dataset feature audit for the real insulin-pump source files and documented the raw columns, gaps, and missing physiology signals.
+- Upgraded the real-data importer to be series-aware and to derive proxy physiology for IOB, COB, SQI, CGM age, activity, and glucose dynamics.
+- Regenerated `data/training/predictor_v2_real_dataset.csv` and retrained the existing linear Predictor V2 models on the enriched real dataset.
+
+Results:
+- The enriched pass materially improved holdout and validation metrics compared with the earlier sparse-proxy real-data pass.
+- Host `make -f host.mk test` and `make -f host.mk regression` both still pass.
+
+Next recommended step:
+- If needed, add a second real-data import pass with better meal/activity annotations rather than changing the model architecture yet.

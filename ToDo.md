@@ -180,3 +180,9 @@
 - [x] Train/export/validate on the expanded synthetic dataset
 - [x] Re-run host regression suites
 - [x] Commit the dataset expansion as its own milestone
+
+## Milestone 19 — Predictor V2 Feature Enrichment
+- [x] Audit the raw insulin-pump dataset columns and quality issues
+- [x] Derive series-aware proxy physiology features from the real dataset
+- [x] Retrain/export/validate Predictor V2 on the enriched real dataset
+- [x] Keep the work host-only and leave embedded runtime behavior untouched
