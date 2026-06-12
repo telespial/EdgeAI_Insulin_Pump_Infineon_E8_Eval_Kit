@@ -713,5 +713,7 @@ PY
 [2026-06-11 20:30:00 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
 [2026-06-11 20:31:00 PDT] COMMAND: git status --short
 [2026-06-11 20:33:00 PDT] COMMAND: git status --short
+[2026-06-11 20:34:00 PDT] COMMAND: git add ARCHITECTURE_DECISIONS.md CODEX_PROGRESS_LOG.md README.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md docs/PROJECT_HISTORY.md docs/RTOS_MIGRATION_PLAN.md && git commit -m "Document project lineage"
+[2026-06-11 20:34:30 PDT] COMMAND: git push origin codex/bar-graph-tuning
 [2026-06-11 20:32:00 PDT] COMMAND: git add ARCHITECTURE_DECISIONS.md CODEX_PROGRESS_LOG.md README.md ToDo.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md docs/OSAL_PLAN.md docs/RTOS_MIGRATION_PLAN.md proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c && git commit -m "Add RTOS readiness planning"
 [2026-06-11 20:32:30 PDT] COMMAND: git push origin codex/bar-graph-tuning
