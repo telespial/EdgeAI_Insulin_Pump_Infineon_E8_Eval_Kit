@@ -566,6 +566,25 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - `docs/BUILD_REPORT.md` now reflects the banner-only LCD-safe path rather than the earlier smoke-loop sequence.
 - The current validated boot behavior is APS banner on UART with the GUI path left stable.
 
+## Update 2026-06-11 22:10 PDT
+- The LCD-safe rollback has been committed and pushed as `f36c0ab` on `embedded-bringup-smoke-test`.
+- The worktree is clean again and the branch now contains the static APS banner boot path rather than the active smoke loop.
+
+## Update 2026-06-11 22:11 PDT
+- The command log now includes the final pushed branch state so the recovery timeline is complete.
+
+## Update 2026-06-11 22:12 PDT
+- The repo history is closed out for this smoke-test recovery pass.
+
+## Update 2026-06-11 22:13 PDT
+- The branch remains clean and the LCD-safe static banner flow is the current checked-in state.
+
+## Update 2026-06-11 22:14 PDT
+- Final bookkeeping is complete for this LCD recovery pass.
+
+## Update 2026-06-11 22:16 PDT
+- Final line anchors were captured for the handoff summary.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

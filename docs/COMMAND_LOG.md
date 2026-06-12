@@ -865,3 +865,19 @@ PY
   - Restored the generated Ninja logs so they do not muddy the final patch.
 [2026-06-11 22:08:00 PDT] COMMAND: apply_patch
   - Updated `docs/BUILD_REPORT.md` so it reflects the current LCD-safe banner-only boot path instead of the earlier active smoke loop.
+[2026-06-11 22:09:00 PDT] COMMAND: git add CODEX_PROGRESS_LOG.md ToDo.md VALIDATION_PLAN.md docs/BUILD_REPORT.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/main.c && git commit -m "Restore LCD-safe APS boot path" && git push origin embedded-bringup-smoke-test
+  - Committed the LCD-safe rollback as `f36c0ab` and pushed `embedded-bringup-smoke-test` to GitHub.
+[2026-06-11 22:10:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD
+  - Confirmed the worktree is clean and the branch HEAD is `f36c0ab`.
+[2026-06-11 22:11:00 PDT] COMMAND: apply_patch
+  - Recorded the final pushed branch state and the LCD-safe rollback in `docs/PROJECT_STATE.md`.
+[2026-06-11 22:12:00 PDT] COMMAND: apply_patch
+  - Added the final timeline note to `docs/PROJECT_STATE.md` so the recovery sequence is fully documented.
+[2026-06-11 22:13:00 PDT] COMMAND: apply_patch
+  - Closed out the smoke-test recovery timeline in `docs/PROJECT_STATE.md`.
+[2026-06-11 22:14:00 PDT] COMMAND: apply_patch
+  - Recorded the final LCD-safe checked-in state in `docs/PROJECT_STATE.md`.
+[2026-06-11 22:15:00 PDT] COMMAND: apply_patch
+  - Closed the recovery audit loop for the LCD-safe rollback pass.
+[2026-06-11 22:16:00 PDT] COMMAND: nl -ba proj_cm55/main.c ... && nl -ba proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c ... && nl -ba docs/BUILD_REPORT.md ...
+  - Captured line anchors for the final summary: `main.c:629-750`, `edgeai_insulin_pump_app.c:366-572`, and `docs/BUILD_REPORT.md:1-70`.
