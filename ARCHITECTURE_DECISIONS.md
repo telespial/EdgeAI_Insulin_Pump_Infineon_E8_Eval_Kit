@@ -99,3 +99,13 @@ Separating physiology estimation from prediction and control keeps the architect
 
 Status:
 Accepted
+
+## ADR-011 — Predictor V2 uses physiology context
+Decision:
+Predictor V2 shall consume deterministic physiology context from IOB, COB, and activity engines as structured model features.
+
+Reason:
+This keeps the export-ready predictor aligned with the physiology engine and makes trained model export compatible with the existing replay and host-regression flow.
+
+Status:
+Accepted

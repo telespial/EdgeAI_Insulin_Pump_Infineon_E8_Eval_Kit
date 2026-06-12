@@ -4,8 +4,10 @@
 - Replay historical CGM traces through the predictor.
 - Compare 15m, 30m, and 60m outputs against labels.
 - Compare baseline trend predictions against Predictor V2 on the same replay rows.
-- Validate the fixed 30-feature Predictor V2 export schema and generated per-horizon tables.
+- Validate the fixed 36-feature Predictor V2 export schema and generated per-horizon tables.
+- Verify deterministic physiology context reaches Predictor V2 feature construction for IOB, COB, and activity state.
 - Verify missing-history features use documented median/default fallbacks.
+- Verify missing or invalid physiology context falls back safely and emits status flags.
 - Measure MAE, RMSE, and low-miss rate.
 
 Pass criteria:
@@ -62,6 +64,7 @@ Pass criteria:
 ## Host Unit Tests
 - Test predictor feature extraction.
 - Test physiology accumulation.
+- Test physiology feature propagation into Predictor V2.
 - Test controller action selection.
 - Test safety override logic.
 - Test replay summary metrics and audit CSV header coverage.

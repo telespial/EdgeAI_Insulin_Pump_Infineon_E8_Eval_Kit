@@ -152,9 +152,104 @@ static void test_predictor_feature_vector_construction(void)
     require_true("feature vector builds", valid);
     require_true("feature current glucose", (uint16_t)features.values[PREDICTOR_V2_FEATURE_CURRENT_GLUCOSE] == 145u);
     require_true("feature lag1 defaults to current", (uint16_t)features.values[PREDICTOR_V2_FEATURE_LAG_1] == 145u);
-    require_true("feature lag1 marked invalid", (features.valid_mask & (1u << PREDICTOR_V2_FEATURE_LAG_1)) == 0u);
+    require_true("feature lag1 marked invalid", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_LAG_1)) == 0u);
     require_true("feature tod sin finite", features.values[PREDICTOR_V2_FEATURE_TOD_SIN] >= -1.0f && features.values[PREDICTOR_V2_FEATURE_TOD_SIN] <= 1.0f);
     require_true("predictor no dynamic memory", !PredictorV2_UsesDynamicMemory());
+}
+
+static void test_predictor_physiology_feature_integration(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_feature_vector_t features;
+    predictor_v2_horizon_eval_t evaluation;
+    activity_features_t activity;
+
+    IobEngine_Reset();
+    CobEngine_Reset();
+    ActivityEngine_Reset();
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+
+    require_true("physiology iob seed", IobEngine_AddBolus(300u, 1.5f));
+    require_true("physiology cob seed", CobEngine_AddMeal(300u, 22.0f, 180u));
+    require_true("physiology activity seed", ActivityEngine_Update(300u, 700, 0, 0, true, 30u, &activity));
+    require_true("physiology activity cool-down", ActivityEngine_Update(360u, 0, 0, 1000, false, 0u, &activity));
+
+    input = make_input(420u, 150u, 12, 95u, 0u, IobEngine_GetIobU(), CobEngine_GetCobG(), true);
+    input.physiology.activity_state = (uint8_t)activity.state;
+    input.physiology.activity_confidence_pct = activity.confidence_pct;
+    input.physiology.motion_rms_5m = activity.motion_rms_5m;
+    input.physiology.motion_rms_15m = activity.motion_rms_15m;
+    input.physiology.active_minutes = activity.active_minutes;
+    input.physiology.post_exercise_minutes = activity.post_exercise_minutes;
+
+    require_true("physiology feature vector builds", PredictorV2_BuildFeatureVector(&input, &features));
+    require_true("physiology iob feature present", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_IOB)) != 0u);
+    require_true("physiology cob feature present", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_COB)) != 0u);
+    require_true("physiology activity state present", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_ACTIVITY_STATE)) != 0u);
+    require_true("physiology activity confidence present", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_ACTIVITY_CONFIDENCE)) != 0u);
+    require_true("physiology active minutes present", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_ACTIVE_MINUTES)) != 0u);
+    require_true("physiology post exercise present", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_POST_EXERCISE_MINUTES)) != 0u);
+    require_true("physiology activity state matches", (uint16_t)features.values[PREDICTOR_V2_FEATURE_ACTIVITY_STATE] == (uint16_t)activity.state);
+    require_true("physiology confidence matches", (uint16_t)features.values[PREDICTOR_V2_FEATURE_ACTIVITY_CONFIDENCE] == (uint16_t)activity.confidence_pct);
+    require_true("physiology motion 5m bounded", features.values[PREDICTOR_V2_FEATURE_MOTION_RMS_5M] >= 0.0f && features.values[PREDICTOR_V2_FEATURE_MOTION_RMS_5M] <= 200.0f);
+    require_true("physiology motion 15m bounded", features.values[PREDICTOR_V2_FEATURE_MOTION_RMS_15M] >= 0.0f && features.values[PREDICTOR_V2_FEATURE_MOTION_RMS_15M] <= 200.0f);
+    require_true("physiology eval works", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_15M, &evaluation));
+    require_true("physiology status not missing", (evaluation.status_flags & PREDICTOR_V2_STATUS_MISSING_PHYSIOLOGY) == 0u);
+}
+
+static void test_predictor_missing_physiology_fallback(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_feature_vector_t features;
+    predictor_v2_horizon_eval_t evaluation;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    input = make_input(600u, 152u, 8, 95u, 0u, 0.0f, 0.0f, false);
+    input.physiology.activity_state = ACTIVITY_UNKNOWN;
+    input.physiology.activity_confidence_pct = 0u;
+    input.physiology.motion_rms_5m = 0.0f;
+    input.physiology.motion_rms_15m = 0.0f;
+    input.physiology.active_minutes = 0u;
+    input.physiology.post_exercise_minutes = 0u;
+
+    require_true("missing physiology feature vector", PredictorV2_BuildFeatureVector(&input, &features));
+    require_true("missing physiology iob masked", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_IOB)) == 0u);
+    require_true("missing physiology activity masked", (features.valid_mask & (1ull << PREDICTOR_V2_FEATURE_ACTIVITY_STATE)) == 0u);
+    require_true("missing physiology eval works", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_15M, &evaluation));
+    require_true("missing physiology status emitted", (evaluation.status_flags & PREDICTOR_V2_STATUS_MISSING_PHYSIOLOGY) != 0u);
+}
+
+static void test_predictor_invalid_physiology_sanitized(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_feature_vector_t features;
+    predictor_v2_horizon_eval_t evaluation;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    input = make_input(900u, 148u, 10, 95u, 0u, -4.0f, 999.0f, true);
+    input.physiology.basal_u_per_hr = -1.0f;
+    input.physiology.insulin_30m_u = 50.0f;
+    input.physiology.insulin_120m_u = 80.0f;
+    input.physiology.carbs_30m_g = -2.0f;
+    input.physiology.carbs_120m_g = 999.0f;
+    input.physiology.activity_state = 42u;
+    input.physiology.activity_confidence_pct = 240u;
+    input.physiology.motion_rms_5m = -10.0f;
+    input.physiology.motion_rms_15m = 400.0f;
+    input.physiology.active_minutes = 5000u;
+    input.physiology.post_exercise_minutes = 6000u;
+
+    require_true("invalid physiology feature vector", PredictorV2_BuildFeatureVector(&input, &features));
+    require_true("invalid physiology iob clamped", (uint16_t)features.values[PREDICTOR_V2_FEATURE_IOB] == 0u);
+    require_true("invalid physiology cob clamped", (uint16_t)features.values[PREDICTOR_V2_FEATURE_COB] == 200u);
+    require_true("invalid physiology basal clamped", (uint16_t)features.values[PREDICTOR_V2_FEATURE_BASAL_RATE] == 0u);
+    require_true("invalid physiology activity state clamped", (uint16_t)features.values[PREDICTOR_V2_FEATURE_ACTIVITY_STATE] == 0u);
+    require_true("invalid physiology motion clamped", (uint16_t)features.values[PREDICTOR_V2_FEATURE_MOTION_RMS_15M] == 200u);
+    require_true("invalid physiology eval works", PredictorV2_EvaluateHorizon(&input, PREDICTOR_V2_HORIZON_15M, &evaluation));
+    require_true("invalid physiology status emitted", (evaluation.status_flags & PREDICTOR_V2_STATUS_INVALID_FEATURES) != 0u);
 }
 
 static void test_predictor_invalid_feature_fallback(void)
@@ -541,6 +636,8 @@ static void test_simulation_summary_and_audit_header(void)
     require_true("summary metric baseline", summary.baseline_15m.mae >= 0.0f);
     require_true("summary metric ml", summary.ml_15m.mae >= 0.0f);
     require_true("summary disagreement count", summary.controller_disagreement_count <= dataset.count);
+    require_true("summary physiology present count", summary.physiology_present_count == dataset.count);
+    require_true("summary physiology missing count", summary.physiology_missing_count == 0u);
     require_true("summary result has actual", results[0].has_actual_15m || dataset.count < 4u);
 
     audit_file = tmpfile();
@@ -680,6 +777,9 @@ int main(void)
     PredictorV2_SetModelBundleForTesting(NULL);
     test_predictor_outputs();
     test_predictor_feature_vector_construction();
+    test_predictor_physiology_feature_integration();
+    test_predictor_missing_physiology_fallback();
+    test_predictor_invalid_physiology_sanitized();
     test_predictor_invalid_feature_fallback();
     test_predictor_independent_horizons();
     test_predictor_output_bounds();

@@ -300,7 +300,7 @@ Gold fixtures are software regression guards, not clinical validation.
 
 ### Predictor V2 feature schema
 
-Predictor V2 now uses a stable 30-feature export-ready vector with explicit generated model tables for 15m, 30m, and 60m horizons. The feature order and fallback rules are documented in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`.
+Predictor V2 now uses a stable 36-feature export-ready vector with explicit generated model tables for 15m, 30m, and 60m horizons. The feature order, physiology context, and fallback rules are documented in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`.
 
 5. Build and program the application
 

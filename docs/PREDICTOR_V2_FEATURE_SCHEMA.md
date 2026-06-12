@@ -1,6 +1,6 @@
 # Predictor V2 Feature Schema
 
-Predictor V2 uses a fixed 30-feature vector. The order below is stable and should be treated as part of the export contract.
+Predictor V2 uses a fixed 36-feature vector. The order below is stable and should be treated as part of the export contract.
 
 | Index | Feature | Units | Source | Expected Range | Fallback / Default |
 | --- | --- | --- | --- | --- | --- |
@@ -26,23 +26,29 @@ Predictor V2 uses a fixed 30-feature vector. The order below is stable and shoul
 | 19 | iob | U | Physiology estimate | 0–20 | 0 |
 | 20 | cob | g | Physiology estimate | 0–200 | 0 |
 | 21 | basal_rate | U/hr | Current basal estimate | 0–5 | 0 |
-| 22 | insulin_30m | U | Physiology accumulation | 0–10 | 0 |
-| 23 | insulin_120m | U | Physiology accumulation | 0–20 | 0 |
-| 24 | carbs_30m | g | Physiology accumulation | 0–100 | 0 |
-| 25 | carbs_120m | g | Physiology accumulation | 0–200 | 0 |
+| 22 | insulin_30m | U | Physiology accumulation | 0–20 | 0 |
+| 23 | insulin_120m | U | Physiology accumulation | 0–40 | 0 |
+| 24 | carbs_30m | g | Physiology accumulation | 0–200 | 0 |
+| 25 | carbs_120m | g | Physiology accumulation | 0–300 | 0 |
 | 26 | sqi | % | Current sensor quality | 0–100 | Current SQI |
 | 27 | cgm_age_s | s | Replay helper / capture age | 0–3600 | 0 |
 | 28 | tod_sin | unitless | Time-of-day encoding | -1 to 1 | 0 |
 | 29 | tod_cos | unitless | Time-of-day encoding | -1 to 1 | 1 |
+| 30 | activity_state | enum | Physiology estimate | 0–5 | Unknown / median fallback |
+| 31 | activity_confidence | % | Physiology estimate | 0–100 | 0 |
+| 32 | motion_rms_5m | mg | Physiology estimate | 0–200 | 0 |
+| 33 | motion_rms_15m | mg | Physiology estimate | 0–200 | 0 |
+| 34 | active_minutes | min | Physiology estimate | 0–1440 | 0 |
+| 35 | post_exercise_minutes | min | Physiology estimate | 0–1440 | 0 |
 
 ## Horizon Tables
 
 Each horizon table stores:
 
-- `feature_mean[30]`
-- `feature_scale[30]`
-- `feature_median[30]`
-- `coefficients[30]`
+- `feature_mean[36]`
+- `feature_scale[36]`
+- `feature_median[36]`
+- `coefficients[36]`
 - `intercept`
 - `valid`
 
@@ -50,6 +56,6 @@ The generated model tables live in `firmware/include/predictor_v2_generated.h` a
 
 ## Fallback Rules
 
-- Missing history features use the median/default values during evaluation.
+- Missing history and missing physiology features use the median/default values during evaluation.
 - Poor SQI, stale CGM, or invalid model tables force a linear-trend fallback.
 - Outputs are clamped to a safe glucose range before they reach the controller and safety supervisor.

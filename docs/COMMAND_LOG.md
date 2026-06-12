@@ -746,3 +746,23 @@ PY
   - Recorded the README verification result and pushed it to the branch.
 [2026-06-11 20:52:00 PDT] COMMAND: git status --short
   - Working tree clean after the verification push.
+[2026-06-11 20:58:00 PDT] COMMAND: git switch codex/bar-graph-tuning && rg --files | rg 'predictor_v2|predictor|physiology|iob_engine|cob_engine|activity_engine'
+[2026-06-11 20:59:00 PDT] COMMAND: sed -n '1,260p' firmware/include/predictor_v2.h && sed -n '1,360p' firmware/src/predictor_v2.c && sed -n '1,260p' firmware/include/predictor_v2_generated.h && sed -n '1,320p' firmware/src/predictor_v2_generated.c && sed -n '1,240p' firmware/include/aps_physiology.h && sed -n '1,320p' firmware/src/aps_physiology.c
+[2026-06-11 21:00:00 PDT] COMMAND: rg -n \"PredictorV2_BuildFeatureVector|PredictorV2_EvaluateHorizon|physiology|iob_u|cob_g|activity_state|feature_count|PREDICTOR_V2_FEATURE\" tests/test_runner.c sim/simulation_runner.c sim/scenario_runner.c
+[2026-06-11 21:01:00 PDT] COMMAND: sed -n '1,220p' firmware/include/aps_types.h && sed -n '1,220p' ToDo.md && sed -n '1,220p' VALIDATION_PLAN.md && sed -n '1,220p' SAFETY_CHECKLIST.md && tail -n 60 ARCHITECTURE_DECISIONS.md
+[2026-06-11 21:02:00 PDT] COMMAND: sed -n '1,260p' docs/PREDICTOR_V2_FEATURE_SCHEMA.md && sed -n '220,760p' tests/test_runner.c
+[2026-06-11 21:03:00 PDT] COMMAND: rg -n \"30-feature|feature_mean\\[30\\]|feature_scale\\[30\\]|feature_median\\[30\\]|coefficients\\[30\\]|PREDICTOR_V2_FEATURE_COUNT = 30|fixed 30-feature|30-feature vector\" README.md ToDo.md VALIDATION_PLAN.md SAFETY_CHECKLIST.md CODEX_PROGRESS_LOG.md docs firmware tests
+[2026-06-11 21:04:00 PDT] COMMAND: sed -n '640,760p' firmware/src/predictor_v2.c && sed -n '1,120p' docs/PREDICTOR_V2_FEATURE_SCHEMA.md
+[2026-06-11 21:05:00 PDT] COMMAND: make -f host.mk test
+  - Host tests passed after widening the predictor feature vector to 36 entries and updating the physiology context tests.
+[2026-06-11 21:06:00 PDT] COMMAND: make -f host.mk regression
+  - Fixture sample and gold matrices both passed with Predictor V2 consuming physiology context.
+[2026-06-11 21:07:00 PDT] COMMAND: tail -n 20 docs/COMMAND_LOG.md
+[2026-06-11 21:08:00 PDT] COMMAND: tail -n 30 docs/PROJECT_STATE.md
+[2026-06-11 21:09:00 PDT] COMMAND: tail -n 40 CODEX_PROGRESS_LOG.md
+[2026-06-11 21:10:00 PDT] COMMAND: rm -rf host_build out && git status --short
+  - Removed generated host build and regression output directories; the working tree is now source-only again.
+[2026-06-11 21:11:00 PDT] COMMAND: git status --short && rg -n \"30-feature|feature_mean\\[30\\]|feature_scale\\[30\\]|feature_median\\[30\\]|coefficients\\[30\\]|PREDICTOR_V2_FEATURE_COUNT = 30|fixed 30-feature|30-feature vector\" README.md ToDo.md VALIDATION_PLAN.md SAFETY_CHECKLIST.md CODEX_PROGRESS_LOG.md docs firmware tests
+  - No active stale 30-feature references remain outside the historical command log.
+[2026-06-11 21:12:00 PDT] COMMAND: git status --short
+  - Working tree contains only the intended source and documentation updates for the predictor physiology milestone.

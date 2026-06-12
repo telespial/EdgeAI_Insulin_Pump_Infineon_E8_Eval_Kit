@@ -41,7 +41,7 @@ The activity module classifies motion from accelerometer samples.
 - Feed the outputs into Predictor V2 feature engineering once the export pipeline is ready.
 
 ## Predictor V2 Usage
-Predictor V2 will consume physiology context as input features:
+Predictor V2 now consumes physiology context as structured input features:
 
 - `iob_u`
 - `cob_g`

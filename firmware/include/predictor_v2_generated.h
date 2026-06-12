@@ -35,13 +35,19 @@ typedef enum
     PREDICTOR_V2_FEATURE_CGM_AGE_S = 27u,
     PREDICTOR_V2_FEATURE_TOD_SIN = 28u,
     PREDICTOR_V2_FEATURE_TOD_COS = 29u,
-    PREDICTOR_V2_FEATURE_COUNT = 30u
+    PREDICTOR_V2_FEATURE_ACTIVITY_STATE = 30u,
+    PREDICTOR_V2_FEATURE_ACTIVITY_CONFIDENCE = 31u,
+    PREDICTOR_V2_FEATURE_MOTION_RMS_5M = 32u,
+    PREDICTOR_V2_FEATURE_MOTION_RMS_15M = 33u,
+    PREDICTOR_V2_FEATURE_ACTIVE_MINUTES = 34u,
+    PREDICTOR_V2_FEATURE_POST_EXERCISE_MINUTES = 35u,
+    PREDICTOR_V2_FEATURE_COUNT = 36u
 } predictor_v2_feature_index_t;
 
 typedef struct
 {
     float values[PREDICTOR_V2_FEATURE_COUNT];
-    uint32_t valid_mask;
+    uint64_t valid_mask;
 } predictor_v2_feature_vector_t;
 
 typedef enum
@@ -85,6 +91,7 @@ typedef struct
 #define PREDICTOR_V2_STATUS_LOW_CONFIDENCE (1u << 4)
 #define PREDICTOR_V2_STATUS_BAD_SQI (1u << 5)
 #define PREDICTOR_V2_STATUS_STALE_CGM (1u << 6)
+#define PREDICTOR_V2_STATUS_MISSING_PHYSIOLOGY (1u << 7)
 
 const predictor_v2_generated_bundle_t *PredictorV2Generated_DefaultBundle(void);
 

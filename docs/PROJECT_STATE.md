@@ -400,9 +400,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added `scripts/run_gold_matrix.sh` and wired the host regression flow to run both the broad sample matrix and the tighter gold matrix.
 
 ## Update 2026-06-11 18:55 PDT
-- Reworked Predictor V2 around a fixed 30-feature export-ready vector and generated per-horizon model tables.
+- Reworked Predictor V2 around a fixed 36-feature export-ready vector and generated per-horizon model tables.
 - Added `PredictorV2_BuildFeatureVector`, `PredictorV2_EvaluateHorizon`, and test hooks for fallback and invalid-model handling.
-- Documented the stable feature schema in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md` and extended host tests for feature, bounds, and fallback coverage.
+- Documented the stable feature schema in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`, extended host tests for feature, bounds, and fallback coverage, and now feed deterministic physiology context into the predictor path.
 - `make -f host.mk regression` passes again after widening two gold ML envelopes that were too tight for the new predictor coefficients.
 
 ## Update 2026-06-11 19:10 PDT
@@ -468,6 +468,19 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 20:52 PDT
 - Recorded the README verification so the repo history shows both the branch content and the default-branch masking behavior.
 - Confirmed the working tree is clean after pushing the documentation-only verification update.
+
+## Update 2026-06-11 21:06 PDT
+- Expanded Predictor V2 to a stable 36-feature export-ready vector and wired in deterministic physiology context for IOB, COB, and activity features.
+- Added a predictor summary line that reports physiology present/missing counts so replay logs can confirm the context path is active.
+- Verified the update with `make -f host.mk test` and `make -f host.mk regression`; both host and fixture suites passed.
+
+## Update 2026-06-11 21:10 PDT
+- Removed generated host build and fixture output directories so the working tree is source-only again.
+- Kept the predictor, physiology, and regression changes as source/documentation updates only.
+
+## Update 2026-06-11 21:11 PDT
+- Confirmed there are no active stale 30-feature references outside historical command-log entries.
+- Kept the 36-feature Predictor V2 schema and physiology context documentation aligned with the host tests.
 
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.

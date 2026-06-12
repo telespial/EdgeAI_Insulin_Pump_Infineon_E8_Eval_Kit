@@ -352,6 +352,18 @@ bool SimulationRunner_RunDataset(const replay_dataset_t *dataset,
         {
             disagreement_count++;
         }
+
+        if (summary != NULL)
+        {
+            if (input.physiology_present)
+            {
+                summary->physiology_present_count++;
+            }
+            else
+            {
+                summary->physiology_missing_count++;
+            }
+        }
     }
 
     if (results_count != NULL)
@@ -400,4 +412,5 @@ void SimulationRunner_PrintSummary(FILE *stream, const simulation_summary_t *sum
     fprintf(stream, "  false low warning count: %u\n", summary->clinical.false_low_warning_count);
     fprintf(stream, "  safety intervention count: %u\n", summary->clinical.safety_intervention_count);
     fprintf(stream, "  controller disagreement count: %u\n", summary->controller_disagreement_count);
+    fprintf(stream, "  physiology present/missing: %zu / %zu\n", summary->physiology_present_count, summary->physiology_missing_count);
 }

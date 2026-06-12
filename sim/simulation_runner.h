@@ -43,6 +43,8 @@ typedef struct
     size_t valid_actual_count_15m;
     size_t valid_actual_count_30m;
     size_t valid_actual_count_60m;
+    size_t physiology_present_count;
+    size_t physiology_missing_count;
 } simulation_summary_t;
 
 bool SimulationRunner_RunDataset(const replay_dataset_t *dataset,

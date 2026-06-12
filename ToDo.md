@@ -25,10 +25,11 @@
 - [x] Add slope/variance/volatility features
 - [x] Add confidence and stale-CGM handling
 - [x] Add unit tests
-- [x] Add explicit 30-feature Predictor V2 vector
+- [x] Add explicit 36-feature Predictor V2 vector
 - [x] Add generated model tables for 15m/30m/60m
 - [x] Add export-ready horizon evaluator with bounded fallback
 - [x] Document the stable feature schema
+- [x] Integrate deterministic physiology context into Predictor V2 features
 
 ## Milestone 3 — Physiology State
 - [x] Add insulin event buffer

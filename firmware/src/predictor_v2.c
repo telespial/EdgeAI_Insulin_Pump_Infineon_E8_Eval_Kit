@@ -47,6 +47,57 @@ static int16_t clamp_i16_i32(int32_t value, int32_t lower_bound, int32_t upper_b
     return (int16_t)value;
 }
 
+static float sanitize_feature_float(float value, float lower_bound, float upper_bound, float fallback_value, bool *valid)
+{
+    if (valid != NULL)
+    {
+        *valid = true;
+    }
+
+    if (!isfinite(value))
+    {
+        if (valid != NULL)
+        {
+            *valid = false;
+        }
+        return fallback_value;
+    }
+
+    if (value < lower_bound)
+    {
+        if (valid != NULL)
+        {
+            *valid = false;
+        }
+        return lower_bound;
+    }
+    if (value > upper_bound)
+    {
+        if (valid != NULL)
+        {
+            *valid = false;
+        }
+        return upper_bound;
+    }
+
+    return value;
+}
+
+static float sanitize_activity_state_feature(uint8_t value, bool *valid)
+{
+    if (valid != NULL)
+    {
+        *valid = (value <= (uint8_t)ACTIVITY_SLEEP);
+    }
+
+    if (value > (uint8_t)ACTIVITY_SLEEP)
+    {
+        return (float)ACTIVITY_UNKNOWN;
+    }
+
+    return (float)value;
+}
+
 static const predictor_v2_input_t *history_at_lag(uint8_t lag_samples)
 {
     uint8_t historical_index;
@@ -202,7 +253,7 @@ static void feature_set(predictor_v2_feature_vector_t *features,
     features->values[index] = value;
     if (valid)
     {
-        features->valid_mask |= (1u << (uint32_t)index);
+        features->valid_mask |= (1ull << (uint32_t)index);
     }
 }
 
@@ -270,6 +321,10 @@ static uint8_t estimate_confidence_pct(const predictor_v2_input_t *input, const 
     {
         confidence_pct = 0u;
     }
+    if ((input != NULL) && !input->physiology_present && confidence_pct > 5u)
+    {
+        confidence_pct = (uint8_t)(confidence_pct - 5u);
+    }
     if (features != NULL)
     {
         rolling_stddev_6 = features->values[PREDICTOR_V2_FEATURE_ROLL_STDDEV_6];
@@ -317,6 +372,13 @@ static bool should_force_fallback(const predictor_v2_input_t *input,
 
     if (input != NULL)
     {
+        if (!input->physiology_present)
+        {
+            if (status_flags != NULL)
+            {
+                *status_flags |= PREDICTOR_V2_STATUS_MISSING_PHYSIOLOGY;
+            }
+        }
         bad_sensor_quality = (input->cgm.sqi_pct < PREDICTOR_V2_LOW_CONFIDENCE_THRESHOLD) ||
                              ((input->cgm.sensor_flags & APS_SENSOR_FLAG_BAD_SQI) != 0u) ||
                              ((input->cgm.sensor_flags & APS_SENSOR_FLAG_INVALID) != 0u);
@@ -368,7 +430,7 @@ static float evaluate_standardized_model(const predictor_v2_generated_model_t *m
         float raw_value = features->values[index];
         float standardized_value;
 
-        if ((features->valid_mask & (1u << index)) == 0u || !isfinite(raw_value))
+        if ((features->valid_mask & (1ull << index)) == 0u || !isfinite(raw_value))
         {
             raw_value = model->feature_median[index];
             *status_flags |= PREDICTOR_V2_STATUS_INVALID_FEATURES;
@@ -613,17 +675,39 @@ bool PredictorV2_BuildFeatureVector(const predictor_v2_input_t *input, predictor
     feature_set(features, PREDICTOR_V2_FEATURE_ROLL_VAR_6, var6, roll_count_6 > 1u);
     feature_set(features, PREDICTOR_V2_FEATURE_ROLL_STDDEV_6, stddev6, roll_count_6 > 1u);
     feature_set(features, PREDICTOR_V2_FEATURE_VOLATILITY_SCORE, volatility_score, roll_count_6 > 1u);
-    feature_set(features, PREDICTOR_V2_FEATURE_IOB, input->physiology.iob_u, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_COB, input->physiology.cob_g, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_BASAL_RATE, input->physiology.basal_u_per_hr, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_INSULIN_30M, input->physiology.insulin_30m_u, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_INSULIN_120M, input->physiology.insulin_120m_u, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_CARBS_30M, input->physiology.carbs_30m_g, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_CARBS_120M, input->physiology.carbs_120m_g, input->physiology_present);
-    feature_set(features, PREDICTOR_V2_FEATURE_SQI, (float)input->cgm.sqi_pct, true);
-    feature_set(features, PREDICTOR_V2_FEATURE_CGM_AGE_S, cgm_age_s, true);
-    feature_set(features, PREDICTOR_V2_FEATURE_TOD_SIN, time_of_day_sin(input->cgm.epoch_s), true);
-    feature_set(features, PREDICTOR_V2_FEATURE_TOD_COS, time_of_day_cos(input->cgm.epoch_s), true);
+    {
+        bool iob_valid = input->physiology_present && isfinite(input->physiology.iob_u) && input->physiology.iob_u >= 0.0f && input->physiology.iob_u <= 20.0f;
+        bool cob_valid = input->physiology_present && isfinite(input->physiology.cob_g) && input->physiology.cob_g >= 0.0f && input->physiology.cob_g <= 200.0f;
+        bool basal_valid = input->physiology_present && isfinite(input->physiology.basal_u_per_hr) && input->physiology.basal_u_per_hr >= 0.0f && input->physiology.basal_u_per_hr <= 5.0f;
+        bool insulin_30_valid = input->physiology_present && isfinite(input->physiology.insulin_30m_u) && input->physiology.insulin_30m_u >= 0.0f && input->physiology.insulin_30m_u <= 20.0f;
+        bool insulin_120_valid = input->physiology_present && isfinite(input->physiology.insulin_120m_u) && input->physiology.insulin_120m_u >= 0.0f && input->physiology.insulin_120m_u <= 40.0f;
+        bool carbs_30_valid = input->physiology_present && isfinite(input->physiology.carbs_30m_g) && input->physiology.carbs_30m_g >= 0.0f && input->physiology.carbs_30m_g <= 200.0f;
+        bool carbs_120_valid = input->physiology_present && isfinite(input->physiology.carbs_120m_g) && input->physiology.carbs_120m_g >= 0.0f && input->physiology.carbs_120m_g <= 300.0f;
+        bool activity_state_valid = input->physiology_present && input->physiology.activity_state <= (uint8_t)ACTIVITY_SLEEP;
+        bool activity_confidence_valid = input->physiology_present && input->physiology.activity_confidence_pct <= 100u;
+        bool motion_5_valid = input->physiology_present && isfinite(input->physiology.motion_rms_5m) && input->physiology.motion_rms_5m >= 0.0f && input->physiology.motion_rms_5m <= 200.0f;
+        bool motion_15_valid = input->physiology_present && isfinite(input->physiology.motion_rms_15m) && input->physiology.motion_rms_15m >= 0.0f && input->physiology.motion_rms_15m <= 200.0f;
+        bool active_minutes_valid = input->physiology_present && input->physiology.active_minutes <= 1440u;
+        bool post_exercise_valid = input->physiology_present && input->physiology.post_exercise_minutes <= 1440u;
+
+        feature_set(features, PREDICTOR_V2_FEATURE_IOB, sanitize_feature_float(input->physiology.iob_u, 0.0f, 20.0f, 0.0f, NULL), iob_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_COB, sanitize_feature_float(input->physiology.cob_g, 0.0f, 200.0f, 0.0f, NULL), cob_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_BASAL_RATE, sanitize_feature_float(input->physiology.basal_u_per_hr, 0.0f, 5.0f, 0.0f, NULL), basal_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_INSULIN_30M, sanitize_feature_float(input->physiology.insulin_30m_u, 0.0f, 20.0f, 0.0f, NULL), insulin_30_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_INSULIN_120M, sanitize_feature_float(input->physiology.insulin_120m_u, 0.0f, 40.0f, 0.0f, NULL), insulin_120_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_CARBS_30M, sanitize_feature_float(input->physiology.carbs_30m_g, 0.0f, 200.0f, 0.0f, NULL), carbs_30_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_CARBS_120M, sanitize_feature_float(input->physiology.carbs_120m_g, 0.0f, 300.0f, 0.0f, NULL), carbs_120_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_SQI, (float)input->cgm.sqi_pct, true);
+        feature_set(features, PREDICTOR_V2_FEATURE_CGM_AGE_S, cgm_age_s, true);
+        feature_set(features, PREDICTOR_V2_FEATURE_TOD_SIN, time_of_day_sin(input->cgm.epoch_s), true);
+        feature_set(features, PREDICTOR_V2_FEATURE_TOD_COS, time_of_day_cos(input->cgm.epoch_s), true);
+        feature_set(features, PREDICTOR_V2_FEATURE_ACTIVITY_STATE, sanitize_activity_state_feature(input->physiology.activity_state, NULL), activity_state_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_ACTIVITY_CONFIDENCE, sanitize_feature_float((float)input->physiology.activity_confidence_pct, 0.0f, 100.0f, 0.0f, NULL), activity_confidence_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_MOTION_RMS_5M, sanitize_feature_float(input->physiology.motion_rms_5m, 0.0f, 200.0f, 0.0f, NULL), motion_5_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_MOTION_RMS_15M, sanitize_feature_float(input->physiology.motion_rms_15m, 0.0f, 200.0f, 0.0f, NULL), motion_15_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_ACTIVE_MINUTES, sanitize_feature_float((float)input->physiology.active_minutes, 0.0f, 1440.0f, 0.0f, NULL), active_minutes_valid);
+        feature_set(features, PREDICTOR_V2_FEATURE_POST_EXERCISE_MINUTES, sanitize_feature_float((float)input->physiology.post_exercise_minutes, 0.0f, 1440.0f, 0.0f, NULL), post_exercise_valid);
+    }
 
     return true;
 }

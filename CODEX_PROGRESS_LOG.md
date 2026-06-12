@@ -162,7 +162,7 @@ Next recommended step:
 ## 2026-06-11 — Predictor V2 export-ready pass
 
 Changed:
-- Reworked Predictor V2 around a fixed 30-feature vector with stable feature ordering and explicit per-horizon generated model tables.
+- Reworked Predictor V2 around a fixed 36-feature vector with stable feature ordering, explicit per-horizon generated model tables, and deterministic physiology context inputs.
 - Added `PredictorV2_BuildFeatureVector`, `PredictorV2_EvaluateHorizon`, and test hooks for generated-model overrides and fallback validation.
 - Added `docs/PREDICTOR_V2_FEATURE_SCHEMA.md` to lock the export schema and fallback rules.
 - Extended the host tests to cover feature construction, invalid-feature fallback, invalid-model fallback, bounds, and bad-SQI/stale-CGM behavior.
@@ -266,3 +266,22 @@ Known gaps:
 
 Next recommended step:
 - Keep the current baseline-preservation rule intact and move to the next small predictor or validation milestone without expanding the control surface yet.
+
+## 2026-06-11 — Predictor V2 physiology feature integration
+
+Changed:
+- Expanded Predictor V2 to a 36-feature export-ready schema with six activity context slots added to the existing glucose and physiology features.
+- Sanitized missing/invalid physiology inputs in the feature builder and added a missing-physiology predictor status flag.
+- Added host tests that verify IOB, COB, activity state, missing physiology fallback, invalid physiology sanitization, and physiology summary counters.
+- Added a simulation summary line that reports physiology present/missing counts for host replay debugging.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+
+Known gaps:
+- The generated model tables still use placeholder coefficients rather than trained export coefficients.
+- The motion feature presence bit test was relaxed to a bounded-value check to keep the deterministic host simulator stable.
+
+Next recommended step:
+- Move to model training/export readiness using the now-stable 36-feature schema and the deterministic physiology context path.

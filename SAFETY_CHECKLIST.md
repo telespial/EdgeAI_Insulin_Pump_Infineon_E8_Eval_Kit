@@ -12,6 +12,7 @@
 - [x] Tests prove safety overrides controller
 - [x] Audit CSV records final safety action and reason codes for every step
 - [ ] Physiology context is advisory only and does not directly command insulin
+- [x] Predictor V2 accepts physiology context without bypassing safety checks
 
 Current foundation status:
 - Host tests cover predicted-low, bad-SQI, and conservative override behavior.
