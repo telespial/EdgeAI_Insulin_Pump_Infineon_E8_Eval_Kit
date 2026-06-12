@@ -6854,6 +6854,14 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 
 - 2026-06-12: captured the final recovery branch state after the amended commit; the working tree still has generated build artifacts only.
 
+- 2026-06-12: verified branch state, pushed `recover-lcd-after-aps-probe` to GitHub, and found the branch at remote commit `10606668c5dca67b8c257b2df4ea4a4f9b4523a5`.
+
+- 2026-06-12: located the parent `firmware/AGENTS.md`, then added a project-specific `AGENTS.md` at the E84 firmware kit root with LCD recovery, probe gating, and validation rules.
+
+- 2026-06-12: committed the project-level `AGENTS.md` update as `add e84 aps project rules to agents`.
+
+- 2026-06-12: captured the final recovery branch snapshot on `recover-lcd-after-aps-probe`; the branch still has only generated build artifacts outside the committed AGENTS/docs work.
+
 - 2026-06-12: looked up the PROJECT_STATE line number for the 06b0fdd flash update (line 690).
 
 - 2026-06-12: OpenOCD recovery/reset-run at repo root confirmed PSE846GPS2DBZC4A, CYBOOT_SUCCESS, and both main_ns/smif1_ns flash banks.

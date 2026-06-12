@@ -760,3 +760,13 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Physical LCD confirmed recovered after clean rebuild and default probe-free flash.
 - Default image must not print `APS probe:`, and UART boot alone is not enough to claim LCD success.
 - Recovery branch committed with the guarded probe and LCD recovery documentation.
+
+## Update 2026-06-12 10:30 PDT
+- The recovery branch was pushed to GitHub at `10606668c5dca67b8c257b2df4ea4a4f9b4523a5`.
+- A project-specific `AGENTS.md` now sits at the E84 firmware kit root and captures the LCD recovery, clean rebuild, and probe-gating rules for future sessions.
+
+## Update 2026-06-12 10:35 PDT
+- The project-level `AGENTS.md` update was committed so future sessions inherit the LCD-recovery and probe-gating rules automatically.
+
+## Update 2026-06-12 10:40 PDT
+- Final branch snapshot captured on `recover-lcd-after-aps-probe`; only generated build artifacts remain outside the committed AGENTS/docs changes.
