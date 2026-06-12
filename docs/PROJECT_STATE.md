@@ -624,7 +624,7 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The remaining check is a longer capture to confirm the final smoke step and completion banner, plus an LCD visual sanity check from the board side.
 
 ## Update 2026-06-11 22:50 PDT
-- The LCD-safe APS sidecar fix has been committed and pushed as `882f5fd` on `embedded-bringup-smoke-test`.
+- The LCD-safe APS sidecar fix has been committed and pushed as `78c43dc` on `embedded-bringup-smoke-test`.
 - Current validated UART behavior shows the APS banner plus smoke steps 0 through 3 while the GUI timer stays enabled; the final step should be confirmed on a longer capture if needed.
 
 ## Next Milestones
