@@ -794,3 +794,5 @@ PY
   - Confirmed the worktree is clean after the release-readiness push and the current branch HEAD is `3caa7cb`.
 [2026-06-11 21:27:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD
   - Final verification showed a clean worktree and HEAD `7f5d05f` after the final bookkeeping push.
+[2026-06-11 21:28:00 PDT] COMMAND: make -f host.mk test && make -f host.mk regression
+  - Host tests and the full sample/gold fixture regression suite passed with the physiology features already wired into Predictor V2.
