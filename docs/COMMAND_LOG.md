@@ -6951,3 +6951,15 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12 12:05 PDT: Verified the final source-only diff before commit; only the generator script, committed synthetic CSV, and docs remained in scope for the dataset-expansion milestone.
 - 2026-06-12 12:10 PDT: Committed the dataset-expansion milestone and published the updated `recover-lcd-after-aps-probe` branch so the synthetic training CSV and generator are preserved remotely.
 - 2026-06-12 12:15 PDT: Verified the final published dataset-expansion hash on `origin/recover-lcd-after-aps-probe` as `aea27fb9e31d0b61e2147478a0378ee3e33409ee`.
+- 2026-06-12 12:20 PDT: Audited the real training data under `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`; found `d1namo_test_subject001.csv`, `d1namo_train_excl001.csv`, `label_first_labels.json`, and `label_first_template.csv`.
+- 2026-06-12 12:20 PDT: Recorded that the real dataset is glucose/insulin focused with no direct carb/activity/SQI fields, so any Predictor V2 importer will need defaults and documented assumptions.
+- 2026-06-12 12:20 PDT: Confirmed the audit note anchors in `data/training/README.md`, `docs/PREDICTOR_V2_TRAINING.md`, and `docs/PROJECT_STATE.md` so the preferred real-data source path is preserved in the repo docs.
+- 2026-06-12 12:25 PDT: Attempted to import the real insulin-pump dataset with `tools/import_predictor_v2_training_data.py`; the script correctly flagged `label_first_template.csv` as a non-training template, so the importer will be tightened to skip metadata/template assets.
+- 2026-06-12 12:30 PDT: Imported the real insulin-pump dataset successfully after skipping `label_first_template.csv`; the converted Predictor V2 CSV contains `8221` rows and preserves source provenance columns.
+- 2026-06-12 12:35 PDT: Trained and validated Predictor V2 on `data/training/predictor_v2_real_dataset.csv`; the exported model and validation reports were regenerated under `generated/`.
+- 2026-06-12 12:35 PDT: Real-data validation beat the linear baseline on all three horizons, but the absolute errors remain large enough that the dataset is still only partially ready for meaningful Predictor V2 training.
+- 2026-06-12 12:40 PDT: Verified the worktree before the final real-data dataset audit/cleanup step and removed transient build directories so only source changes remain.
+- 2026-06-12 12:45 PDT: Rechecked the real-data milestone file set and confirmed the imported Predictor V2 dataset is 1.3 MB with the expected source/docs/script additions only.
+- 2026-06-12 12:50 PDT: Confirmed the final real-data training pass file list before staging: docs updates plus the importer script and converted real dataset CSV.
+- 2026-06-12 12:55 PDT: Committed the real-data Predictor V2 training pass as `ead8028` on `recover-lcd-after-aps-probe`.
+- 2026-06-12 13:00 PDT: Amended and pushed the real-data Predictor V2 training pass as `aea2b4e` to `origin/recover-lcd-after-aps-probe`.

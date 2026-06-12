@@ -79,3 +79,9 @@ python3 tools/generate_predictor_v2_synthetic_data.py --output data/training/syn
 ```
 
 The synthetic dataset is committed because it is small enough to review and reproduce locally, but it remains host-only evidence rather than embedded runtime data.
+
+## Real Training Source
+
+The larger real training data is located at:
+
+`/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`

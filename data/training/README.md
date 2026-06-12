@@ -24,5 +24,9 @@ Real Predictor V2 training needs a much larger dataset with:
 - replay timestamps that preserve sequence order
 - separate held-out data for validation
 
+The main repository location for training data is:
+
+- `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`
+
 Use the smoke dataset only as a build and CLI sanity check.
 Use the synthetic dataset as a host-only pipeline exercise, not a medical training corpus.

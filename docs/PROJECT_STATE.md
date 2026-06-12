@@ -805,3 +805,7 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-12 12:00 PDT
 - Reran `make -f host.mk test` and `make -f host.mk regression` after the dataset expansion; both host suites still passed.
 - The working tree remains free of embedded/LCD/runtime changes for this milestone.
+
+## Update 2026-06-12 12:20 PDT
+- Documented the real training-data source path for future Predictor V2 work:
+  - `/home/user/projects/embedded/Embedded_Intel_Layer/embedded-intelligence-layer/data/preloaded/insulin_pump/`
