@@ -224,6 +224,7 @@ make -f host.mk build
 make -f host.mk test
 make -f host.mk sim
 make -f host.mk regression
+make -f host.mk gold
 make -f host.mk clean
 ```
 
@@ -250,6 +251,16 @@ make -f host.mk regression
 
 Each run produces paired audit and summary files such as `out/fixture_matrix/stable_audit.csv` and `out/fixture_matrix/stable_summary.txt`.
 `make -f host.mk regression` now performs host build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric metric envelope checks.
+
+### Gold regression matrix
+
+The tighter gold lane runs the deterministic gold fixtures under `data/gold/` and writes outputs under `out/gold_fixture_matrix/`:
+
+```bash
+make -f host.mk gold
+```
+
+Gold fixtures are software regression guards, not clinical validation.
 
 5. Build and program the application
 

@@ -8,7 +8,7 @@ audit_schema='timestamp,glucose_mgdl,sqi_pct,iob_u,cob_g,baseline_pred_15,baseli
 output_dir="out/fixture_matrix"
 fixtures=(data/sample_replay_*.csv)
 
-make -f host.mk test
+make -f host.mk build
 rm -rf "$output_dir"
 mkdir -p "$output_dir"
 

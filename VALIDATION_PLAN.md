@@ -36,6 +36,7 @@ Pass criteria:
 - Run the committed `data/sample_replay_*.csv` fixtures through the host simulator.
 - Run the full fixture matrix script to ensure every committed replay stays covered.
 - The matrix now performs build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric metric envelope checks.
+- Run the gold fixture matrix to lock down a smaller, higher-signal regression lane.
 
 Pass criteria:
 - Same inputs produce same outputs.
@@ -68,6 +69,7 @@ Pass criteria:
 ## Regression Tests
 - Lock a small set of canonical replay traces.
 - Re-run them after every meaningful change.
+- Keep the broader sample matrix and the narrower gold matrix separate so each catches different drift modes.
 
 Pass criteria:
 - No regression in safety behavior.

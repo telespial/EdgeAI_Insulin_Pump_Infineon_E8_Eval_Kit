@@ -77,6 +77,7 @@
 - [x] Add stable host workflows for configure/build/test/sim/clean
 - [x] Add fixture regression matrix runner
 - [x] Add numeric regression envelopes for committed fixtures
+- [x] Add gold fixture regression lane
 
 ## Milestone 8 — E84 Portability
 - [ ] Add memory estimate
@@ -98,6 +99,7 @@
 - [x] Lock the audit CSV schema in docs
 - [x] Document fixture matrix and host regression workflow
 - [x] Document numeric envelope validation checks
+- [x] Document gold fixture regression lane
 
 ## Milestone 10 — Final Review
 - [ ] Run all tests

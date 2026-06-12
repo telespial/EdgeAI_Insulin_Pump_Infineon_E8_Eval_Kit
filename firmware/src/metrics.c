@@ -1,4 +1,5 @@
 #include "metrics.h"
+#include "aps_types.h"
 
 #include <math.h>
 #include <string.h>
@@ -96,7 +97,7 @@ void Metrics_ComputeClinical(const uint16_t *glucose_values,
         {
             false_low_warning_count++;
         }
-        if (safety_flags[sample_index] != 0u)
+        if ((safety_flags[sample_index] & APS_SAFETY_REASON_ALL) != 0u)
         {
             safety_intervention_count++;
         }

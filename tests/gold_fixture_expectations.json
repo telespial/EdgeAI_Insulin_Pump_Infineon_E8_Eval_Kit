@@ -1,0 +1,37 @@
+{
+  "gold_stable_flat": {
+    "baseline_mae_15_max": 10,
+    "baseline_rmse_15_max": 10,
+    "ml_mae_15_max": 15,
+    "ml_rmse_15_max": 15,
+    "time_in_range_min_pct": 95,
+    "time_in_range_max_pct": 100,
+    "safety_interventions_max": 1,
+    "controller_disagreement_max": 12,
+    "forbidden_reason_codes": ["BAD_SQI", "STALE_CGM", "PREDICTED_LOW_15M", "PREDICTED_LOW_30M", "RAPID_FALL"]
+  },
+  "gold_meal_rise": {
+    "baseline_mae_15_max": 100,
+    "baseline_rmse_15_max": 100,
+    "ml_mae_15_max": 20,
+    "ml_rmse_15_max": 25,
+    "time_in_range_min_pct": 50,
+    "time_above_range_max_pct": 60,
+    "safety_interventions_max": 12,
+    "controller_disagreement_min": 1,
+    "controller_disagreement_max": 12,
+    "forbidden_reason_codes": ["BAD_SQI", "STALE_CGM"]
+  },
+  "gold_predicted_low": {
+    "baseline_mae_15_max": 100,
+    "baseline_rmse_15_max": 100,
+    "ml_mae_15_max": 25,
+    "ml_rmse_15_max": 30,
+    "time_below_range_max_pct": 100,
+    "safety_interventions_min": 1,
+    "safety_interventions_max": 12,
+    "controller_disagreement_max": 12,
+    "required_reason_codes": ["PREDICTED_LOW_15M", "PREDICTED_LOW_30M"],
+    "forbidden_reason_codes": ["BAD_SQI", "STALE_CGM"]
+  }
+}

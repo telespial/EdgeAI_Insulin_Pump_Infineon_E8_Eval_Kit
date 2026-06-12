@@ -101,6 +101,22 @@ def check_bounds(name, metrics, expectations, failures):
         print(f"  PASS {metric_name}: {value}")
 
 
+def check_reason_codes(name, audit_path, expectations, failures):
+    for reason_code in expectations.get("required_reason_codes", []):
+        if not audit_contains_reason(audit_path, reason_code):
+            failures.append(f"{name}: missing reason code {reason_code}")
+            print(f"  FAIL required reason code: {reason_code}")
+        else:
+            print(f"  PASS required reason code: {reason_code}")
+
+    for reason_code in expectations.get("forbidden_reason_codes", []):
+        if audit_contains_reason(audit_path, reason_code):
+            failures.append(f"{name}: forbidden reason code {reason_code} present")
+            print(f"  FAIL forbidden reason code: {reason_code}")
+        else:
+            print(f"  PASS forbidden reason code: {reason_code}")
+
+
 def main():
     if len(sys.argv) != 3:
         print("Usage: validate_fixture_metrics.py <fixture_dir> <expectations_json>", file=sys.stderr)
@@ -127,12 +143,7 @@ def main():
         metrics = parse_summary(summary_path)
         check_bounds(name, metrics, fixture_expectations, failures)
 
-        for reason_code in fixture_expectations.get("required_reason_codes", []):
-            if not audit_contains_reason(audit_path, reason_code):
-                failures.append(f"{name}: missing reason code {reason_code}")
-                print(f"  FAIL required reason code: {reason_code}")
-            else:
-                print(f"  PASS required reason code: {reason_code}")
+        check_reason_codes(name, audit_path, fixture_expectations, failures)
 
     if failures:
         print("\nFixture metric validation failed:", file=sys.stderr)

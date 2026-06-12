@@ -140,3 +140,21 @@ Known gaps:
 
 Next recommended step:
 - Run the regression matrix, review the actual envelope values, and trim any envelope that is clearly too loose or too tight.
+
+## 2026-06-11 — Gold fixture pass
+
+Changed:
+- Added a separate `data/gold/` fixture set with stable-flat, meal-rise, and predicted-low gold traces.
+- Added `tests/gold_fixture_expectations.json` with narrower metric envelopes, required reason codes, and forbidden reason codes.
+- Added `scripts/run_gold_matrix.sh` and wired `make -f host.mk gold` into the regression workflow.
+- Updated the main regression lane to run both the broad sample matrix and the tighter gold matrix.
+
+Tests:
+- Pending matrix rerun after the gold fixture lane additions.
+
+Known gaps:
+- Gold envelopes are still software guardrails, not clinical validation.
+- The gold lane currently focuses on the 15-minute horizon and the existing reason-code/audit schema.
+
+Next recommended step:
+- Run `make -f host.mk regression` and review the gold lane metrics before making any envelope tighter.

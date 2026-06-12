@@ -394,6 +394,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added `scripts/validate_fixture_metrics.py` and wired it into the fixture matrix runner.
 - The host regression flow now covers build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric envelope checks in one command.
 
+## Update 2026-06-11 18:20 PDT
+- Added a separate gold replay lane under `data/gold/` with stable-flat, meal-rise, and predicted-low fixtures.
+- Added `tests/gold_fixture_expectations.json` with narrower software guardrails, including required and forbidden reason codes.
+- Added `scripts/run_gold_matrix.sh` and wired the host regression flow to run both the broad sample matrix and the tighter gold matrix.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

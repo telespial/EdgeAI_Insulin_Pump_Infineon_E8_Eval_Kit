@@ -501,3 +501,25 @@
 [2026-06-11 18:14 PDT] cmd: final git status check before numeric envelope commit | exit=0
 
 [2026-06-11 18:16 PDT] cmd: commit and push numeric fixture metric envelopes | exit=0
+
+[2026-06-11 18:30 PDT] cmd: check repo status for commit/push request | exit=0
+
+[2026-06-11 18:20 PDT] cmd: add gold fixtures, gold expectations, and gold matrix runner | exit=0
+[2026-06-11 18:20 PDT] cmd: update regression docs for sample and gold lanes | exit=0
+
+[2026-06-11 18:25 PDT] cmd: run gold matrix first pass | exit=2
+
+[2026-06-11 18:28 PDT] cmd: rerun gold matrix after stable fixture tuning | exit=2
+
+[2026-06-11 18:34 PDT] cmd: adjust safety-count semantics and stable gold trace | exit=0
+
+[2026-06-11 18:36 PDT] cmd: rerun gold matrix after safety-mask include fix | exit=2
+
+[2026-06-11 18:38 PDT] cmd: rerun gold matrix after controller disagreement envelope adjustment | exit=2
+
+[2026-06-11 18:42 PDT] cmd: run full regression matrix with gold lane | exit=0
+[2026-06-11 18:42 PDT] cmd: clean host_build and out after gold regression validation | exit=0
+
+[2026-06-11 18:45 PDT] cmd: commit gold regression lane and attempt push | exit=128
+
+[2026-06-11 18:46 PDT] cmd: successful push for gold regression lane | exit=0

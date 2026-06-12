@@ -33,6 +33,15 @@
 #define APS_SAFETY_REASON_LOW_CONFIDENCE (1u << 7)
 #define APS_SAFETY_REASON_MISSING_PHYSIOLOGY (1u << 8)
 #define APS_SAFETY_REASON_CONTROLLER_BLOCKED (1u << 9)
+#define APS_SAFETY_REASON_ALL (APS_SAFETY_REASON_STALE_CGM | \
+                               APS_SAFETY_REASON_BAD_SQI | \
+                               APS_SAFETY_REASON_PREDICTED_LOW_15M | \
+                               APS_SAFETY_REASON_PREDICTED_LOW_30M | \
+                               APS_SAFETY_REASON_RAPID_FALL | \
+                               APS_SAFETY_REASON_EXCESSIVE_IOB | \
+                               APS_SAFETY_REASON_IMPOSSIBLE_GLUCOSE | \
+                               APS_SAFETY_REASON_LOW_CONFIDENCE | \
+                               APS_SAFETY_REASON_MISSING_PHYSIOLOGY)
 
 typedef struct
 {
