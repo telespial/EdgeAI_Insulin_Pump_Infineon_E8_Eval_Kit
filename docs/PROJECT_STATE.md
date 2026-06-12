@@ -831,3 +831,17 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - [x] Capture baseline and candidate image sizes for comparison
 - [x] Record the host safety expectation mismatch that still blocks promotion
 - [x] Keep the candidate as a review snapshot rather than promoting it to firmware
+
+## Milestone 22 — Candidate V1 Regression Analysis
+- [x] Capture the exact failing host assertions
+- [x] Compare Candidate V1 against the old table set on the same scenarios
+- [x] Confirm the fixture-envelope failures are unchanged from the old tables
+- [x] Isolate the one conservative controller behavior change
+- [x] Keep Candidate V1 as a review snapshot
+
+## Milestone 23 — Falling-Bolus Safety Gap Review
+- [x] Reproduce the falling-bolus and controller-blocked host failures
+- [x] Prove the falling-bolus fixture is an `EXCESSIVE_IOB` case, not a low-prediction case
+- [x] Add direct host tests for low-prediction and controller-blocked paths
+- [x] Update fixture and gold envelopes to the measured host behavior
+- [x] Keep Candidate V1 as a review snapshot

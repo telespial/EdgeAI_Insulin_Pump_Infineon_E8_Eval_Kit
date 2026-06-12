@@ -54,3 +54,8 @@ Delta:
 KEEP AS REVIEW SNAPSHOT
 
 The candidate tables build cleanly, but the host test/regression mismatch is enough to keep this snapshot out of active firmware for now.
+
+## Regression Follow-Up
+- `docs/PREDICTOR_V2_CANDIDATE_V1_REGRESSION_ANALYSIS.md` shows the fixture-envelope failures are unchanged between the old and candidate table sets.
+- The only clear model-driven shift is the `controller can increase` unit case, where Candidate V1 becomes more conservative and now suspends basal instead of allowing no-change.
+- The falling-bolus safety concern remains unresolved in both table sets.

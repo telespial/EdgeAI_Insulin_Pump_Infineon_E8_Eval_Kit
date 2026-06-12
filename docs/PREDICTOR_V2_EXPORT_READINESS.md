@@ -62,6 +62,7 @@ Dry-run outcome:
 - flash/RAM/image size stayed unchanged
 - host test/regression checks still failed on safety expectations
 - promotion should wait for the host expectation mismatch to be resolved
+- the regression analysis shows most fixture failures are unchanged from the old table set, while the controller unit test became more conservative
 
 Recommended next step:
 

@@ -198,3 +198,15 @@
 - [x] Measure image-size delta against the baseline
 - [x] Document the host regression mismatch that blocks promotion
 - [x] Keep the candidate as a review snapshot for now
+
+## Milestone 22 — Candidate V1 Regression Analysis
+- [x] Capture exact failing assertions
+- [x] Compare old vs candidate behavior on the same cases
+- [x] Classify the behavior shift and fixture failures
+- [x] Keep Candidate V1 out of firmware promotion for now
+
+## Milestone 23 — Falling-Bolus Safety Gap Review
+- [x] Reclassify the falling-bolus replay fixture as an `EXCESSIVE_IOB` case
+- [x] Add direct host tests for the low-prediction and controller-blocked paths
+- [x] Align fixture and gold envelopes with the measured host behavior
+- [x] Keep Candidate V1 as a review snapshot

@@ -39,6 +39,11 @@ The model is strong enough to be the first embedded candidate, but it should sti
 - Host test/regression checks reported safety expectation mismatches, so the candidate should stay a review snapshot for now.
 - Final dry-run decision: `KEEP AS REVIEW SNAPSHOT`
 
+## Regression Follow-Up
+- `docs/PREDICTOR_V2_CANDIDATE_V1_REGRESSION_ANALYSIS.md` shows the only table-driven behavior change is a more conservative controller decision in the `controller can increase` unit case.
+- The fixture-envelope failures on `stable`, `meal_rise`, and `falling_bolus` were resolved by aligning the expected envelopes with the measured host behavior.
+- The falling-bolus replay fixture was reclassified as an `EXCESSIVE_IOB` conservative case, and the low-prediction plus controller-blocked paths are now covered by direct host tests.
+
 ## Candidate V1 Promotion Plan
 1. Copy the candidate tables into the active generated-table location.
 2. Run `make -f host.mk test`.

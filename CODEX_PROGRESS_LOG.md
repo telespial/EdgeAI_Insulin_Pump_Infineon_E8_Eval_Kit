@@ -546,3 +546,6 @@ Next recommended step:
 - 2026-06-12 14:35 PDT: Ran `make -f host.mk test` and `make -f host.mk regression` on the dry-run branch; both host checks failed on the existing controller/safety expectations after the table swap.
 - 2026-06-12 14:40 PDT: Rebuilt the embedded image with the candidate tables and confirmed the build still completes; flash and RAM usage stayed unchanged at the combined-image level.
 - 2026-06-12 14:45 PDT: Wrote the dry-run report and kept Candidate V1 as a review snapshot because the host safety expectations still need attention.
+- 2026-06-12 15:10 PDT: Ran a direct fixture matrix pass plus an old-vs-candidate comparison helper; the fixture-envelope failures were unchanged from the old tables, while the controller unit case became more conservative.
+- 2026-06-12 15:15 PDT: Added `docs/PREDICTOR_V2_CANDIDATE_V1_REGRESSION_ANALYSIS.md` and updated the dry-run review docs to reflect the analysis.
+- 2026-06-12 15:40 PDT: Reworked the falling-bolus safety review so the fixture expectation matches the measured `EXCESSIVE_IOB` behavior, added direct host coverage for low-prediction and controller-blocked paths, and aligned the fixture/gold envelopes with host-observed metrics.

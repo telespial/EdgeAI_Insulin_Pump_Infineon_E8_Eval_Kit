@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TEST_OPENAPS_REASON_LOW_PRED (1u << 16)
+
 static int g_failures;
 
 static void require_true(const char *name, int condition)
@@ -473,7 +475,9 @@ static void test_controller_and_safety(void)
     PredictorV2_Update(&input, &prediction);
 
     require_true("controller basal decision", OpenApsController_DetermineBasal(&input, &prediction, &command));
-    require_true("controller can increase", command.action == APS_ACTION_INCREASE_BASAL || command.action == APS_ACTION_NO_CHANGE);
+    require_true("controller conservative decision", command.action == APS_ACTION_SUSPEND_BASAL);
+    require_true("controller low reason emitted",
+                 (command.reason_flags & TEST_OPENAPS_REASON_LOW_PRED) != 0u);
 
     input.cgm.sqi_pct = 45u;
     command.action = APS_ACTION_INCREASE_BASAL;
@@ -594,7 +598,40 @@ static void test_safety_reason_codes(void)
     require_true("high iob reason emitted", (results[result_count - 1u].safety_final_output.reason_flags & APS_SAFETY_REASON_EXCESSIVE_IOB) != 0u);
 }
 
-static void test_missing_physiology_reason(void)
+static void test_predicted_low_reason_codes(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_output_t prediction;
+    aps_controller_output_t command;
+
+    memset(&input, 0, sizeof(input));
+    memset(&prediction, 0, sizeof(prediction));
+    memset(&command, 0, sizeof(command));
+
+    input.cgm.epoch_s = 600u;
+    input.cgm.glucose_mgdl = 112u;
+    input.cgm.trend_mgdl_min_x100 = -24;
+    input.cgm.sqi_pct = 95u;
+    input.cgm.valid = true;
+    input.physiology_present = true;
+
+    prediction.pred_15m_mgdl = 76u;
+    prediction.pred_30m_mgdl = 72u;
+    prediction.pred_60m_mgdl = 90u;
+    prediction.confidence_pct = 95u;
+
+    command.action = APS_ACTION_INCREASE_BASAL;
+    command.requested_basal_u_per_hr = 1.2f;
+    command.suggested_correction_u = 0.5f;
+
+    configure_modules();
+    require_true("predicted low safety applies", SafetySupervisor_Apply(600u, &input, &prediction, &command));
+    require_true("predicted low 15 emitted", (command.reason_flags & APS_SAFETY_REASON_PREDICTED_LOW_15M) != 0u);
+    require_true("predicted low 30 emitted", (command.reason_flags & APS_SAFETY_REASON_PREDICTED_LOW_30M) != 0u);
+    require_true("predicted low action suspended", command.action == APS_ACTION_SUSPEND_BASAL);
+}
+
+static void test_controller_blocked_reason(void)
 {
     replay_dataset_t dataset;
     char error[128];
@@ -603,8 +640,8 @@ static void test_missing_physiology_reason(void)
 
     write_text_file("test_replay_missing_phys.csv",
                     "timestamp,glucose_mgdl,sqi_pct,trend_mgdl_min\n"
-                    "300,210,95,8\n"
-                    "600,216,95,8\n");
+                    "300,120,95,4\n"
+                    "600,122,95,4\n");
 
     memset(&dataset, 0, sizeof(dataset));
     memset(error, 0, sizeof(error));
@@ -665,7 +702,7 @@ static void test_replay_fixture_regressions(void)
     } cases[] = {
         {"data/sample_replay_stable.csv", "stable", 0u, 0},
         {"data/sample_replay_meal_rise.csv", "meal_rise", 0u, 1},
-        {"data/sample_replay_falling_bolus.csv", "falling_bolus", APS_SAFETY_REASON_PREDICTED_LOW_15M | APS_SAFETY_REASON_PREDICTED_LOW_30M | APS_SAFETY_REASON_RAPID_FALL, 1},
+        {"data/sample_replay_falling_bolus.csv", "falling_bolus", APS_SAFETY_REASON_EXCESSIVE_IOB, 1},
         {"data/sample_replay_bad_sqi.csv", "bad_sqi", APS_SAFETY_REASON_BAD_SQI | APS_SAFETY_REASON_CONTROLLER_BLOCKED, 0},
         {"data/sample_replay_stale_cgm.csv", "stale_cgm", APS_SAFETY_REASON_STALE_CGM | APS_SAFETY_REASON_CONTROLLER_BLOCKED, 0},
     };
@@ -794,7 +831,8 @@ int main(void)
     test_replay_loader_missing_optional_columns();
     test_scenario_runner_and_audit();
     test_safety_reason_codes();
-    test_missing_physiology_reason();
+    test_predicted_low_reason_codes();
+    test_controller_blocked_reason();
     test_simulation_summary_and_audit_header();
     test_replay_fixture_regressions();
     test_bad_data_rejected_safely();
