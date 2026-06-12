@@ -161,6 +161,25 @@
 [2026-06-11 14:56:10 PDT] cmd: add three adjustable horizontal bar graphs to the right-side glass boxes | exit=0
 [2026-06-11 14:57:10 PDT] cmd: build three bar graphs for right-side boxes | exit=2
 
+[2026-06-11 22:31:00 PDT] cmd: inspect cooperative APS smoke flow and old timer guards | sed -n '1,220p' docs/COMMAND_LOG.md && sed -n '640,690p' proj_cm55/main.c && sed -n '300,430p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c && sed -n '540,590p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c | exit=0
+[2026-06-11 22:31:00 PDT] cmd: inspect smoke-mode startup guards and timer creation | sed -n '596,625p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c | exit=0
+[2026-06-11 22:31:00 PDT] cmd: inspect docs for current LCD-safe sidecar hypothesis | rg -n "APS smoke|cooperative|sidecar|banner|root-cause|LCD" docs/BUILD_REPORT.md docs/PROJECT_STATE.md docs/COMMAND_LOG.md | exit=0
+[2026-06-11 22:31:00 PDT] cmd: rebuild embedded smoke-test image with restored GUI timer path | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:31:00 PDT] cmd: flash restored GUI-timer smoke-test image | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:31:00 PDT] cmd: capture UART after restoring GUI timer path | python3 -u - <<'PY' ... serial watch for 18s ... PY | exit=0 (banner + step 0 only; no later APS steps observed)
+[2026-06-11 22:35:00 PDT] cmd: rebuild after switching APS sidecar timing to LVGL tick | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:35:00 PDT] cmd: flash after switching APS sidecar timing to LVGL tick | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:36:00 PDT] cmd: capture UART after LVGL-tick timing change | python3 -u - <<'PY' ... serial watch for 18s ... PY | exit=0 (banner + step 0 only; no later APS steps observed)
+[2026-06-11 22:38:00 PDT] cmd: rebuild after adding loop-count fallback to APS sidecar pacing | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:38:00 PDT] cmd: flash after adding loop-count fallback to APS sidecar pacing | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:41:00 PDT] cmd: capture UART after loop-count fallback image | python3 -u - <<'PY' ... serial watch for 20s ... PY | exit=0 (banner + step 0 only; no later APS steps observed)
+[2026-06-11 22:41:00 PDT] cmd: rebuild after lowering loop-count fallback threshold | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:41:00 PDT] cmd: flash after lowering loop-count fallback threshold | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1 | exit=0
+[2026-06-11 22:44:00 PDT] cmd: capture UART after lowered-threshold image | python3 -u - <<'PY' ... serial watch for 20s ... PY | exit=0 (banner plus APS steps 0 through 3 observed; no LCD stall seen in this window)
+[2026-06-11 22:46:00 PDT] cmd: extend UART watch for final smoke step and completion banner | python3 -u - <<'PY' ... serial watch for 12s ... PY | exit=0 (no additional output captured during this short follow-up window)
+[2026-06-11 22:48:00 PDT] cmd: inspect repo status before cleanup | git status --short && git rev-parse --short HEAD && git diff --stat | exit=0
+[2026-06-11 22:49:00 PDT] cmd: drop generated ninja cache files from status | git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log && git status --short | exit=0
+
 [14:39:22 PDT] git status --short
 
 [14:39:28 PDT] inspect runbook for build and flash commands
@@ -883,3 +902,21 @@ PY
   - Captured line anchors for the final summary: `main.c:629-750`, `edgeai_insulin_pump_app.c:366-572`, and `docs/BUILD_REPORT.md:1-70`.
 [2026-06-11 22:17:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD && git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Record final LCD-safe audit notes" && git push origin embedded-bringup-smoke-test && git status --short && git rev-parse --short HEAD
   - Final clean branch state is `4c4b835` on `embedded-bringup-smoke-test`.
+[2026-06-11 22:18:00 PDT] COMMAND: git branch --show-current && git status --short && rg -n "lv_timer_handler|vTaskDelay|xTaskCreate\\(|edgeai_insulin_pump_app_start|APP_APS_SMOKE_TEST|APP_APS_SMOKE_UART_ONLY|dashboard_timer_cb|lv_timer_create|touch|indev|lv_port_disp_init|lv_port_indev_init" proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h
+  - Mapped the CM55/LVGL service flow and confirmed the old smoke path still existed as a timer callback in the GUI app.
+[2026-06-11 22:19:00 PDT] COMMAND: sed -n '600,760p' proj_cm55/main.c && sed -n '1,120p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c && sed -n '360,590p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+  - Reviewed the display setup, LVGL service loop, and smoke timer path before converting APS to a cooperative sidecar.
+[2026-06-11 22:20:00 PDT] COMMAND: apply_patch
+  - Added a cooperative APS smoke service API, rate limiting, and optional UART-only display bypass support.
+[2026-06-11 22:21:00 PDT] COMMAND: apply_patch
+  - Wired `ApsSmoke_Service()` into the CM55 LVGL loop and added a minimum yield floor to keep the task cooperative.
+[2026-06-11 22:22:00 PDT] COMMAND: export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+  - The cooperative APS build completed successfully on all three embedded cores; only pre-existing unrelated warnings remained.
+[2026-06-11 22:23:00 PDT] COMMAND: python3 -u - <<'PY' ... PY
+  - Started a fresh UART listener on `/dev/ttyACM0` at 115200 baud for the cooperative APS flash test.
+[2026-06-11 22:24:00 PDT] COMMAND: apply_patch
+  - Added a 10 ms upper bound to the CM55 service-loop sleep so `lv_timer_handler()` cannot park the GUI for too long when APS smoke mode is active.
+[2026-06-11 22:25:00 PDT] COMMAND: apply_patch
+  - Updated `docs/BUILD_REPORT.md` with the tighter root-cause hypothesis for the LCD stall.
+[2026-06-11 22:26:00 PDT] COMMAND: export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Rebuilt successfully with the 10 ms LVGL sleep cap in place; only unrelated legacy warnings remained.

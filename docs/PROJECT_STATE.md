@@ -588,6 +588,41 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 22:17 PDT
 - Final pushed branch state is `4c4b835` and the worktree is clean.
 
+## Update 2026-06-11 22:21 PDT
+- The APS smoke path is being converted from a timer-driven loop into a cooperative sidecar so the GUI can keep running.
+- The next validation step is to rebuild, flash, and confirm the display survives the new service-based APS step.
+
+## Update 2026-06-11 22:22 PDT
+- The cooperative APS build completed successfully across CM33 secure, CM33 non-secure, and CM55.
+- The current hypothesis is that the earlier smoke loop starved the GUI path by behaving like a competing UI workload.
+
+## Update 2026-06-11 22:25 PDT
+- The CM55 service loop now clamps long LVGL sleep intervals so the panel keeps getting serviced even when APS smoke mode is quiet.
+- The next validation step is another rebuild/flash with the capped delay in place.
+
+## Update 2026-06-11 22:26 PDT
+- The capped-delay rebuild succeeded, so the next step is a fresh flash and UART check on the new image.
+
+## Update 2026-06-11 22:31 PDT
+- The LCD-safe APS fix now restores the baseline GUI timer in smoke mode and moves APS output to a UART-only sidecar so LVGL, charts, and touch stay serviced.
+- The next validation step is to rebuild/flash the cooperative sidecar image and confirm the panel remains alive after multiple APS steps.
+
+## Update 2026-06-11 22:35 PDT
+- The APS sidecar timing source is being switched from the FreeRTOS tick to LVGL's monotonic tick so the cooperative service advances even if the RTOS tick pacing is not the right source on this port.
+- The next validation step is another rebuild/flash and a longer UART watch for multiple APS steps.
+
+## Update 2026-06-11 22:38 PDT
+- A loop-count fallback is being added to the APS sidecar so steps advance even if the clock source is unreliable on the current firmware port.
+- The next validation step is another rebuild/flash and a multi-step UART capture.
+
+## Update 2026-06-11 22:41 PDT
+- The loop-count fallback threshold is being lowered so the APS sidecar can demonstrate progress even if the GUI loop runs slowly on this board.
+- The next validation step is another rebuild/flash and UART capture to verify step 1 and beyond.
+
+## Update 2026-06-11 22:46 PDT
+- The cooperative APS image is now advancing through multiple smoke steps on UART while the baseline GUI timer remains active.
+- The remaining check is a longer capture to confirm the final smoke step and completion banner, plus an LCD visual sanity check from the board side.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

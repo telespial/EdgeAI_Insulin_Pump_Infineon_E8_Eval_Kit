@@ -661,6 +661,13 @@ static void cm55_gfx_task(void *arg)
          * LVGL tasks.
          */
         time_till_next = lv_timer_handler();
+#if (APP_APS_SMOKE_TEST == 1U)
+        ApsSmoke_Service((uint32_t)lv_tick_get());
+#endif
+        if ((time_till_next == 0u) || (time_till_next > 10u))
+        {
+            time_till_next = 10u;
+        }
         vTaskDelay(pdMS_TO_TICKS(time_till_next));
     }
 }

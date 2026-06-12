@@ -4,7 +4,7 @@
 - `embedded-bringup-smoke-test`
 
 ## Commit
-- `df41472`
+- `working tree`
 
 ## Target
 - `APP_KIT_PSE84_EVAL_EPC2`
@@ -31,6 +31,7 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 - Flash/program: success
 - UART smoke banner: success
 - UART smoke sequence: success
+- Observed on UART after the cooperative-sidecar fix: steps 0 through 3 printed cleanly without LCD loss during the watch window
 
 ## Artifact Paths
 - `build/app_combined.hex`
@@ -52,7 +53,13 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 - `ClampF32` unused warning in `cgm_model_runtime.c`
 - `touchpad_read` unused variable warnings in `lv_port_indev.c`
 - RWX load-segment linker warning for `proj_cm33_s.elf`
-- `dashboard_timer_cb` unused warning after disabling the active smoke loop to preserve the LCD path
+- `dashboard_timer_cb` is now restored in smoke mode so the GUI/timers remain active while APS prints as a sidecar
+
+## Root Cause Hypothesis
+- The earlier active smoke loop likely stalled the panel because APS work was driven from the GUI/timer path with repeated `push_sample()` updates and UART prints, effectively turning smoke mode into a competing UI workload.
+- The LCD-safe fix restores the baseline GUI timer path and keeps APS output in a lightweight UART-only sidecar so the panel never depends on APS work to refresh.
+- A second likely contributor was the CM55 loop sleeping too long when `lv_timer_handler()` had no near-term work scheduled; capping the loop delay to a small value keeps the GUI and touch service alive even when APS mode is quiet.
+- The sidecar also needed a pacing fallback because the timer-driven GUI loop alone was not guaranteeing repeated APS service on this port.
 
 ## UART Output
 ```text
@@ -66,5 +73,6 @@ Build: Jun 11 2026 21:43:59
 
 ## Known Gaps
 - Timing instrumentation still reports `timing not available`.
-- The active smoke loop is currently disabled to keep the LCD alive; only the APS banner prints on boot.
+- The GUI timer and APS sidecar now share the display safely; the next validation is to confirm the final smoke step/completion banner on a longer UART watch.
+- The boot banner still shows the older build timestamp string in the UART watch window; that stamp should be refreshed or explained in a follow-up.
 - No host regression was needed because this pass only changed embedded firmware smoke wiring.
