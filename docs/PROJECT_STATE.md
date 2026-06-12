@@ -863,3 +863,8 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Merged the docs-only README alignment branch into `main`, which cleaned the repository homepage identity before the firmware model promotion merge.
 - Revalidated the Predictor V2 Candidate V1 dry-run branch after the README merge, then merged the candidate branch into `main` with host tests, regression, and embedded build all passing.
 - Confirmed the merged `main` tree still preserves the LCD/GUI path and did not require a flash or programming step.
+
+## Update 2026-06-12 17:00 PDT
+- Programmed merged `main` commit `39f6361` to the E84 and verified the debugger could still acquire the device before and after the flash.
+- Confirmed the flashed image includes Candidate V1 tables and that the default UART boot did not print `APS probe:`.
+- Recorded the flash/programming evidence, while noting that a direct physical LCD view was not captured from the terminal session.

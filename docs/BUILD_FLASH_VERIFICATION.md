@@ -8,10 +8,17 @@
   - Branch: `embedded-bringup-smoke-test`
   - Commit: `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
 - Recovery closure:
-  - Physical LCD confirmed recovered after clean rebuild and default probe-free flash.
-  - Default image must not print `APS probe:`.
-  - A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
-  - UART boot alone is not enough to claim LCD success.
+- Physical LCD confirmed recovered after clean rebuild and default probe-free flash.
+- Default image must not print `APS probe:`.
+- A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
+- UART boot alone is not enough to claim LCD success.
+
+## Update 2026-06-12 17:00 PDT
+- Flashed merged `main` commit `39f6361` with the Candidate V1 tables included.
+- Pre-reset OpenOCD again detected `PSE846GPS2DBZC4A` and reported `CYBOOT_SUCCESS`.
+- Post-reset OpenOCD completed a clean `reset run` after programming.
+- UART after the flash showed the legacy LVGL demo boot banner and did not show any `APS probe:` line or smoke sequence output.
+- The panel was not directly visible in this terminal session, so the run records UART and debugger evidence only.
 
 ## Verification Matrix
 

@@ -60,6 +60,12 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 - RWX load-segment linker warning for `proj_cm33_s.elf`
 - `dashboard_timer_cb` is now restored in smoke mode so the GUI/timers remain active while APS prints as a sidecar
 
+## Flash Main
+- Flashing merged `main` commit `39f6361` completed successfully.
+- The flashed image included Candidate V1 and did not enable the APS probe or smoke path by default.
+- UART showed the boot banner and no APS probe line.
+- Physical LCD verification was not directly captured from the terminal session.
+
 ## Root Cause Hypothesis
 - The earlier active smoke loop likely stalled the panel because APS work was driven from the GUI/timer path with repeated `push_sample()` updates and UART prints, effectively turning smoke mode into a competing UI workload.
 - The LCD-safe fix restores the baseline GUI timer path and keeps APS output in a lightweight UART-only sidecar so the panel never depends on APS work to refresh.
