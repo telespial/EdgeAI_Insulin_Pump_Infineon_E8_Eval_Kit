@@ -361,6 +361,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 15:46 PDT
 - Marked the current insulin-pump checkpoint as the golden/failsafe restore point set in `docs/RESTORE_POINTS.md`.
 
+## Update 2026-06-11 16:50 PDT
+- Created project-tracking files at the repo root: `ToDo.md`, `ARCHITECTURE_DECISIONS.md`, `VALIDATION_PLAN.md`, `SAFETY_CHECKLIST.md`, and `CODEX_PROGRESS_LOG.md`.
+
+## Update 2026-06-11 16:58 PDT
+- Added the host-side APS foundation: portable predictor, physiology, controller, safety, metrics modules, CMake build, and a passing host test runner.
+
+## Update 2026-06-11 17:12 PDT
+- Added CSV replay loading, built-in synthetic scenarios, and a shared audit trace with explicit safety reason codes.
+- Host tests and a sample scenario run now pass with the replay/safety path.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

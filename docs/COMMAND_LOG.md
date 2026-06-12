@@ -407,3 +407,29 @@
 [16:44:53 PDT] listed insulin-pump git tags
 [16:45:19 PDT] staged restore-point files for commit
 [16:45:31 PDT] committed restore-point bundle as dd65427 and moved restore tags locally
+[16:45:43 PDT] amended restore-point commit to include command log and re-tagged golden/failsafe restore points
+[16:46:00 PDT] push updated branch; restore tag push was rejected because tags already existed remotely
+[16:46:30 PDT] read pasted handoff instructions and listed zip contents
+[16:46:57 PDT] reviewed handoff zip docs and firmware sources
+[16:49:53 PDT] read pasted request text from ca6c1d79
+[16:50:24 PDT] created project tracking files ToDo/ADR/Validation/Safety/Progress
+[16:54:19 PDT] first host build failed in safety_supervisor.c due to missing stddef include
+[16:54:29 PDT] host build completed successfully
+[16:55:25 PDT] host test runner passed
+[16:55:30 PDT] removed local host_build directory after validation
+[16:55:50 PDT] collected line numbers for foundation docs
+[16:56:02 PDT] found PROJECT_STATE host foundation note line
+[17:30:19 PDT] host rebuild failed in sim/simulation_runner.c due to wrong prediction type name
+[17:30:35 PDT] host rebuild failed because sim headers were not on include path
+[17:30:45 PDT] host rebuild completed successfully with sim support
+[17:31:02 PDT] host tests failed because high-IOB scenario did not force a blocked increase; adjusting scenario aggression
+[17:31:26 PDT] moved controller-block assertion to missing physiology test
+[17:31:32 PDT] host tests passed after replay/safety tracing updates
+[17:32:05 PDT] corrected scenario physiology metadata and sim input propagation
+[17:32:34 PDT] inspected controller reason-bit definitions
+[17:32:42 PDT] separated controller reason bits from safety reason bits
+[17:32:46 PDT] audit CSV looked clean after controller/safety bit separation
+[17:33:06 PDT] removed generated host_build directory after validation
+[17:33:13 PDT] collected line numbers for replay/audit foundation
+[17:33:22 PDT] collected doc line numbers after replay/audit pass
+[17:33:25 PDT] collected ADR-005 line number

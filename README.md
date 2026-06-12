@@ -190,11 +190,25 @@ See [Using the code example](docs/using_the_code_example.md) for instructions on
 
       OR
 
-      To use the 10.1 inch WF101JTYAHMNB0 display:
+To use the 10.1 inch WF101JTYAHMNB0 display:
 
       ```
       CONFIG_DISPLAY = WF101JTYAHMNB0_DISP
       ```
+
+## APS Research Foundation
+
+This repo now also includes a host-side research/simulation foundation for the E84 CGM artificial-pancreas handoff.
+
+Host build and test:
+
+```bash
+cmake -S . -B host_build
+cmake --build host_build -j2
+./host_build/e84_aps_host_tests
+```
+
+The host framework is research-only and is intentionally separate from the embedded LVGL demo path.
 
 5. Build and program the application
 
