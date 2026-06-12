@@ -438,3 +438,29 @@
 [17:37:47 PDT] host tests passed after commit/push and build
 [17:37:59 PDT] removed generated host_build directory after successful validation
 [17:38:18 PDT] pushed replay build verification commit 219ce29
+[17:38:29 PDT] pushed final log cleanup commit 9971a86
+
+[2026-06-11 16:40 PDT] cmd: inspect replay comparison and audit runner code paths | exit=0
+[2026-06-11 16:40 PDT] cmd: inspect replay loader, scenario runner, metrics, and docs state | exit=0
+[2026-06-11 16:40 PDT] cmd: confirm Predictor V1 is not present in repo | exit=0
+
+[2026-06-11 16:45 PDT] cmd: patch simulation runner for baseline-vs-ML comparison, summary metrics, and CLI output | exit=0
+[2026-06-11 16:45 PDT] cmd: patch audit trace CSV header and row writer for comparison audit columns | exit=0
+[2026-06-11 16:45 PDT] cmd: patch replay loader errors and meal_rise scenario alias | exit=0
+[2026-06-11 16:45 PDT] cmd: update host tests for summary and comparison fields | exit=0
+
+[2026-06-11 16:50 PDT] cmd: build host sim after baseline-vs-ML patch set | exit=2
+
+[2026-06-11 16:52 PDT] cmd: rebuild host sim after incomplete-type fix | exit=0
+
+[2026-06-11 16:55 PDT] cmd: run host sim with stable scenario and compare audit CSV output | exit=0
+
+[2026-06-11 17:00 PDT] cmd: rebuild and run host tests after comparison/audit changes | exit=0
+
+[2026-06-11 17:22 PDT] cmd: inspect git status after comparison and docs updates | exit=0
+
+[2026-06-11 17:23 PDT] cmd: remove generated host_build and out artifacts | exit=0
+
+[2026-06-11 17:24 PDT] cmd: final git status check before commit/push | exit=0
+
+[2026-06-11 17:26 PDT] cmd: check git branch and GitHub auth before publish | exit=1

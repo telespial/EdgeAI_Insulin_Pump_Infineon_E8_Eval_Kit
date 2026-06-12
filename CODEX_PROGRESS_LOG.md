@@ -66,3 +66,23 @@ Known gaps:
 
 Next recommended step:
 - Add baseline-vs-ML comparison mode for replay and simulation traces.
+
+## 2026-06-11 — Comparison and metrics pass
+
+Changed:
+- Added baseline-vs-ML comparison in the host simulator, including a linear trend baseline, Predictor V2, and paired controller decisions.
+- Expanded the audit CSV to carry actual future values, per-horizon prediction errors, action decisions, and safety reason strings.
+- Added replay summary metrics for MAE/RMSE, time in range, time below/above range, missed low count, false low warning count, safety interventions, and controller disagreement count.
+- Added the `meal_rise` scenario alias and improved replay parse errors with row numbers.
+
+Tests:
+- `cmake --build host_build -j2`
+- `./host_build/e84_aps_host_tests`
+- `./host_build/e84_aps_sim --scenario stable --out out/audit.csv`
+
+Known gaps:
+- Predictor V1 is not present in this repo, so the comparison path currently covers the linear trend baseline versus Predictor V2.
+- The simulator is still research-only and does not include real pump integration.
+
+Next recommended step:
+- Keep the comparison loop stable while adding one or two representative replay CSV fixtures for regression checks.

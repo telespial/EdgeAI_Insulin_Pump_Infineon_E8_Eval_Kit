@@ -24,6 +24,14 @@ static void set_error(char *error, size_t error_length, const char *message)
     }
 }
 
+static void set_error_row(char *error, size_t error_length, const char *message, size_t row_number)
+{
+    if (error != NULL && error_length > 0u)
+    {
+        snprintf(error, error_length, "%s at row %zu", message, row_number);
+    }
+}
+
 static char *trim(char *text)
 {
     while (*text != '\0' && isspace((unsigned char)*text))
@@ -205,13 +213,13 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
         if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.timestamp), &timestamp) || timestamp <= 0)
         {
             fclose(file);
-            set_error(error, error_length, "invalid timestamp value");
+            set_error_row(error, error_length, "invalid timestamp value", line_number - 1u);
             return false;
         }
         if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.glucose), &glucose) || glucose < 40 || glucose > 400)
         {
             fclose(file);
-            set_error(error, error_length, "invalid glucose value");
+            set_error_row(error, error_length, "invalid glucose value", line_number - 1u);
             return false;
         }
         if (cols.sqi >= 0 && field_or_empty(fields, field_count, cols.sqi)[0] != '\0')
@@ -219,7 +227,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
             if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.sqi), &sqi) || sqi < 0 || sqi > 100)
             {
                 fclose(file);
-                set_error(error, error_length, "invalid sqi value");
+                set_error_row(error, error_length, "invalid sqi value", line_number - 1u);
                 return false;
             }
         }
@@ -228,7 +236,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
             if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.trend), &trend))
             {
                 fclose(file);
-                set_error(error, error_length, "invalid trend value");
+                set_error_row(error, error_length, "invalid trend value", line_number - 1u);
                 return false;
             }
         }
@@ -237,7 +245,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
             if (!parse_float_field((char *)field_or_empty(fields, field_count, cols.carbs), &carbs) || carbs < 0.0f)
             {
                 fclose(file);
-                set_error(error, error_length, "invalid carbs value");
+                set_error_row(error, error_length, "invalid carbs value", line_number - 1u);
                 return false;
             }
         }
@@ -246,7 +254,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
             if (!parse_float_field((char *)field_or_empty(fields, field_count, cols.insulin), &insulin) || insulin < 0.0f)
             {
                 fclose(file);
-                set_error(error, error_length, "invalid insulin value");
+                set_error_row(error, error_length, "invalid insulin value", line_number - 1u);
                 return false;
             }
         }
@@ -255,14 +263,14 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
             if (!parse_float_field((char *)field_or_empty(fields, field_count, cols.basal), &basal) || basal < 0.0f)
             {
                 fclose(file);
-                set_error(error, error_length, "invalid basal value");
+                set_error_row(error, error_length, "invalid basal value", line_number - 1u);
                 return false;
             }
         }
         if ((uint32_t)timestamp <= previous_timestamp)
         {
             fclose(file);
-            set_error(error, error_length, "timestamps must increase monotonically");
+            set_error_row(error, error_length, "timestamps must increase monotonically", line_number - 1u);
             return false;
         }
 

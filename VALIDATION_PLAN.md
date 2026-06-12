@@ -3,6 +3,7 @@
 ## Predictor Validation
 - Replay historical CGM traces through the predictor.
 - Compare 15m, 30m, and 60m outputs against labels.
+- Compare baseline trend predictions against Predictor V2 on the same replay rows.
 - Measure MAE, RMSE, and low-miss rate.
 
 Pass criteria:
@@ -31,6 +32,7 @@ Pass criteria:
 - Confirm deterministic CSV outputs.
 - Validate parser errors for impossible timestamps and glucose values.
 - Validate missing optional CSV columns use safe defaults.
+- Confirm the audit CSV includes actual future values, prediction errors, controller decisions, and reason codes.
 
 Pass criteria:
 - Same inputs produce same outputs.
@@ -41,6 +43,7 @@ Pass criteria:
 - Generate synthetic meals, boluses, and activity cases.
 - Compare controller behavior across scenarios.
 - Confirm each built-in scenario reaches the intended safety branch.
+- Exercise the `meal_rise` alias alongside the long-form scenario name.
 
 Pass criteria:
 - Low glucose leads to reduce/suspend behavior.
@@ -52,6 +55,7 @@ Pass criteria:
 - Test physiology accumulation.
 - Test controller action selection.
 - Test safety override logic.
+- Test replay summary metrics and audit CSV header coverage.
 
 Pass criteria:
 - Tests pass consistently on the host platform.

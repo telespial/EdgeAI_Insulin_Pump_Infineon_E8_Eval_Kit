@@ -10,7 +10,9 @@
 - [x] Low confidence falls back to conservative mode
 - [x] All safety interventions emit reason codes
 - [x] Tests prove safety overrides controller
+- [x] Audit CSV records final safety action and reason codes for every step
 
 Current foundation status:
 - Host tests cover predicted-low, bad-SQI, and conservative override behavior.
 - Replay and scenario runs now share one audited simulation path.
+- Baseline-vs-ML comparison mode is now available in the host simulator.

@@ -195,6 +195,7 @@ static void test_scenario_runner_and_audit(void)
     const char *scenarios[] = {
         "stable in range",
         "rising after meal",
+        "meal_rise",
         "falling after bolus",
         "predicted hypo",
         "stale cgm",
@@ -216,8 +217,11 @@ static void test_scenario_runner_and_audit(void)
         require_true("scenario load", ScenarioRunner_Load(scenarios[scenario_index], &dataset, error, sizeof(error)));
         require_true("scenario count", dataset.count > 0u);
         configure_modules();
-        require_true("scenario run", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, error, sizeof(error)));
+        require_true("scenario run", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, NULL, error, sizeof(error)));
         require_true("scenario result count", result_count == dataset.count);
+        require_true("scenario baseline predictions", results[0].baseline_prediction.pred_15m_mgdl > 0u);
+        require_true("scenario ML predictions", results[0].ml_prediction.pred_15m_mgdl > 0u);
+        require_true("scenario safety output", results[0].safety_final_output.action <= APS_ACTION_CORRECTION_SUGGESTION);
     }
 }
 
@@ -232,8 +236,8 @@ static void test_safety_reason_codes(void)
     memset(error, 0, sizeof(error));
     require_true("high iob scenario load", ScenarioRunner_Load("high iob", &dataset, error, sizeof(error)));
     configure_modules();
-    require_true("high iob scenario run", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, error, sizeof(error)));
-    require_true("high iob reason emitted", (results[result_count - 1u].final_output.reason_flags & APS_SAFETY_REASON_EXCESSIVE_IOB) != 0u);
+    require_true("high iob scenario run", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, NULL, error, sizeof(error)));
+    require_true("high iob reason emitted", (results[result_count - 1u].safety_final_output.reason_flags & APS_SAFETY_REASON_EXCESSIVE_IOB) != 0u);
 }
 
 static void test_missing_physiology_reason(void)
@@ -252,10 +256,46 @@ static void test_missing_physiology_reason(void)
     memset(error, 0, sizeof(error));
     require_true("missing phys csv loads", ReplayLoader_LoadCsv("test_replay_missing_phys.csv", &dataset, error, sizeof(error)));
     configure_modules();
-    require_true("missing phys scenario runs", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, error, sizeof(error)));
-    require_true("missing phys reason emitted", (results[result_count - 1u].final_output.reason_flags & APS_SAFETY_REASON_MISSING_PHYSIOLOGY) != 0u);
-    require_true("controller blocked reason emitted", (results[result_count - 1u].final_output.reason_flags & APS_SAFETY_REASON_CONTROLLER_BLOCKED) != 0u);
+    require_true("missing phys scenario runs", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, NULL, error, sizeof(error)));
+    require_true("missing phys reason emitted", (results[result_count - 1u].safety_final_output.reason_flags & APS_SAFETY_REASON_MISSING_PHYSIOLOGY) != 0u);
+    require_true("controller blocked reason emitted", (results[result_count - 1u].safety_final_output.reason_flags & APS_SAFETY_REASON_CONTROLLER_BLOCKED) != 0u);
     remove("test_replay_missing_phys.csv");
+}
+
+static void test_simulation_summary_and_audit_header(void)
+{
+    replay_dataset_t dataset;
+    char error[128];
+    sim_step_result_t results[REPLAY_LOADER_MAX_STEPS];
+    simulation_summary_t summary;
+    size_t result_count = 0u;
+    FILE *audit_file;
+    char header_line[512];
+
+    memset(&dataset, 0, sizeof(dataset));
+    memset(&summary, 0, sizeof(summary));
+    memset(error, 0, sizeof(error));
+    require_true("summary scenario load", ScenarioRunner_Load("stable", &dataset, error, sizeof(error)));
+    configure_modules();
+    require_true("summary scenario run", SimulationRunner_RunDataset(&dataset, NULL, results, REPLAY_LOADER_MAX_STEPS, &result_count, &summary, error, sizeof(error)));
+    require_true("summary sample count", summary.sample_count == dataset.count);
+    require_true("summary metric baseline", summary.baseline_15m.mae >= 0.0f);
+    require_true("summary metric ml", summary.ml_15m.mae >= 0.0f);
+    require_true("summary disagreement count", summary.controller_disagreement_count <= dataset.count);
+    require_true("summary result has actual", results[0].has_actual_15m || dataset.count < 4u);
+
+    audit_file = tmpfile();
+    require_true("audit tmpfile", audit_file != NULL);
+    if (audit_file != NULL)
+    {
+        memset(header_line, 0, sizeof(header_line));
+        AuditTrace_PrintHeader(audit_file);
+        rewind(audit_file);
+        require_true("audit header read", fgets(header_line, sizeof(header_line), audit_file) != NULL);
+        require_true("audit header baseline column", strstr(header_line, "baseline_pred_15") != NULL);
+        require_true("audit header safety column", strstr(header_line, "safety_reason_codes") != NULL);
+        fclose(audit_file);
+    }
 }
 
 static void test_bad_data_rejected_safely(void)
@@ -285,6 +325,7 @@ int main(void)
     test_scenario_runner_and_audit();
     test_safety_reason_codes();
     test_missing_physiology_reason();
+    test_simulation_summary_and_audit_header();
     test_bad_data_rejected_safely();
 
     if (g_failures != 0)

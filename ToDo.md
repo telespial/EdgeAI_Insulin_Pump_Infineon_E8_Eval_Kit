@@ -52,7 +52,7 @@
 - [x] Add excessive IOB gate
 - [x] Add impossible-value gate
 - [x] Add low-confidence gate
-- [ ] Add safety reason codes
+- [x] Add safety reason codes
 - [x] Add tests proving safety overrides controller
 
 ## Milestone 6 — Metrics
@@ -69,8 +69,10 @@
 - [x] Add replay simulation
 - [x] Add synthetic patient scenario runner
 - [x] Add CSV output logs
-- [ ] Add comparison mode: baseline trend vs Predictor V2
-- [ ] Add comparison mode: controller without ML vs controller with ML
+- [x] Add comparison mode: baseline trend vs Predictor V2
+- [x] Add comparison mode: controller without ML vs controller with ML
+- [x] Add replay audit CSV with actual/future values and error columns
+- [x] Add replay metrics summary for MAE/RMSE, TIR/TBR/TAR, and disagreement counts
 
 ## Milestone 8 — E84 Portability
 - [ ] Add memory estimate
@@ -84,11 +86,11 @@
 
 ## Milestone 9 — Documentation
 - [x] Update README
-- [ ] Update architecture docs
-- [ ] Update safety docs
-- [ ] Update validation docs
-- [ ] Add known limitations
-- [ ] Add research-only warning
+- [x] Update architecture docs
+- [x] Update safety docs
+- [x] Update validation docs
+- [x] Add known limitations
+- [x] Add research-only warning
 
 ## Milestone 10 — Final Review
 - [ ] Run all tests

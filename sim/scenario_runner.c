@@ -213,7 +213,7 @@ bool ScenarioRunner_Load(const char *scenario_name, replay_dataset_t *dataset, c
     {
         return build_stable_in_range(dataset);
     }
-    if (strcmp(scenario_name, "rising after meal") == 0)
+    if (strcmp(scenario_name, "rising after meal") == 0 || strcmp(scenario_name, "meal_rise") == 0)
     {
         return build_rising_after_meal(dataset);
     }

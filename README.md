@@ -208,7 +208,15 @@ cmake --build host_build -j2
 ./host_build/e84_aps_host_tests
 ```
 
-The host framework is research-only and is intentionally separate from the embedded LVGL demo path.
+Host simulation examples:
+
+```bash
+./host_build/e84_aps_sim --scenario stable
+./host_build/e84_aps_sim --scenario meal_rise
+./host_build/e84_aps_sim --replay data/sample_replay.csv --out out/audit.csv
+```
+
+The host framework is research-only, intentionally separate from the embedded LVGL demo path, and emits baseline-vs-ML comparison metrics plus an auditable CSV trace.
 
 5. Build and program the application
 
