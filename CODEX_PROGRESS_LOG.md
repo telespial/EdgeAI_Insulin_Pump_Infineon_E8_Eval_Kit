@@ -49,3 +49,20 @@ Known gaps:
 
 Next recommended step:
 - Add baseline-vs-ML comparison mode and extend the validation docs with replay samples.
+
+## 2026-06-11 — Commit and build pass
+
+Changed:
+- Pushed the replay/audit foundation to the main branch.
+- Rebuilt the host foundation after the push and verified the full host test suite still passes.
+
+Tests:
+- `cmake -S . -B host_build`
+- `cmake --build host_build -j2`
+- `./host_build/e84_aps_host_tests`
+
+Known gaps:
+- Comparison-mode analysis remains to be added.
+
+Next recommended step:
+- Add baseline-vs-ML comparison mode for replay and simulation traces.

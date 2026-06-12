@@ -371,6 +371,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added CSV replay loading, built-in synthetic scenarios, and a shared audit trace with explicit safety reason codes.
 - Host tests and a sample scenario run now pass with the replay/safety path.
 
+## Update 2026-06-11 17:15 PDT
+- Committed and pushed the replay/audit foundation, then rebuilt and revalidated the host test suite successfully.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
