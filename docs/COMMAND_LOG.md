@@ -6820,6 +6820,40 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 
 - 2026-06-12: updated PROJECT_STATE to record successful flash of commit 06b0fdd with LCD-safe reset-run.
 
+- 2026-06-12: created recovery branch `recover-lcd-after-aps-probe` from `embedded-bringup-smoke-test` to isolate the LCD regression without rewriting history.
+
+- 2026-06-12: tightened the one-shot APS probe gate to `APP_APS_EMBEDDED_PROBE == 1` so the default CM55 build path stays on the LCD-safe baseline.
+
+- 2026-06-12: ran the LCD-safe OpenOCD recovery/reset sequence on `recover-lcd-after-aps-probe`; target acquired cleanly and `reset run` completed without error.
+
+- 2026-06-12: built the default LCD-safe baseline on `recover-lcd-after-aps-probe` without `APP_APS_EMBEDDED_PROBE`; host subprojects and CM55 link both completed successfully.
+
+- 2026-06-12: programmed the default LCD-safe baseline on `recover-lcd-after-aps-probe`; flash verify passed and the board accepted the rebuilt image.
+
+- 2026-06-12: ran the post-flash OpenOCD recovery/reset sequence on `recover-lcd-after-aps-probe`; target acquired cleanly and `reset run` completed without error.
+
+- 2026-06-12: captured UART after the baseline flash; the board still printed the `APS probe:` line, which means stale probe-enabled artifacts were still being flashed and a true clean rebuild is required.
+
+- 2026-06-12: attempted `make clean` without the toolchain environment and confirmed the project expects `CY_TOOLS_PATHS`; the clean step needs the exported ModusToolbox paths.
+
+- 2026-06-12: ran `make clean` with the documented ModusToolbox environment; `proj_cm33_s`, `proj_cm33_ns`, `proj_cm55`, and `build/` were removed.
+
+- 2026-06-12: rebuilt the project after the clean and confirmed the CM55 link completed from scratch with the default probe-free path.
+
+- 2026-06-12: programmed the freshly rebuilt default image on `recover-lcd-after-aps-probe`; flash verify passed on the new build artifact.
+
+- 2026-06-12: ran the post-flash OpenOCD recovery/reset sequence again on `recover-lcd-after-aps-probe`; target acquired cleanly and `reset run` completed without error.
+
+- 2026-06-12: captured UART after the freshly rebuilt flash; the boot banner appeared and the `APS probe:` line was absent, confirming the probe is now compiled out of the default image.
+
+- 2026-06-12: captured `git status --short --branch` and `git rev-parse --short HEAD` on `recover-lcd-after-aps-probe`; the branch is `recover-lcd-after-aps-probe` and HEAD remains `3fdd51a` while the working tree carries the recovery edits.
+
+- 2026-06-12: updated the recovery docs and added `docs/LCD_REGRESSION_3FDD51A.md` to record the clean-rebuild LCD recovery, the stale-artifact failure mode, and the new process rule that UART alone is insufficient.
+
+- 2026-06-12: committed the LCD/probe recovery branch with message `guard aps probe and document lcd recovery`.
+
+- 2026-06-12: captured the final recovery branch state after the amended commit; the working tree still has generated build artifacts only.
+
 - 2026-06-12: looked up the PROJECT_STATE line number for the 06b0fdd flash update (line 690).
 
 - 2026-06-12: OpenOCD recovery/reset-run at repo root confirmed PSE846GPS2DBZC4A, CYBOOT_SUCCESS, and both main_ns/smif1_ns flash banks.

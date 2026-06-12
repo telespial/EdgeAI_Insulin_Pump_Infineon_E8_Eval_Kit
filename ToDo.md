@@ -157,3 +157,11 @@
 - [x] Verify the probe on CM55 hardware
 - [x] Keep the GUI/LCD alive during probe boot
 - [ ] Add a second physiology-context probe only if needed
+
+## Milestone 16 — LCD / Probe Recovery Closure
+- [x] Force a clean rebuild after changing `APP_APS_EMBEDDED_PROBE`
+- [x] Reflash the default probe-free image
+- [x] Confirm the UART boot banner appears without `APS probe:`
+- [x] Confirm the physical LCD recovered after the clean rebuild and probe-free flash
+- [x] Document that UART boot alone is not enough to claim LCD success
+- [x] Commit the recovery branch with the final evidence trail

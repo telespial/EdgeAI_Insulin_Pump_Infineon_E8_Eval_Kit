@@ -86,3 +86,9 @@ Build: Jun 11 2026 21:43:59
 - The CM55 application sources were rolled back to `failsafe-e8-insulin-pump` for LCD revalidation.
 - The restore-point rebuild completed successfully and was programmed to the board.
 - UART was quiet during the short follow-up window, which is expected for the baseline image; the remaining confirmation is a direct LCD visual check on the board.
+
+## Recovery Closure
+- Physical LCD confirmed recovered after clean rebuild and default probe-free flash.
+- Default image must not print `APS probe:`.
+- A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
+- UART boot alone is not enough to claim LCD success.

@@ -745,7 +745,7 @@ int main(void)
                "PSOC Edge MCU: Graphics LVGL Demo "
                "****************** \r\n\n");
 
-#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE != 0)
+#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
         ApsEmbeddedProbe_RunOnce();
 #endif
 

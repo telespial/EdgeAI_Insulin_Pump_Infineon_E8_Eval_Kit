@@ -7,6 +7,11 @@
 - Current repo state at capture time:
   - Branch: `embedded-bringup-smoke-test`
   - Commit: `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
+- Recovery closure:
+  - Physical LCD confirmed recovered after clean rebuild and default probe-free flash.
+  - Default image must not print `APS probe:`.
+  - A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
+  - UART boot alone is not enough to claim LCD success.
 
 ## Verification Matrix
 
@@ -21,7 +26,7 @@
 | Activity engine | yes | yes | yes | no | host test output (`PASS: activity ...`), CM55 link map | Embedded linked, not runtime called. |
 | Controller/safety framework | yes | yes | yes | yes | host test output (`PASS: controller ...`, `PASS: safety ...`), CM55 probe output | Embedded linked, one-shot runtime verified. |
 | Audit logging | yes | yes | yes | no | fixture/audit CSV outputs, CM55 link map | Embedded linked, not runtime called. |
-| Embedded APS one-shot runtime probe | yes | yes | yes | yes | `make build ...`, `make program ...`, OpenOCD reset-run, UART `APS probe:` line | One-shot probe ran on boot and returned to the existing GUI/LVGL flow. |
+| Embedded APS one-shot runtime probe | yes | yes | yes | yes | `make build ...`, `make program ...`, OpenOCD reset-run, UART `APS probe:` line | One-shot probe ran on boot and returned to the existing GUI/LVGL flow; later recovery showed why boot-time APS work must stay off the default image. |
 
 ## Evidence Notes
 
@@ -201,6 +206,28 @@
 - Commit / branch:
   - `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
   - `embedded-bringup-smoke-test`
+
+### LCD / probe recovery closure
+- Bad commit:
+  - `3fdd51a`
+- Last LCD-good commit before probe:
+  - `cbe7b58`
+- Recovery branch:
+  - `recover-lcd-after-aps-probe`
+- Symptom:
+  - LCD blank after probe-enabled image and stale artifact reuse during the first baseline flash attempt.
+- Cause hypothesis:
+  - Stale probe-enabled build artifacts and the risk of running APS work too early from `main()`.
+- Recovery action:
+  - Tightened `APP_APS_EMBEDDED_PROBE == 1` gating.
+  - Ran `make clean` with the documented ModusToolbox environment.
+  - Rebuilt the default image from scratch.
+  - Reflashed and ran OpenOCD `reset run`.
+  - Physically confirmed the LCD recovered after the clean rebuild and probe-free flash.
+- New rule:
+  - No APS runtime call from boot or `main()` until a LCD-safe delayed or sidecar execution model is designed.
+  - Clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
+  - Physical LCD verification is required before claiming success.
 
 ## Firmware Map
 

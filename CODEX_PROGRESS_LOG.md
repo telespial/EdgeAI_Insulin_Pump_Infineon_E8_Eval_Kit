@@ -366,3 +366,23 @@ Known gaps:
 
 Next recommended step:
 - Return to the Predictor V2 physiology integration milestone now that the embedded bring-up path is proven again.
+
+## 2026-06-12 — LCD / probe recovery closure
+
+Changed:
+- Confirmed the physical LCD recovered only after a full clean rebuild and default probe-free flash.
+- Tightened the probe gate so the default image does not print `APS probe:`.
+- Documented that UART boot alone is not enough to claim LCD success.
+
+Tests:
+- `make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD `reset run`
+- UART capture confirming the boot banner only
+
+Known gaps:
+- The one-shot APS probe remains historical evidence only and must not be reintroduced at boot without a separate LCD-safe design.
+
+Next recommended step:
+- Resume only with a delayed or sidecar APS test after a visibly stable GUI baseline is re-established.

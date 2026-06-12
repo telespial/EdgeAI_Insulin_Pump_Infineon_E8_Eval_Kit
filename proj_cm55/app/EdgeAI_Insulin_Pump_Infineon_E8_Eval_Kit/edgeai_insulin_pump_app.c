@@ -39,7 +39,7 @@ typedef struct
 
 static cgm_dashboard_t gDashboard;
 
-#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE != 0)
+#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
 static bool gApsProbeRan;
 
 static const char *action_to_string(aps_action_t action)

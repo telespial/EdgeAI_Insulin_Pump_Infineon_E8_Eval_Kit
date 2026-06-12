@@ -710,3 +710,53 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Moved the one-shot APS probe call into `proj_cm55/main.c` so it runs after the UART boot banner and before the scheduler starts.
 - Rebuilt, programmed, and reset-run the probe-enabled image successfully; a clean reset-only capture showed exactly one `APS probe:` line.
 - The LCD/GUI stayed alive, and the probe returned immediately to the normal GUI flow without repeated output.
+
+## Update 2026-06-12 08:20 PDT
+- The physical LCD was reported blank again after the one-shot APS probe commit, so recovery now treats the board-side observation as authoritative.
+- Tightened the probe gate to `APP_APS_EMBEDDED_PROBE == 1` so the default build path matches the LCD-safe baseline unless the probe is explicitly enabled.
+- Next step is a baseline rebuild and flash without the probe flag, followed by a board-side LCD check.
+
+## Update 2026-06-12 08:30 PDT
+- The LCD-safe OpenOCD acquire + `reset run` sequence completed cleanly on the recovery branch, confirming the target still boots through the debugger.
+- Next step is a default build and flash with the probe flag omitted so we can compare the physical LCD against the known-safe baseline behavior.
+
+## Update 2026-06-12 08:45 PDT
+- The default LCD-safe baseline rebuilt successfully on the recovery branch with the probe flag omitted.
+- Next step is programming the board with that baseline and then doing the recovery reset-run again before any LCD claim.
+
+## Update 2026-06-12 09:00 PDT
+- The default LCD-safe baseline was programmed successfully on the recovery branch and flash verify passed.
+- Next step is a post-flash OpenOCD `reset run` so we can see whether the board-side LCD recovers on this baseline.
+
+## Update 2026-06-12 09:10 PDT
+- The post-flash OpenOCD acquire + `reset run` sequence completed cleanly on the recovered baseline.
+- UART and the physical LCD still need a board-side visual check, and we should not claim the panel is alive until that observation is made.
+
+## Update 2026-06-12 09:20 PDT
+- UART capture after the baseline flash still showed the `APS probe:` line, so the previous flash reused stale probe-enabled artifacts instead of a truly clean rebuild.
+- The next recovery action is a forced clean rebuild and reflash of the default baseline, then another reset-run and UART check before any LCD claim.
+
+## Update 2026-06-12 09:25 PDT
+- `make clean` requires the ModusToolbox toolchain environment to be exported in this shell, so the recovery path will use the documented env block before cleaning.
+
+## Update 2026-06-12 09:30 PDT
+- The build trees were fully removed with `make clean`, clearing the stale probe-enabled artifacts that had survived the first flash.
+- Next step is a fresh default build and flash so the UART boot path can be rechecked from zero.
+
+## Update 2026-06-12 09:45 PDT
+- The fresh build from the cleaned tree completed successfully, so the probe-free default image is now actually rebuilt rather than reused.
+- Next step is to program that newly rebuilt image and repeat the recovery reset-run before checking UART or LCD.
+
+## Update 2026-06-12 10:00 PDT
+- The freshly rebuilt default image programmed and verified successfully on the recovery branch.
+- Next step is the post-flash OpenOCD reset-run and a UART capture to confirm the probe line is truly gone before any LCD claim.
+
+## Update 2026-06-12 10:10 PDT
+- The post-flash OpenOCD reset-run completed cleanly on the freshly rebuilt image.
+- Next step is a UART capture from the board so we can verify the probe line is gone before asking for a board-side LCD check.
+
+## Update 2026-06-12 10:20 PDT
+- UART capture from the freshly rebuilt flash showed only the LVGL demo banner and no `APS probe:` line, so the default build path is now probe-free again.
+- Physical LCD confirmed recovered after clean rebuild and default probe-free flash.
+- Default image must not print `APS probe:`, and UART boot alone is not enough to claim LCD success.
+- Recovery branch committed with the guarded probe and LCD recovery documentation.
