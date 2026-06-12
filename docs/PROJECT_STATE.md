@@ -485,6 +485,14 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 21:14 PDT
 - Recorded the final commit/push for Predictor V2 physiology integration and confirmed the working tree was clean immediately after.
 
+## Update 2026-06-11 21:17 PDT
+- Replaced the root README with the APS research platform landing page and moved legacy display bring-up details into `docs/LEGACY_DISPLAY_BRINGUP.md`.
+- Removed Pong / Smart Pong / LVGL demo framing from the repository homepage so the landing page now reflects the research platform identity.
+
+## Update 2026-06-11 21:19 PDT
+- Confirmed the README heading structure matches the requested APS landing-page outline.
+- Kept the legacy display bring-up details in a separate historical document rather than on the homepage.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

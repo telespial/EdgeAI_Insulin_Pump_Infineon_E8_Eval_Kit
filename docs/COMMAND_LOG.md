@@ -771,3 +771,10 @@ PY
 [2026-06-11 21:14:00 PDT] COMMAND: git status --short
   - Working tree clean after the predictor integration push.
 [2026-06-11 21:15:00 PDT] COMMAND: git status --short
+[2026-06-11 21:16:00 PDT] COMMAND: printf '---README TOP---\\n' && sed -n '1,260p' README.md && printf '\\n---LEGACY DOC---\\n' && sed -n '1,220p' docs/LEGACY_DISPLAY_BRINGUP.md && printf '\\n---README SEARCH---\\n' && rg -n "Pong|Smart Pong|LVGL demo|music player|legacy display" README.md
+  - Initial verification command hit a shell-printf formatting issue, but the follow-up check confirmed README is free of Pong/LVGL legacy references.
+[2026-06-11 21:17:00 PDT] COMMAND: cat README.md | sed -n '1,260p' && printf '\\n---LEGACY DOC---\\n' && sed -n '1,220p' docs/LEGACY_DISPLAY_BRINGUP.md && printf '\\n---README SEARCH---\\n' && rg -n "Pong|Smart Pong|LVGL demo|music player|legacy display" README.md
+  - README now presents the APS research platform landing page, and the legacy display bring-up details live in `docs/LEGACY_DISPLAY_BRINGUP.md`.
+[2026-06-11 21:18:00 PDT] COMMAND: printf '%s\\n' '---HEADINGS---' && rg -n '^#|^##' README.md && printf '\\n---STATUS---\\n' && git status --short
+  - README headings now match the requested APS landing-page structure; the working tree still has the intended docs changes pending commit.
+[2026-06-11 21:19:00 PDT] COMMAND: git branch --show-current && git rev-parse --short HEAD
