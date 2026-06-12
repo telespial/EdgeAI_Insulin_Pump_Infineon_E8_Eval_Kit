@@ -780,3 +780,11 @@ PY
 [2026-06-11 21:19:00 PDT] COMMAND: git branch --show-current && git rev-parse --short HEAD
 [2026-06-11 21:20:00 PDT] COMMAND: git push origin codex/bar-graph-tuning (completion check)
   - The README replacement commit finished pushing successfully to `origin/codex/bar-graph-tuning`.
+[2026-06-11 21:21:00 PDT] COMMAND: git ls-remote --symref origin HEAD && git ls-remote --heads origin main codex/bar-graph-tuning
+  - Confirmed the repository default branch is `main`; `main` points at `bc4d31d6d73482683c68888111e0ac76401b5209` and `codex/bar-graph-tuning` points at `bf84f27f1a2d993b6d77b22a2f09471f7ac61bc5`.
+[2026-06-11 21:22:00 PDT] COMMAND: git show origin/main:README.md | sed -n '1,8p' && sed -n '1,8p' README.md && git branch --show-current && git status --short
+  - Verified `main` still shows the legacy APS smoke-test README title, while `codex/bar-graph-tuning` shows the new APS research platform landing page; the working tree was clean at the time of the check.
+[2026-06-11 21:23:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD
+  - Confirmed the worktree is now carrying the release-readiness documentation updates and the current branch HEAD is `bf84f27`.
+[2026-06-11 21:24:00 PDT] COMMAND: git diff --stat && sed -n '1,220p' docs/RELEASE_READINESS.md
+  - Confirmed the audit doc content before staging; the diff is limited to release-readiness documentation.
