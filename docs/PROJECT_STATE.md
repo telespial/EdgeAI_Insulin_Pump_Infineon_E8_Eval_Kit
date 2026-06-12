@@ -639,6 +639,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The restored baseline has been committed and pushed as `83d2f8a` on `embedded-bringup-smoke-test`.
 - The firmware sources now match the known-good `failsafe-e8-insulin-pump` control flow again, so the next step is a fresh LCD visual check on the board before reintroducing APS code.
 
+## Update 2026-06-11 23:15 PDT
+- Final docs sync is being kept aligned with the flashed restore-point baseline while the LCD visual check remains pending on the board.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

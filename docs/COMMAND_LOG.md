@@ -188,6 +188,9 @@
 [2026-06-11 23:03:00 PDT] cmd: flash restore-point firmware to board | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 | exit=0
 [2026-06-11 23:10:00 PDT] cmd: capture UART after restore-point flash | python3 -u - <<'PY' ... serial watch for 8s ... PY | exit=0 (no UART output during this baseline window)
 [2026-06-11 23:12:00 PDT] cmd: commit and push restored failsafe LCD baseline | git add docs/BUILD_REPORT.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h && git commit -m "Restore failsafe LCD baseline" && git push origin embedded-bringup-smoke-test | exit=0 (commit 83d2f8a pushed)
+[2026-06-11 23:13:00 PDT] cmd: sync restore-point notes with latest push | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Sync restore-point notes" && git push origin embedded-bringup-smoke-test | exit=0 (commit c46e22e pushed)
+[2026-06-11 23:14:00 PDT] cmd: check for remaining unstaged files | git status --short | exit=0 (docs/COMMAND_LOG.md still modified for final log sync)
+[2026-06-11 23:15:00 PDT] cmd: inspect project state tail | tail -n 20 docs/PROJECT_STATE.md | exit=0
 
 [14:39:22 PDT] git status --short
 
