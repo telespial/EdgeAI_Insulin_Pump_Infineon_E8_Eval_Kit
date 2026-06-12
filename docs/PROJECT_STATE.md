@@ -389,6 +389,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added `make -f host.mk regression` as the repeatable host regression entry point.
 - Added a minimal GitHub Actions workflow to run the matrix on push and pull requests.
 
+## Update 2026-06-11 18:05 PDT
+- Added numeric regression envelopes for the committed replay fixtures in `tests/fixture_expectations.json`.
+- Added `scripts/validate_fixture_metrics.py` and wired it into the fixture matrix runner.
+- The host regression flow now covers build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric envelope checks in one command.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

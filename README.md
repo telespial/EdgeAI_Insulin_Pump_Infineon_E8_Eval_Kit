@@ -249,6 +249,7 @@ make -f host.mk regression
 ```
 
 Each run produces paired audit and summary files such as `out/fixture_matrix/stable_audit.csv` and `out/fixture_matrix/stable_summary.txt`.
+`make -f host.mk regression` now performs host build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric metric envelope checks.
 
 5. Build and program the application
 

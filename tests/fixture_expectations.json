@@ -1,0 +1,62 @@
+{
+  "stable": {
+    "baseline_mae_15_max": 20,
+    "baseline_rmse_15_max": 25,
+    "ml_mae_15_min": 0,
+    "ml_mae_15_max": 20,
+    "ml_rmse_15_max": 30,
+    "time_in_range_min_pct": 90,
+    "time_below_range_max_pct": 10,
+    "time_above_range_max_pct": 10,
+    "safety_interventions_max": 10,
+    "controller_disagreement_max": 20
+  },
+  "meal_rise": {
+    "baseline_mae_15_max": 100,
+    "baseline_rmse_15_max": 100,
+    "ml_mae_15_max": 30,
+    "ml_rmse_15_max": 35,
+    "time_in_range_min_pct": 40,
+    "time_above_range_max_pct": 60,
+    "safety_interventions_max": 20,
+    "controller_disagreement_min": 1,
+    "controller_disagreement_max": 20
+  },
+  "falling_bolus": {
+    "baseline_mae_15_max": 100,
+    "baseline_rmse_15_max": 100,
+    "ml_mae_15_max": 35,
+    "ml_rmse_15_max": 40,
+    "time_in_range_min_pct": 30,
+    "time_below_range_max_pct": 70,
+    "safety_interventions_min": 1,
+    "safety_interventions_max": 20,
+    "controller_disagreement_min": 1,
+    "controller_disagreement_max": 20,
+    "required_reason_codes": ["RAPID_FALL", "PREDICTED_LOW_15M", "PREDICTED_LOW_30M"]
+  },
+  "bad_sqi": {
+    "baseline_mae_15_max": 35,
+    "baseline_rmse_15_max": 40,
+    "ml_mae_15_max": 35,
+    "ml_rmse_15_max": 40,
+    "time_in_range_min_pct": 0,
+    "time_in_range_max_pct": 100,
+    "safety_interventions_min": 1,
+    "safety_interventions_max": 20,
+    "controller_disagreement_max": 20,
+    "required_reason_codes": ["BAD_SQI"]
+  },
+  "stale_cgm": {
+    "baseline_mae_15_max": 35,
+    "baseline_rmse_15_max": 40,
+    "ml_mae_15_max": 35,
+    "ml_rmse_15_max": 40,
+    "time_in_range_min_pct": 0,
+    "time_in_range_max_pct": 100,
+    "safety_interventions_min": 1,
+    "safety_interventions_max": 20,
+    "controller_disagreement_max": 20,
+    "required_reason_codes": ["STALE_CGM"]
+  }
+}

@@ -122,3 +122,21 @@ Known gaps:
 
 Next recommended step:
 - Run the matrix script, verify the generated per-fixture outputs, and then lock in any missing fixture behavior checks.
+
+## 2026-06-11 — Numeric envelope pass
+
+Changed:
+- Added `tests/fixture_expectations.json` with loose per-fixture metric envelopes and reason-code expectations.
+- Added `scripts/validate_fixture_metrics.py` to parse the generated summaries and enforce numeric drift limits.
+- Wired the matrix runner to perform build, unit tests, fixture simulations, schema checks, reason-code checks, and metric envelope checks in one pass.
+- Documented the full regression flow in the README and validation plan.
+
+Tests:
+- Pending rerun of `make -f host.mk regression` after the validator integration.
+
+Known gaps:
+- The current envelopes are intentionally broad and should be tightened gradually after a few stable runs.
+- The validator focuses on the 15-minute horizon because that is the most stable current comparison anchor.
+
+Next recommended step:
+- Run the regression matrix, review the actual envelope values, and trim any envelope that is clearly too loose or too tight.

@@ -35,6 +35,7 @@ Pass criteria:
 - Confirm the audit CSV includes actual future values, prediction errors, controller decisions, and reason codes.
 - Run the committed `data/sample_replay_*.csv` fixtures through the host simulator.
 - Run the full fixture matrix script to ensure every committed replay stays covered.
+- The matrix now performs build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric metric envelope checks.
 
 Pass criteria:
 - Same inputs produce same outputs.

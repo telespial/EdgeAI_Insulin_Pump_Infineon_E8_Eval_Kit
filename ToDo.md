@@ -76,6 +76,7 @@
 - [x] Add committed replay fixtures for regression testing
 - [x] Add stable host workflows for configure/build/test/sim/clean
 - [x] Add fixture regression matrix runner
+- [x] Add numeric regression envelopes for committed fixtures
 
 ## Milestone 8 — E84 Portability
 - [ ] Add memory estimate
@@ -96,6 +97,7 @@
 - [x] Add research-only warning
 - [x] Lock the audit CSV schema in docs
 - [x] Document fixture matrix and host regression workflow
+- [x] Document numeric envelope validation checks
 
 ## Milestone 10 — Final Review
 - [ ] Run all tests

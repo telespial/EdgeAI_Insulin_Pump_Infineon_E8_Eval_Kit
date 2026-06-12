@@ -8,7 +8,7 @@ audit_schema='timestamp,glucose_mgdl,sqi_pct,iob_u,cob_g,baseline_pred_15,baseli
 output_dir="out/fixture_matrix"
 fixtures=(data/sample_replay_*.csv)
 
-make -f host.mk build
+make -f host.mk test
 rm -rf "$output_dir"
 mkdir -p "$output_dir"
 
@@ -82,3 +82,5 @@ for fixture in "${fixtures[@]}"; do
 
     echo "fixture ok: $fixture_key"
 done
+
+python3 scripts/validate_fixture_metrics.py "$output_dir" tests/fixture_expectations.json

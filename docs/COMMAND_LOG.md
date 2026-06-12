@@ -488,3 +488,16 @@
 [2026-06-11 17:59 PDT] cmd: final git status check before fixture matrix commit | exit=0
 
 [2026-06-11 18:00 PDT] cmd: commit and push fixture matrix regression workflow | exit=0
+
+[2026-06-11 18:05 PDT] cmd: add fixture expectations JSON, numeric validator, and matrix integration | exit=0
+[2026-06-11 18:05 PDT] cmd: update docs for numeric regression envelopes and full regression flow | exit=0
+
+[2026-06-11 18:10 PDT] cmd: run full regression matrix with numeric envelopes | exit=2
+
+[2026-06-11 18:12 PDT] cmd: inspect fixture expectations and generated matrix outputs after passing regression | exit=0
+
+[2026-06-11 18:13 PDT] cmd: clean host_build and out after numeric envelope regression pass | exit=0
+
+[2026-06-11 18:14 PDT] cmd: final git status check before numeric envelope commit | exit=0
+
+[2026-06-11 18:16 PDT] cmd: commit and push numeric fixture metric envelopes | exit=0
