@@ -528,3 +528,17 @@ Results:
 
 Next recommended step:
 - Compare the candidate snapshot against the current embedded defaults and only then decide whether to wire it into firmware.
+
+## 2026-06-12 — Predictor V2 candidate V1 promotion review
+
+Changed:
+- Added `docs/PREDICTOR_V2_FEATURE_IMPORTANCE.md` to show which coefficient groups are actually carrying the candidate model.
+- Added `docs/PREDICTOR_V2_CANDIDATE_REVIEW.md` to summarize accuracy, risks, embedded suitability, and the promotion plan.
+- Added `generated/predictor_v2_table_comparison.md` to compare the candidate export against the active embedded table layout without changing firmware sources.
+
+Results:
+- The candidate remains conditionally ready rather than fully ready; the gains are real, but the proxy-heavy features still warrant caution.
+- The active firmware model tables were left untouched.
+
+Next recommended step:
+- If promotion is approved, copy the candidate tables into the active generated-table path and rerun the full host and LCD-safe validation path before any hardware flash.

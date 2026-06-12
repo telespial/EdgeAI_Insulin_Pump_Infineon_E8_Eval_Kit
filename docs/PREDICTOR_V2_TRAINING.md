@@ -105,6 +105,8 @@ It also adds glucose-dynamics helpers such as rolling volatility, acceleration, 
 
 The current candidate export is reviewed in `docs/PREDICTOR_V2_EXPORT_READINESS.md`.
 
+Feature-importance analysis is in `docs/PREDICTOR_V2_FEATURE_IMPORTANCE.md`, and the candidate review is in `docs/PREDICTOR_V2_CANDIDATE_REVIEW.md`.
+
 Host-side export summaries can be regenerated with `tools/summarize_predictor_v2_export.py`, which writes a manifest to `generated/predictor_v2_export_manifest.md`.
 
 Review-only candidate snapshots may be staged under:

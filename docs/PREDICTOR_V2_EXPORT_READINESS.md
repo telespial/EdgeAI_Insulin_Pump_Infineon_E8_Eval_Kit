@@ -59,3 +59,8 @@ Recommended next step:
 
 - compare the candidate snapshot against the current embedded default tables and confirm the firmware still builds cleanly before any runtime wiring changes.
 
+See also:
+
+- `docs/PREDICTOR_V2_CANDIDATE_REVIEW.md`
+- `docs/PREDICTOR_V2_FEATURE_IMPORTANCE.md`
+- `generated/predictor_v2_table_comparison.md`

@@ -7022,3 +7022,5 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12 13:50 PDT: Re-ran `make -f host.mk test` and `make -f host.mk regression`; both host suites passed after adding the export-readiness review materials.
 - 2026-06-12 13:55 PDT: Removed transient build/output directories after the export-readiness validation; the remaining diff is docs, script, and candidate snapshot only.
 - 2026-06-12 14:00 PDT: Committed the export-readiness review bundle as `3353fb2` on `recover-lcd-after-aps-probe`.
+- 2026-06-12 14:05 PDT: Host `make -f host.mk test` and `make -f host.mk regression` both passed after the candidate review docs and table comparison were added.
+- 2026-06-12 14:05 PDT: Wrote `docs/PREDICTOR_V2_FEATURE_IMPORTANCE.md`, `docs/PREDICTOR_V2_CANDIDATE_REVIEW.md`, and `generated/predictor_v2_table_comparison.md`; active firmware tables were left unchanged.
