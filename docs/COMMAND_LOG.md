@@ -164,3 +164,21 @@
   - Synced the repository homepage branch so GitHub will show the APS landing page instead of the older Graphics LVGL demo text.
 [2026-06-11 20:57:00 PDT] COMMAND: git status --short
   - Working tree clean after the main-branch push.
+[2026-06-11 21:30:00 PDT] COMMAND: git status --short && git branch --show-current && git switch main && git pull --ff-only && git switch -c update-main-aps-readme
+  - Created the docs-only branch `update-main-aps-readme` from `main` for homepage alignment work.
+[2026-06-11 21:31:00 PDT] COMMAND: git show main:README.md | sed -n '1,220p' && git show codex/bar-graph-tuning:README.md | sed -n '1,220p' && git show codex/bar-graph-tuning:docs/PROJECT_HISTORY.md | sed -n '1,220p' && git show codex/bar-graph-tuning:docs/LEGACY_DISPLAY_BRINGUP.md | sed -n '1,220p'
+  - Confirmed the legacy `main` README still contained the LVGL/Smart Pong bring-up framing and copied the APS landing-page/history docs from the feature branch.
+[2026-06-11 21:32:00 PDT] COMMAND: git diff --stat main..update-main-aps-readme -- README.md docs/PROJECT_HISTORY.md docs/LEGACY_DISPLAY_BRINGUP.md && git status --short
+  - Verified the docs-only diff is scoped to the homepage README plus the two history docs.
+[2026-06-11 21:33:00 PDT] COMMAND: git diff --stat main..update-main-aps-readme && git diff -- README.md && rg -n "Pong|Smart Pong|LVGL demo|music player" README.md && git status --short
+  - Verified the new README removes Pong/Smart Pong/LVGL demo framing; the legacy terms no longer appear in `README.md`.
+[2026-06-11 21:34:00 PDT] COMMAND: rm -rf host_build out && git status --short
+  - Removed generated host build and regression outputs so the branch stays docs-only.
+[2026-06-11 21:35:00 PDT] COMMAND: git add README.md docs/PROJECT_HISTORY.md docs/LEGACY_DISPLAY_BRINGUP.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Align main README with APS landing page" && git push origin update-main-aps-readme
+  - The docs-only branch was committed as `2a8b877` and pushed to `origin/update-main-aps-readme`.
+[2026-06-11 21:36:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD && git branch --show-current
+  - Confirmed the branch is clean after push and the current branch is `update-main-aps-readme` at `2a8b877`.
+[2026-06-11 21:37:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD && git branch --show-current
+  - Final verification confirmed a clean docs branch at `54092c1`.
+[2026-06-11 21:38:00 PDT] COMMAND: git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Finish homepage verification log" && git push origin update-main-aps-readme
+  - Final homepage verification log update was committed and pushed on `update-main-aps-readme`.
