@@ -160,3 +160,7 @@
 [2026-06-11 20:53:00 PDT] COMMAND: git branch --show-current; git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || true; git branch -a | sed -n '1,20p'; git show main:README.md | sed -n '1,40p'
 [2026-06-11 20:54:00 PDT] COMMAND: git switch main
 [2026-06-11 20:55:00 PDT] COMMAND: git show codex/bar-graph-tuning:README.md > README.md && git diff --stat -- README.md && sed -n '1,40p' README.md
+[2026-06-11 20:56:00 PDT] COMMAND: git add README.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Update main README to APS landing page" && git push origin main
+  - Synced the repository homepage branch so GitHub will show the APS landing page instead of the older Graphics LVGL demo text.
+[2026-06-11 20:57:00 PDT] COMMAND: git status --short
+  - Working tree clean after the main-branch push.
