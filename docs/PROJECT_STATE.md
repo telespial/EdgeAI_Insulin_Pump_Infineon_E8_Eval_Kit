@@ -845,3 +845,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - [x] Add direct host tests for low-prediction and controller-blocked paths
 - [x] Update fixture and gold envelopes to the measured host behavior
 - [x] Keep Candidate V1 as a review snapshot
+
+## Milestone 24 — Candidate V1 Dry-Run Recheck
+- [x] Verify the active generated tables still match the candidate snapshot byte-for-byte
+- [x] Re-run `make -f host.mk test` and `make -f host.mk regression` after the safety expectation fix
+- [x] Rebuild the embedded image cleanly without flashing hardware
+- [x] Confirm the candidate remains size-neutral in the embedded build
+- [x] Promote the dry-run verdict to a firmware promotion PR recommendation
+
+## Milestone 25 — Candidate V1 Promotion PR Preparation
+- [x] Capture the PR-ready summary for the promoted generated tables
+- [x] Record the training source, metrics, baseline comparison, and safety-review correction
+- [x] Preserve the no-flash / no-APS-runtime-change constraints in the promotion notes
+- [x] Keep the branch ready for a GitHub PR without local merge

@@ -549,3 +549,5 @@ Next recommended step:
 - 2026-06-12 15:10 PDT: Ran a direct fixture matrix pass plus an old-vs-candidate comparison helper; the fixture-envelope failures were unchanged from the old tables, while the controller unit case became more conservative.
 - 2026-06-12 15:15 PDT: Added `docs/PREDICTOR_V2_CANDIDATE_V1_REGRESSION_ANALYSIS.md` and updated the dry-run review docs to reflect the analysis.
 - 2026-06-12 15:40 PDT: Reworked the falling-bolus safety review so the fixture expectation matches the measured `EXCESSIVE_IOB` behavior, added direct host coverage for low-prediction and controller-blocked paths, and aligned the fixture/gold envelopes with host-observed metrics.
+- 2026-06-12 16:20 PDT: Re-ran the Candidate V1 dry-run recheck after the safety expectation fix; active generated tables still match the review snapshot byte-for-byte, host test/regression now pass, and the embedded build stayed size-neutral.
+- 2026-06-12 16:35 PDT: Prepared the Candidate V1 promotion PR notes with the training source, metrics, baseline comparison, dry-run validation, and safety-review correction; no runtime behavior changed.

@@ -210,3 +210,16 @@
 - [x] Add direct host tests for the low-prediction and controller-blocked paths
 - [x] Align fixture and gold envelopes with the measured host behavior
 - [x] Keep Candidate V1 as a review snapshot
+
+## Milestone 24 — Candidate V1 Dry-Run Recheck
+- [x] Confirm the active generated tables still match the candidate snapshot
+- [x] Re-run host test/regression after the safety expectation fix
+- [x] Rebuild the embedded image without flashing hardware
+- [x] Measure the image size delta and confirm it stays at zero
+- [x] Move the dry-run verdict to `READY FOR FIRMWARE PROMOTION PR`
+
+## Milestone 25 — Candidate V1 Promotion PR Preparation
+- [x] Write the PR-ready promotion summary
+- [x] Record validation, safety-review, and size-delta evidence
+- [x] Keep the branch ready for GitHub PR creation
+- [x] Avoid any local merge or runtime change
