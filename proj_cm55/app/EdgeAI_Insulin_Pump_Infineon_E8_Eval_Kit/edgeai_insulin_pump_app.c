@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
 
 #include "cgm_model_runtime.h"
 #include "cgm_replay_subject001.h"
@@ -17,13 +15,7 @@ enum
     CGM_REPLAY_STEP_MS = 1400u,
     CGM_REPLAY_SAMPLE_MINUTES = 5u,
     BAR_GRAPH_COUNT = 3u,
-    SMOKE_SEQUENCE_LEN = 5u,
-    APS_SMOKE_STEP_INTERVAL_MS = 2500u,
 };
-
-#ifndef APP_APS_SMOKE_UART_ONLY
-#define APP_APS_SMOKE_UART_ONLY 0U
-#endif
 
 typedef struct
 {
@@ -42,29 +34,11 @@ typedef struct
     lv_timer_t *timer;
 } cgm_dashboard_t;
 
-typedef struct
-{
-    uint32_t next_due_ms;
-    uint32_t service_call_count;
-    uint32_t step_index;
-    bool active;
-    bool complete;
-} aps_smoke_state_t;
-
 static cgm_dashboard_t gDashboard;
-static aps_smoke_state_t gSmokeState;
-
-#if (APP_APS_SMOKE_TEST == 1U)
-static const uint16_t kSmokeGlucoseSequence[SMOKE_SEQUENCE_LEN] = {100u, 120u, 150u, 80u, 70u};
-#endif
 
 static uint16_t replay_glucose_at(uint32_t index)
 {
-#if (APP_APS_SMOKE_TEST == 1U)
-    return kSmokeGlucoseSequence[index % SMOKE_SEQUENCE_LEN];
-#else
     return kCgmReplaySubject001Mgdl[index % CGM_REPLAY_SUBJECT001_LEN];
-#endif
 }
 
 static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum);
@@ -242,51 +216,6 @@ static void update_chart_colors(uint16_t current_mgdl)
     lv_chart_set_series_color(gDashboard.chart, gDashboard.prediction_series, lv_color_hex(0x4CC7FF));
 }
 
-#if (APP_APS_SMOKE_TEST == 1U)
-static const char *smoke_action_to_string(uint16_t current_mgdl, uint16_t pred_15m_mgdl, uint16_t pred_30m_mgdl)
-{
-    if (current_mgdl <= 80u || pred_15m_mgdl <= 80u || pred_30m_mgdl <= 80u)
-    {
-        return "SUSPEND_BASAL";
-    }
-    if (current_mgdl < 100u || pred_15m_mgdl < 100u)
-    {
-        return "REDUCE_BASAL";
-    }
-    return "NO_CHANGE";
-}
-
-static void smoke_reason_codes(uint16_t current_mgdl,
-                               uint16_t pred_15m_mgdl,
-                               uint16_t pred_30m_mgdl,
-                               char *buffer,
-                               size_t buffer_length)
-{
-    bool wrote_reason = false;
-
-    if (buffer == NULL || buffer_length == 0u)
-    {
-        return;
-    }
-
-    buffer[0] = '\0';
-    if (current_mgdl <= 80u || pred_15m_mgdl <= 80u)
-    {
-        snprintf(buffer + strlen(buffer), buffer_length - strlen(buffer), "%sPREDICTED_LOW_15M", wrote_reason ? "|" : "");
-        wrote_reason = true;
-    }
-    if (pred_30m_mgdl <= 80u)
-    {
-        snprintf(buffer + strlen(buffer), buffer_length - strlen(buffer), "%sPREDICTED_LOW_30M", wrote_reason ? "|" : "");
-        wrote_reason = true;
-    }
-    if (buffer[0] == '\0')
-    {
-        snprintf(buffer, buffer_length, "NONE");
-    }
-}
-#endif
-
 static void update_glucose_label(uint16_t current_mgdl)
 {
     char buffer[48];
@@ -306,18 +235,13 @@ static void update_glucose_label(uint16_t current_mgdl)
 
 static void push_sample(uint16_t current_mgdl)
 {
-    char header_buffer[64];
     uint16_t predicted_mgdl = current_mgdl;
-    uint16_t predicted_30m_mgdl = current_mgdl;
-    uint16_t predicted_60m_mgdl = current_mgdl;
     uint8_t confidence_pct = 0u;
     int32_t accuracy_pct;
+    char header_buffer[64];
 
     (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
-    predicted_30m_mgdl = clamp_i32((int32_t)current_mgdl + (((int32_t)predicted_mgdl - (int32_t)current_mgdl) * 2), 40, 400);
-    predicted_60m_mgdl = clamp_i32((int32_t)current_mgdl + (((int32_t)predicted_mgdl - (int32_t)current_mgdl) * 4), 40, 400);
     accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
-#if (APP_APS_SMOKE_UART_ONLY != 1U)
     update_glucose_label(current_mgdl);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     if (gDashboard.prediction_accuracy_label != NULL)
@@ -336,89 +260,9 @@ static void push_sample(uint16_t current_mgdl)
         update_chart_colors(current_mgdl);
         lv_chart_refresh(gDashboard.chart);
     }
-#endif
 
     gDashboard.sample_index++;
 }
-
-#if (APP_APS_SMOKE_TEST == 1U)
-static void emit_smoke_step(uint32_t step_index, uint16_t current_mgdl)
-{
-    uint16_t predicted_mgdl = current_mgdl;
-    uint16_t predicted_30m_mgdl = current_mgdl;
-    uint16_t predicted_60m_mgdl = current_mgdl;
-    uint8_t confidence_pct = 0u;
-    char reason_buffer[96];
-    const char *controller_action = "NO_CHANGE";
-    const char *safety_action = "NO_CHANGE";
-    int32_t accuracy_pct;
-
-    (void)predict_glucose_from_model(step_index, current_mgdl, &predicted_mgdl, &confidence_pct);
-    predicted_30m_mgdl = clamp_i32((int32_t)current_mgdl + (((int32_t)predicted_mgdl - (int32_t)current_mgdl) * 2), 40, 400);
-    predicted_60m_mgdl = clamp_i32((int32_t)current_mgdl + (((int32_t)predicted_mgdl - (int32_t)current_mgdl) * 4), 40, 400);
-    controller_action = smoke_action_to_string(current_mgdl, predicted_mgdl, predicted_30m_mgdl);
-    safety_action = controller_action;
-    smoke_reason_codes(current_mgdl, predicted_mgdl, predicted_30m_mgdl, reason_buffer, sizeof(reason_buffer));
-    accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
-    printf("APS step %lu BG=%u P15=%u P30=%u P60=%u conf=%u%% acc=%ld%% action=%s safety=%s reasons=%s\r\n",
-           (unsigned long)step_index,
-           (unsigned int)current_mgdl,
-           (unsigned int)predicted_mgdl,
-           (unsigned int)predicted_30m_mgdl,
-           (unsigned int)predicted_60m_mgdl,
-           (unsigned int)confidence_pct,
-           (long)accuracy_pct,
-           controller_action,
-           safety_action,
-           reason_buffer);
-}
-
-void ApsSmoke_Init(void)
-{
-    gSmokeState.next_due_ms = 0u;
-    gSmokeState.service_call_count = 0u;
-    gSmokeState.step_index = 0u;
-    gSmokeState.active = true;
-    gSmokeState.complete = false;
-}
-
-void ApsSmoke_Service(uint32_t now_ms)
-{
-    bool due_by_calls;
-
-    if ((!gSmokeState.active) || gSmokeState.complete)
-    {
-        return;
-    }
-
-    gSmokeState.service_call_count++;
-    due_by_calls = (gSmokeState.service_call_count >= 10u);
-
-    if ((gSmokeState.step_index != 0u) && (now_ms < gSmokeState.next_due_ms) && (!due_by_calls))
-    {
-        return;
-    }
-
-    gSmokeState.service_call_count = 0u;
-
-    if (gSmokeState.step_index >= SMOKE_SEQUENCE_LEN)
-    {
-        gSmokeState.complete = true;
-        printf("APS smoke test complete\r\n");
-        return;
-    }
-
-    emit_smoke_step(gSmokeState.step_index, kSmokeGlucoseSequence[gSmokeState.step_index]);
-    gSmokeState.step_index++;
-    gSmokeState.next_due_ms = now_ms + APS_SMOKE_STEP_INTERVAL_MS;
-
-    if (gSmokeState.step_index >= SMOKE_SEQUENCE_LEN)
-    {
-        gSmokeState.complete = true;
-        printf("APS smoke test complete\r\n");
-    }
-}
-#endif
 
 static void seed_chart(void)
 {
@@ -536,7 +380,7 @@ void edgeai_insulin_pump_app_start(void)
             {
                 gDashboard.status_labels[index] = label;
                 lv_label_set_text(label, bar_texts[index]);
-                lv_obj_set_pos(label, 578, bar_y_positions[index] - 2);
+                lv_obj_set_pos(label, 498, bar_y_positions[index] - 2);
                 lv_obj_set_style_text_color(label, lv_color_hex(0xC7EFFF), 0);
                 lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
             }
@@ -619,9 +463,6 @@ void edgeai_insulin_pump_app_start(void)
     CgmModel_Reset();
     CgmModel_SetEnabled(true);
     gDashboard.sample_index = 0u;
-#if (APP_APS_SMOKE_TEST == 1U)
-    ApsSmoke_Init();
-#endif
     seed_chart();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);
 }

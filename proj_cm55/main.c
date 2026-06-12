@@ -661,13 +661,6 @@ static void cm55_gfx_task(void *arg)
          * LVGL tasks.
          */
         time_till_next = lv_timer_handler();
-#if (APP_APS_SMOKE_TEST == 1U)
-        ApsSmoke_Service((uint32_t)lv_tick_get());
-#endif
-        if ((time_till_next == 0u) || (time_till_next > 10u))
-        {
-            time_till_next = 10u;
-        }
         vTaskDelay(pdMS_TO_TICKS(time_till_next));
     }
 }
@@ -748,18 +741,9 @@ int main(void)
 
     if (pdPASS == task_return)
     {
-#if (APP_APS_SMOKE_TEST == 1U)
-        printf("APS Research Platform\r\n");
-        printf("Mode: Embedded smoke test\r\n");
-        printf("Predictor: present\r\n");
-        printf("Controller: present\r\n");
-        printf("Safety: present\r\n");
-        printf("Build: %s %s\r\n\n", __DATE__, __TIME__);
-#else
         printf("****************** "
                "PSOC Edge MCU: Graphics LVGL Demo "
                "****************** \r\n\n");
-#endif
 
         /* Start the RTOS Scheduler */
         vTaskStartScheduler();

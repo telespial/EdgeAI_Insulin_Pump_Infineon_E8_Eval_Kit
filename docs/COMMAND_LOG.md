@@ -183,6 +183,10 @@
 [2026-06-11 22:51:00 PDT] cmd: commit and push follow-up LCD-safe validation notes | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Record LCD-safe APS sidecar validation" && git push origin embedded-bringup-smoke-test | exit=0 (commit 882f5fd pushed)
 [2026-06-11 22:52:00 PDT] cmd: commit and push hash-alignment note | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Align validation notes with latest push" && git push origin embedded-bringup-smoke-test | exit=0 (commit 78c43dc pushed)
 [2026-06-11 22:53:00 PDT] cmd: finalize LCD-safe APS validation notes | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Finalize LCD-safe APS validation notes" && git push origin embedded-bringup-smoke-test | exit=0 (commit cd581fc pushed)
+[2026-06-11 23:02:00 PDT] cmd: restore CM55 sources to failsafe-e8-insulin-pump baseline for LCD revalidation | git checkout failsafe-e8-insulin-pump -- proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h | exit=0
+[2026-06-11 23:03:00 PDT] cmd: rebuild restore-point firmware from failsafe baseline | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 | exit=0
+[2026-06-11 23:03:00 PDT] cmd: flash restore-point firmware to board | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 | exit=0
+[2026-06-11 23:10:00 PDT] cmd: capture UART after restore-point flash | python3 -u - <<'PY' ... serial watch for 8s ... PY | exit=0 (no UART output during this baseline window)
 
 [14:39:22 PDT] git status --short
 

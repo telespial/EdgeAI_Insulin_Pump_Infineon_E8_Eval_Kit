@@ -627,6 +627,14 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The LCD-safe APS sidecar fix has been committed and pushed as `78c43dc` on `embedded-bringup-smoke-test`.
 - Current validated UART behavior shows the APS banner plus smoke steps 0 through 3 while the GUI timer stays enabled; the final step should be confirmed on a longer capture if needed.
 
+## Update 2026-06-11 23:02 PDT
+- I restored the CM55 display/app sources back to the `failsafe-e8-insulin-pump` control flow so the LCD path can be revalidated from the known-good graphics/prediction baseline.
+- The next step is a clean rebuild/flash from that restore point before reintroducing any APS sidecar behavior.
+
+## Update 2026-06-11 23:10 PDT
+- The failsafe baseline rebuild and flash completed successfully after the source rollback.
+- Next check is the board-side LCD state against this exact restore-point image before adding any APS code back in.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

@@ -76,3 +76,8 @@ Build: Jun 11 2026 21:43:59
 - The GUI timer and APS sidecar now share the display safely; the next validation is to confirm the final smoke step/completion banner on a longer UART watch.
 - The boot banner still shows the older build timestamp string in the UART watch window; that stamp should be refreshed or explained in a follow-up.
 - No host regression was needed because this pass only changed embedded firmware smoke wiring.
+
+## Restore-Point Recheck
+- The CM55 application sources were rolled back to `failsafe-e8-insulin-pump` for LCD revalidation.
+- The restore-point rebuild completed successfully and was programmed to the board.
+- UART was quiet during the short follow-up window, which is expected for the baseline image; the remaining confirmation is a direct LCD visual check on the board.
