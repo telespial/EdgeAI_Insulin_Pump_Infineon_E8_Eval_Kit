@@ -78,7 +78,33 @@ typedef struct
     float carbs_120m_g;
     uint16_t minutes_since_bolus;
     uint16_t minutes_since_meal;
+    uint8_t activity_state;
+    uint8_t activity_confidence_pct;
+    float motion_rms_5m;
+    float motion_rms_15m;
+    uint16_t active_minutes;
+    uint16_t post_exercise_minutes;
 } aps_physiology_state_t;
+
+typedef enum
+{
+    ACTIVITY_UNKNOWN = 0,
+    ACTIVITY_SEDENTARY,
+    ACTIVITY_LIGHT,
+    ACTIVITY_MODERATE,
+    ACTIVITY_EXERCISE,
+    ACTIVITY_SLEEP
+} activity_state_t;
+
+typedef struct
+{
+    activity_state_t state;
+    uint8_t confidence_pct;
+    float motion_rms_5m;
+    float motion_rms_15m;
+    uint16_t active_minutes;
+    uint16_t post_exercise_minutes;
+} activity_features_t;
 
 typedef struct
 {

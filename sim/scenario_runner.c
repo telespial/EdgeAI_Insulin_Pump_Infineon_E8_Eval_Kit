@@ -37,6 +37,8 @@ static replay_step_t make_step(uint32_t now_s,
     step.has_carbs = true;
     step.has_insulin = true;
     step.has_basal = true;
+    step.has_activity = false;
+    step.has_step_count = false;
     return step;
 }
 
@@ -198,6 +200,53 @@ static bool build_meal_and_insulin_overlap(replay_dataset_t *dataset)
     return true;
 }
 
+static bool build_physiology_smoke(replay_dataset_t *dataset)
+{
+    uint32_t index;
+    clear_dataset(dataset);
+    dataset->physiology_columns_present = true;
+
+    for (index = 0u; index < 12u; ++index)
+    {
+        replay_step_t step = make_step(60u * (index + 1u), (uint16_t)(112u + (index * 2u)), 4, 95u, 0u, 0.0f, 0.0f, 0.8f, true, 60u * (index + 1u));
+
+        if (index < 4u)
+        {
+            step.accel_ax_mg = 5;
+            step.accel_ay_mg = -7;
+            step.accel_az_mg = 995;
+            step.step_count = (uint16_t)(index * 6u);
+            step.has_activity = true;
+            step.has_step_count = true;
+        }
+        else if (index < 8u)
+        {
+            step.accel_ax_mg = 120;
+            step.accel_ay_mg = 90;
+            step.accel_az_mg = 980;
+            step.step_count = (uint16_t)(30u + (index * 12u));
+            step.has_activity = true;
+            step.has_step_count = true;
+        }
+        else
+        {
+            step.accel_ax_mg = 260;
+            step.accel_ay_mg = 240;
+            step.accel_az_mg = 860;
+            step.step_count = (uint16_t)(80u + (index * 20u));
+            step.has_activity = true;
+            step.has_step_count = true;
+        }
+
+        if (!append_step(dataset, &step))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool ScenarioRunner_Load(const char *scenario_name, replay_dataset_t *dataset, char *error, size_t error_length)
 {
     if (scenario_name == NULL || dataset == NULL)
@@ -240,6 +289,10 @@ bool ScenarioRunner_Load(const char *scenario_name, replay_dataset_t *dataset, c
     if (strcmp(scenario_name, "meal + insulin overlap") == 0)
     {
         return build_meal_and_insulin_overlap(dataset);
+    }
+    if (strcmp(scenario_name, "physiology smoke") == 0)
+    {
+        return build_physiology_smoke(dataset);
     }
 
     if (error != NULL && error_length > 0u)

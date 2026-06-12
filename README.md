@@ -5,6 +5,7 @@ This repository extends the last stable Failsafe Restore Point of an existing In
 Future architecture planning now also covers RTOS readiness and OS abstraction so the current research loop can migrate cleanly later without changing predictor, controller, safety, or regression behavior.
 
 Project lineage and evolution are documented in `docs/PROJECT_HISTORY.md`.
+The physiology context modules are documented in `docs/PHYSIOLOGY_ENGINE.md`.
 
 Smoke-test build and flash command:
 

@@ -1,6 +1,9 @@
 #include "aps_physiology.h"
+#include "activity_engine.h"
 #include "controller_openaps.h"
+#include "cob_engine.h"
 #include "metrics.h"
+#include "iob_engine.h"
 #include "predictor_v2.h"
 #include "replay_loader.h"
 #include "scenario_runner.h"
@@ -266,6 +269,75 @@ static void test_predictor_bad_sqi_and_stale_fallback(void)
     require_true("stale status", (stale_eval.status_flags & PREDICTOR_V2_STATUS_STALE_CGM) != 0u);
 }
 
+static void test_iob_engine(void)
+{
+    iob_engine_config_t config =
+    {
+        .bolus_duration_min = 300u,
+        .basal_duration_min = 300u,
+        .max_events = 16u,
+    };
+
+    IobEngine_Init(&config);
+    require_true("iob bolus add", IobEngine_AddBolus(60u, 3.0f));
+    require_true("iob basal add", IobEngine_AddBasal(60u, 1.2f, 60u));
+    require_true("iob update start", IobEngine_Update(60u));
+    require_true("iob positive", IobEngine_GetIobU() > 3.9f && IobEngine_GetIobU() < 4.3f);
+    require_true("iob decays", IobEngine_Update(60u + (120u * 60u)));
+    require_true("iob still positive", IobEngine_GetIobU() > 1.8f && IobEngine_GetIobU() < 2.3f);
+    require_true("iob invalid timestamp rejected", !IobEngine_AddBolus(30u, 1.0f));
+    require_true("iob negative rejected", !IobEngine_AddBolus(600u, -1.0f));
+    require_true("iob expires", IobEngine_Update(60u + (360u * 60u)));
+    require_true("iob zero after expiry", IobEngine_GetIobU() == 0.0f);
+}
+
+static void test_cob_engine(void)
+{
+    cob_engine_config_t config =
+    {
+        .meal_duration_min = 180u,
+        .max_meals = 16u,
+    };
+
+    CobEngine_Init(&config);
+    require_true("cob meal add", CobEngine_AddMeal(120u, 45.0f, 180u));
+    require_true("cob update start", CobEngine_Update(120u));
+    require_true("cob positive", CobEngine_GetCobG() > 44.0f && CobEngine_GetCobG() <= 45.0f);
+    require_true("cob decays", CobEngine_Update(120u + (90u * 60u)));
+    require_true("cob still positive", CobEngine_GetCobG() > 20.0f && CobEngine_GetCobG() < 25.0f);
+    require_true("cob invalid timestamp rejected", !CobEngine_AddMeal(60u, 10.0f, 180u));
+    require_true("cob negative rejected", !CobEngine_AddMeal(600u, -1.0f, 180u));
+    require_true("cob expires", CobEngine_Update(120u + (240u * 60u)));
+    require_true("cob zero after expiry", CobEngine_GetCobG() == 0.0f);
+}
+
+static void test_activity_engine(void)
+{
+    activity_engine_config_t config =
+    {
+        .max_samples = 32u,
+    };
+    activity_features_t features;
+    activity_state_t state;
+
+    ActivityEngine_Init(&config);
+    require_true("activity low motion", ActivityEngine_Update(60u, 0, 0, 1000, false, 0u, &features));
+    state = features.state;
+    require_true("activity sedentary or sleep", state == ACTIVITY_SEDENTARY || state == ACTIVITY_SLEEP);
+    require_true("activity confidence bounded", features.confidence_pct <= 100u);
+
+    require_true("activity light motion", ActivityEngine_Update(120u, 980, 0, 0, true, 12u, &features));
+    require_true("activity light or higher", features.state == ACTIVITY_LIGHT || features.state == ACTIVITY_MODERATE || features.state == ACTIVITY_EXERCISE);
+
+    require_true("activity exercise motion", ActivityEngine_Update(180u, 700, 0, 0, true, 48u, &features));
+    require_true("activity exercise reinforcement", ActivityEngine_Update(240u, 650, 0, 0, true, 48u, &features));
+    require_true("activity exercise state", features.state == ACTIVITY_EXERCISE);
+    require_true("activity confidence range", features.confidence_pct <= 100u);
+
+    require_true("activity post exercise update", ActivityEngine_Update(1200u, 0, 0, 1000, false, 0u, &features));
+    require_true("activity post exercise minutes", features.post_exercise_minutes > 0u);
+}
+
 static void configure_modules(void)
 {
     openaps_controller_config_t controller_config;
@@ -383,6 +455,7 @@ static void test_scenario_runner_and_audit(void)
         "bad sqi",
         "high iob",
         "meal + insulin overlap",
+        "physiology smoke",
     };
     size_t scenario_index;
 
@@ -403,6 +476,11 @@ static void test_scenario_runner_and_audit(void)
         require_true("scenario baseline predictions", results[0].baseline_prediction.pred_15m_mgdl > 0u);
         require_true("scenario ML predictions", results[0].ml_prediction.pred_15m_mgdl > 0u);
         require_true("scenario safety output", results[0].safety_final_output.action <= APS_ACTION_CORRECTION_SUGGESTION);
+        if (strcmp(scenarios[scenario_index], "physiology smoke") == 0)
+        {
+            require_true("physiology smoke activity populated", results[0].input.physiology.activity_state != ACTIVITY_UNKNOWN);
+            require_true("physiology smoke active minutes", results[result_count - 1u].input.physiology.active_minutes > 0u);
+        }
     }
 }
 
@@ -555,6 +633,46 @@ static void test_bad_data_rejected_safely(void)
     remove("test_replay_bad.csv");
 }
 
+static void test_physiology_feature_population(void)
+{
+    predictor_v2_input_t input;
+    predictor_v2_feature_vector_t features;
+    activity_features_t activity;
+
+    IobEngine_Reset();
+    CobEngine_Reset();
+    ActivityEngine_Reset();
+    require_true("iob seed", IobEngine_AddBolus(300u, 2.0f));
+    require_true("cob seed", CobEngine_AddMeal(300u, 30.0f, 180u));
+    require_true("iob update seed", IobEngine_Update(300u));
+    require_true("cob update seed", CobEngine_Update(300u));
+    require_true("activity seed", ActivityEngine_Update(300u, 700, 0, 0, true, 30u, &activity));
+    require_true("activity seed reinforce", ActivityEngine_Update(360u, 650, 0, 0, true, 36u, &activity));
+    require_true("activity seed reinforce 2", ActivityEngine_Update(420u, 680, 0, 0, true, 42u, &activity));
+
+    memset(&input, 0, sizeof(input));
+    input.cgm.epoch_s = 300u;
+    input.cgm.glucose_mgdl = 140u;
+    input.cgm.trend_mgdl_min_x100 = 10;
+    input.cgm.sqi_pct = 95u;
+    input.cgm.valid = true;
+    input.physiology.iob_u = IobEngine_GetIobU();
+    input.physiology.cob_g = CobEngine_GetCobG();
+    input.physiology.activity_state = (uint8_t)activity.state;
+    input.physiology.activity_confidence_pct = activity.confidence_pct;
+    input.physiology.motion_rms_5m = activity.motion_rms_5m;
+    input.physiology.motion_rms_15m = activity.motion_rms_15m;
+    input.physiology.active_minutes = activity.active_minutes;
+    input.physiology.post_exercise_minutes = activity.post_exercise_minutes;
+    input.physiology_present = true;
+
+    require_true("physiology copied iob", input.physiology.iob_u > 0.0f);
+    require_true("physiology copied cob", input.physiology.cob_g > 0.0f);
+    require_true("physiology copied activity", input.physiology.activity_state != ACTIVITY_UNKNOWN);
+    require_true("physiology copied activity confidence", input.physiology.activity_confidence_pct > 0u);
+    require_true("physiology feature vector still builds", PredictorV2_BuildFeatureVector(&input, &features));
+}
+
 int main(void)
 {
     ApsPhysiology_Reset();
@@ -567,6 +685,9 @@ int main(void)
     test_predictor_output_bounds();
     test_predictor_invalid_model_fallback();
     test_predictor_bad_sqi_and_stale_fallback();
+    test_iob_engine();
+    test_cob_engine();
+    test_activity_engine();
     test_controller_and_safety();
     test_metrics_module();
     test_replay_loader_success();
@@ -577,6 +698,7 @@ int main(void)
     test_simulation_summary_and_audit_header();
     test_replay_fixture_regressions();
     test_bad_data_rejected_safely();
+    test_physiology_feature_population();
 
     if (g_failures != 0)
     {

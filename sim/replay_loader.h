@@ -14,9 +14,15 @@ typedef struct
     float insulin_u;
     float basal_u_per_hr;
     float carbs_g;
+    int16_t accel_ax_mg;
+    int16_t accel_ay_mg;
+    int16_t accel_az_mg;
+    uint16_t step_count;
     bool has_insulin;
     bool has_basal;
     bool has_carbs;
+    bool has_activity;
+    bool has_step_count;
 } replay_step_t;
 
 typedef struct

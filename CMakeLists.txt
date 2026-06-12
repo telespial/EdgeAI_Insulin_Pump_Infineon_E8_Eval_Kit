@@ -7,8 +7,11 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_library(e84_aps_framework
     firmware/src/aps_log.c
+    firmware/src/activity_engine.c
+    firmware/src/cob_engine.c
     firmware/src/aps_physiology.c
     firmware/src/controller_openaps.c
+    firmware/src/iob_engine.c
     firmware/src/metrics.c
     firmware/src/predictor_v2.c
     firmware/src/predictor_v2_generated.c

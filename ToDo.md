@@ -121,3 +121,11 @@
 - [ ] Keep the current firmware behavior unchanged
 - [ ] Avoid dynamic allocation in firmware modules
 - [ ] Preserve regression outputs during future migration work
+
+## Milestone 12 — Physiology Engine V1
+- [ ] Add IOB engine module
+- [ ] Add COB engine module
+- [ ] Add activity engine module
+- [ ] Extend host replay/simulation with physiology context
+- [ ] Add physiology engine documentation
+- [ ] Preserve GUI/graph/prediction baseline

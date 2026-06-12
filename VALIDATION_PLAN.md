@@ -24,6 +24,7 @@ Pass criteria:
 ## Safety Validation
 - Inject stale CGM, bad SQI, and impossible values.
 - Verify the safety supervisor overrides controller output.
+- Verify physiology context remains advisory only and never directly commands insulin.
 
 Pass criteria:
 - Safety always wins over controller recommendations.
@@ -50,6 +51,8 @@ Pass criteria:
 - Compare controller behavior across scenarios.
 - Confirm each built-in scenario reaches the intended safety branch.
 - Exercise the `meal_rise` alias alongside the long-form scenario name.
+- Exercise the new deterministic physiology smoke scenario.
+- Verify IOB, COB, and activity feature generation remain bounded and deterministic.
 
 Pass criteria:
 - Low glucose leads to reduce/suspend behavior.

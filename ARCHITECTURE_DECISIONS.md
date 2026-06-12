@@ -89,3 +89,13 @@ The APS work is an extension of a working E84 platform, and preserving the prove
 
 Status:
 Accepted
+
+## ADR-010 — Physiology engine provides predictor context
+Decision:
+IOB, COB, and activity state shall be computed by deterministic physiology modules and provided to Predictor V2 and controller logic as context features.
+
+Reason:
+Separating physiology estimation from prediction and control keeps the architecture deterministic, testable, and easier to evolve without disturbing the GUI or replay framework.
+
+Status:
+Accepted

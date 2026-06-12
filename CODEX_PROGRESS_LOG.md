@@ -231,3 +231,38 @@ Known gaps:
 
 Next recommended step:
 - Keep future changes aligned with the documented baseline-preservation rule and avoid replacing working GUI/graph infrastructure without a clear justification.
+
+## 2026-06-11 — Physiology engine milestone
+
+Changed:
+- Added deterministic IOB, COB, and activity engine modules with static allocation and bounded buffers.
+- Extended the host simulator to carry optional activity samples and a deterministic physiology smoke scenario.
+- Added host unit tests for IOB, COB, activity classification, and predictor-input population from physiology context.
+- Documented the physiology engine architecture and added an ADR stating that physiology is predictor context, not direct insulin control.
+
+Tests:
+- Pending host rebuild and regression run after the new modules and tests were added.
+
+Known gaps:
+- The physiology modules are simple linear/rule-based estimators and are not clinically validated.
+- Predictor V2 does not yet use activity features directly.
+
+Next recommended step:
+- Rebuild the host suite, run `make -f host.mk test` and `make -f host.mk regression`, and fix any compile or regression drift introduced by the new physiology context.
+
+## 2026-06-11 — Physiology engine verification
+
+Changed:
+- Host tests and fixture regression suites both passed after tuning the activity-engine test inputs to the deterministic motion scale.
+- Sample and gold fixture matrices validated successfully with the new physiology context modules wired through the simulation runner.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+
+Known gaps:
+- The physiology engine remains a deterministic context layer and is not a clinical model.
+- Predictor V2 still consumes the physiology data indirectly through the existing host simulation flow.
+
+Next recommended step:
+- Keep the current baseline-preservation rule intact and move to the next small predictor or validation milestone without expanding the control surface yet.

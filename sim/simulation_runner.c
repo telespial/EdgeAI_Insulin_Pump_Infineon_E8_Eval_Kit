@@ -1,6 +1,7 @@
 #include "simulation_runner.h"
 
 #include "aps_physiology.h"
+#include "activity_engine.h"
 #include "controller_openaps.h"
 #include "metrics.h"
 #include "predictor_v2.h"
@@ -106,6 +107,7 @@ bool SimulationRunner_RunDataset(const replay_dataset_t *dataset,
     aps_controller_output_t controller_with_ml;
     aps_controller_output_t final_output;
     aps_physiology_state_t physiology;
+    activity_features_t activity_features;
     predictor_v2_input_t input;
     uint16_t clinical_actual_glucose_values[REPLAY_LOADER_MAX_STEPS];
     uint16_t clinical_ml_predicted_15_values[REPLAY_LOADER_MAX_STEPS];
@@ -150,6 +152,7 @@ bool SimulationRunner_RunDataset(const replay_dataset_t *dataset,
     }
 
     ApsPhysiology_Reset();
+    ActivityEngine_Reset();
     PredictorV2_Reset();
     PredictorV2_SetEnabled(true);
     OpenApsController_Reset();
@@ -177,10 +180,30 @@ bool SimulationRunner_RunDataset(const replay_dataset_t *dataset,
         event.carbs_g = step->has_carbs ? step->carbs_g : 0.0f;
         ApsPhysiology_AddEvent(&event);
         ApsPhysiology_Update(step->now_s, &physiology);
+        if (!ActivityEngine_Update(step->now_s,
+                                   step->has_activity ? step->accel_ax_mg : 0,
+                                   step->has_activity ? step->accel_ay_mg : 0,
+                                   step->has_activity ? step->accel_az_mg : 1000,
+                                   step->has_step_count,
+                                   step->step_count,
+                                   &activity_features))
+        {
+            if (error != NULL && error_length > 0u)
+            {
+                snprintf(error, error_length, "activity engine failed at row %zu", index + 1u);
+            }
+            return false;
+        }
 
         input = step->input;
         input.physiology = physiology;
         input.physiology.basal_u_per_hr = step->has_basal ? step->basal_u_per_hr : physiology.basal_u_per_hr;
+        input.physiology.activity_state = (uint8_t)activity_features.state;
+        input.physiology.activity_confidence_pct = activity_features.confidence_pct;
+        input.physiology.motion_rms_5m = activity_features.motion_rms_5m;
+        input.physiology.motion_rms_15m = activity_features.motion_rms_15m;
+        input.physiology.active_minutes = activity_features.active_minutes;
+        input.physiology.post_exercise_minutes = activity_features.post_exercise_minutes;
         input.physiology_present = step->input.physiology_present && dataset->physiology_columns_present;
 
         baseline_prediction = compute_baseline_prediction(&input);

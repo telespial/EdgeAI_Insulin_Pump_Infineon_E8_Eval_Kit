@@ -15,6 +15,10 @@ typedef struct
     int carbs;
     int insulin;
     int basal;
+    int accel_ax;
+    int accel_ay;
+    int accel_az;
+    int step_count;
 } column_index_t;
 
 static void set_error(char *error, size_t error_length, const char *message)
@@ -146,7 +150,7 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
     char header_line[512];
     char *fields[16];
     char *headers[16];
-    column_index_t cols = {-1, -1, -1, -1, -1, -1, -1};
+    column_index_t cols = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
     uint32_t previous_timestamp = 0u;
     size_t line_number = 0u;
 
@@ -181,6 +185,10 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
     cols.carbs = find_header_index(headers, header_count, "carbs_g");
     cols.insulin = find_header_index(headers, header_count, "insulin_u");
     cols.basal = find_header_index(headers, header_count, "basal_u_per_hr");
+    cols.accel_ax = find_header_index(headers, header_count, "accel_ax_mg");
+    cols.accel_ay = find_header_index(headers, header_count, "accel_ay_mg");
+    cols.accel_az = find_header_index(headers, header_count, "accel_az_mg");
+    cols.step_count = find_header_index(headers, header_count, "step_count");
 
     if (!row_has_required_fields(&cols))
     {
@@ -201,6 +209,10 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
         float carbs = 0.0f;
         float insulin = 0.0f;
         float basal = 0.0f;
+        int accel_ax_mg = 0;
+        int accel_ay_mg = 0;
+        int accel_az_mg = 1000;
+        int step_count = 0;
         size_t field_count;
 
         line_number++;
@@ -279,6 +291,42 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
                 return false;
             }
         }
+        if (cols.accel_ax >= 0 && field_or_empty(fields, field_count, cols.accel_ax)[0] != '\0')
+        {
+            if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.accel_ax), &accel_ax_mg))
+            {
+                fclose(file);
+                set_error_row(error, error_length, "invalid accel_ax_mg value", line_number - 1u);
+                return false;
+            }
+        }
+        if (cols.accel_ay >= 0 && field_or_empty(fields, field_count, cols.accel_ay)[0] != '\0')
+        {
+            if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.accel_ay), &accel_ay_mg))
+            {
+                fclose(file);
+                set_error_row(error, error_length, "invalid accel_ay_mg value", line_number - 1u);
+                return false;
+            }
+        }
+        if (cols.accel_az >= 0 && field_or_empty(fields, field_count, cols.accel_az)[0] != '\0')
+        {
+            if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.accel_az), &accel_az_mg))
+            {
+                fclose(file);
+                set_error_row(error, error_length, "invalid accel_az_mg value", line_number - 1u);
+                return false;
+            }
+        }
+        if (cols.step_count >= 0 && field_or_empty(fields, field_count, cols.step_count)[0] != '\0')
+        {
+            if (!parse_int_field((char *)field_or_empty(fields, field_count, cols.step_count), &step_count) || step_count < 0)
+            {
+                fclose(file);
+                set_error_row(error, error_length, "invalid step_count value", line_number - 1u);
+                return false;
+            }
+        }
         if ((uint32_t)timestamp <= previous_timestamp)
         {
             fclose(file);
@@ -302,6 +350,12 @@ bool ReplayLoader_LoadCsv(const char *path, replay_dataset_t *dataset, char *err
         dataset->steps[dataset->count].has_insulin = cols.insulin >= 0;
         dataset->steps[dataset->count].has_carbs = cols.carbs >= 0;
         dataset->steps[dataset->count].has_basal = cols.basal >= 0;
+        dataset->steps[dataset->count].accel_ax_mg = (int16_t)accel_ax_mg;
+        dataset->steps[dataset->count].accel_ay_mg = (int16_t)accel_ay_mg;
+        dataset->steps[dataset->count].accel_az_mg = (int16_t)accel_az_mg;
+        dataset->steps[dataset->count].step_count = (uint16_t)step_count;
+        dataset->steps[dataset->count].has_activity = (cols.accel_ax >= 0) || (cols.accel_ay >= 0) || (cols.accel_az >= 0);
+        dataset->steps[dataset->count].has_step_count = cols.step_count >= 0;
 
         previous_timestamp = (uint32_t)timestamp;
         dataset->count++;

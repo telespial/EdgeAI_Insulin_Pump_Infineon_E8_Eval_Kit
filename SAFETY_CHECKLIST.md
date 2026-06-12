@@ -11,6 +11,7 @@
 - [x] All safety interventions emit reason codes
 - [x] Tests prove safety overrides controller
 - [x] Audit CSV records final safety action and reason codes for every step
+- [ ] Physiology context is advisory only and does not directly command insulin
 
 Current foundation status:
 - Host tests cover predicted-low, bad-SQI, and conservative override behavior.

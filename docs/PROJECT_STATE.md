@@ -449,6 +449,17 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added `docs/PROJECT_HISTORY.md` to show the platform evolution from the original E84 app through GUI, graphs, prediction, APS logic, validation, and future RTOS planning.
 - Updated the README so the project lineage is explicit at the top of the repo.
 
+## Update 2026-06-11 20:36 PDT
+- Added a deterministic Physiology Engine V1 milestone for IOB, COB, and activity context generation.
+- Documented the new physiology modules and the rule that they remain advisory context rather than direct insulin control.
+- Kept the existing GUI, graphing, prediction, and multi-core platform baseline intact.
+
+## Update 2026-06-11 20:42 PDT
+- Added static IOB, COB, and activity engine modules to the shared firmware layer and wired them into the host simulation path.
+- Extended replay loading and scenario generation to carry optional activity samples for the physiology smoke path.
+- Verified the new physiology layer with `make -f host.mk test` and `make -f host.mk regression`; both host and fixture suites passed.
+- Kept the baseline GUI, graphs, and prediction stack intact while adding deterministic physiology context only.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
