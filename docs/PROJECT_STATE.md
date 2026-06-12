@@ -650,6 +650,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The exact-baseline image was rebuilt, flashed, and verified at the tool level; the UART remained quiet during the short baseline capture window, which is consistent with the non-APS image.
 - The next step is a board-side LCD visual check against this exact restore-point image before reintroducing any APS sidecar behavior.
 
+## Update 2026-06-11 22:34 PDT
+- The exact-baseline cleanup was committed and pushed as `dfb4117` on `embedded-bringup-smoke-test`.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
