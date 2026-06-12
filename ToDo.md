@@ -165,3 +165,11 @@
 - [x] Confirm the physical LCD recovered after the clean rebuild and probe-free flash
 - [x] Document that UART boot alone is not enough to claim LCD success
 - [x] Commit the recovery branch with the final evidence trail
+
+## Milestone 17 — Predictor V2 Training / Export Pipeline
+- [x] Add a host-side training script for Predictor V2
+- [x] Add a host-side export script for generated C/H artifacts
+- [x] Add a host-side validation script for held-out replay data
+- [x] Add a synthetic smoke CSV for pipeline sanity checks
+- [x] Document the training/export workflow and smoke-data limitations
+- [x] Run help checks, train the smoke model, and validate the export

@@ -770,3 +770,29 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 
 ## Update 2026-06-12 10:40 PDT
 - Final branch snapshot captured on `recover-lcd-after-aps-probe`; only generated build artifacts remain outside the committed AGENTS/docs changes.
+
+## Update 2026-06-12 10:55 PDT
+- Started the host-only Predictor V2 training/export pipeline without touching embedded LCD/runtime behavior.
+- Added host tools for training, export, and export validation under `tools/`.
+- Added a synthetic smoke dataset at `data/training/smoke_predictor_v2.csv` and documented that it is only a CLI/pipeline sanity check.
+- The current work is intentionally host-only; no flash, GUI, or APS runtime changes were made for this milestone.
+
+## Update 2026-06-12 11:05 PDT
+- Ran the Predictor V2 smoke pipeline end-to-end on `data/training/smoke_predictor_v2.csv`.
+- Generated host artifacts under `generated/`:
+  - `generated/predictor_v2_training.json`
+  - `generated/predictor_v2_generated.h`
+  - `generated/predictor_v2_generated.c`
+  - `generated/predictor_v2_model.json`
+  - `generated/predictor_v2_training_report.md`
+  - `generated/predictor_v2_validation_report.md`
+- The smoke validation stayed host-only and did not touch embedded GUI/LCD or flash behavior.
+- Host `make -f host.mk test` and `make -f host.mk regression` both passed after the new scripts were added.
+
+## Update 2026-06-12 11:20 PDT
+- Chose a reproducible-output policy for `generated/`: ignore generated model artifacts by default and keep only `generated/README.md` plus `generated/.gitignore` under version control.
+- The training/export pipeline remains source-driven; the generated files can be regenerated at any time from the committed scripts and smoke data.
+
+## Update 2026-06-12 11:25 PDT
+- Reran the host-only Predictor V2 help checks plus `make -f host.mk test` and `make -f host.mk regression` after setting the generated-output policy.
+- All host validations still passed, and no embedded/LCD/runtime code changed.

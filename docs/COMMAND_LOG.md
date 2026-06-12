@@ -6929,3 +6929,19 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12: Updated `docs/BUILD_FLASH_VERIFICATION.md`, `docs/BUILD_REPORT.md`, `docs/PROJECT_STATE.md`, `CODEX_PROGRESS_LOG.md`, and `ToDo.md` to record the one-shot runtime probe evidence and the boot-time call path.
 - 2026-06-12: Committed the one-shot APS boot probe milestone as `8b75bdd` on `embedded-bringup-smoke-test`.
 - 2026-06-12: Amended the boot-probe commit to include the command-log note; current commit hash is `6c671bb`.
+- 2026-06-12 10:55 PDT: Reviewed the Predictor V2 schema, replay sample CSVs, host build entry points, and generated model tables before adding the host training/export pipeline.
+- 2026-06-12 10:55 PDT: Added `tools/predictor_v2_pipeline.py`, `tools/train_predictor_v2.py`, `tools/export_predictor_v2.py`, `tools/validate_predictor_export.py`, and `data/training/smoke_predictor_v2.csv`.
+- 2026-06-12 10:55 PDT: Updated `docs/PREDICTOR_V2_TRAINING.md`, `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`, `docs/PROJECT_STATE.md`, `CODEX_PROGRESS_LOG.md`, and `ToDo.md` for the host-only Predictor V2 pipeline milestone.
+- 2026-06-12 11:05 PDT: Ran `python3 tools/train_predictor_v2.py --help`, `python3 tools/export_predictor_v2.py --help`, and `python3 tools/validate_predictor_export.py --help` successfully.
+- 2026-06-12 11:05 PDT: Trained and exported the smoke Predictor V2 model with `data/training/smoke_predictor_v2.csv`; generated deterministic artifacts under `generated/` and wrote the validation report.
+- 2026-06-12 11:05 PDT: Ran `make -f host.mk test` and `make -f host.mk regression`; both host suites passed after the new predictor training/export scripts were added.
+- 2026-06-12 11:10 PDT: Restored the tracked `.ninja_log` files and removed transient build/output directories (`host_build/`, `out/`, `tools/__pycache__/`) plus an unrelated untracked recovery note so the working tree stays focused on the predictor pipeline.
+- 2026-06-12 11:15 PDT: Confirmed the branch anchor remains `recover-lcd-after-aps-probe` at commit `461fd48` before preparing the predictor-pipeline handoff.
+- 2026-06-12 11:15 PDT: Captured the final changed-file set; tracked docs include the predictor schema, project state, command log, progress log, and ToDo updates, while the new training/export scripts, smoke data, and generated host artifacts remain untracked for commit selection.
+- 2026-06-12 11:25 PDT: Added `generated/.gitignore` and `generated/README.md` to make predictor export outputs reproducible but uncommitted by default.
+- 2026-06-12 11:25 PDT: Reran `python3 tools/train_predictor_v2.py --help`, `python3 tools/export_predictor_v2.py --help`, `python3 tools/validate_predictor_export.py --help`, `make -f host.mk test`, and `make -f host.mk regression`; all checks passed again.
+- 2026-06-12 11:30 PDT: Restored the tracked `.ninja_log` files again and removed transient host build/output directories after the validation rerun so the commit set stays source-only.
+- 2026-06-12 11:35 PDT: Verified the final diff scope for the predictor pipeline milestone before staging; only source scripts, smoke data, docs, and the generated-output policy files remain in scope.
+- 2026-06-12 11:35 PDT: Staged the host-only Predictor V2 training/export milestone, including the new pipeline scripts, smoke data, docs, and the `generated/` reproducibility policy files.
+- 2026-06-12 11:40 PDT: Re-added the command log after the final note edit so the staged milestone includes the complete command trail.
+- 2026-06-12 11:45 PDT: Committed the host-only Predictor V2 training/export pipeline as `67d0ab0` and pushed `recover-lcd-after-aps-probe` to `origin`.

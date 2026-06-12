@@ -386,3 +386,67 @@ Known gaps:
 
 Next recommended step:
 - Resume only with a delayed or sidecar APS test after a visibly stable GUI baseline is re-established.
+
+## 2026-06-12 — Host Predictor V2 training/export scaffold
+
+Changed:
+- Added host-only training, export, and validation scripts for Predictor V2.
+- Added a tiny synthetic smoke dataset under `data/training/` so the pipeline has a concrete local sanity-check input.
+- Documented the training/export flow and the fact that it remains separate from embedded LCD/runtime behavior.
+
+Tests:
+- Pending: `python3 tools/train_predictor_v2.py --help`
+- Pending: `python3 tools/export_predictor_v2.py --help`
+- Pending: `python3 tools/validate_predictor_export.py --help`
+- Pending: `make -f host.mk test`
+- Pending: `make -f host.mk regression`
+
+Known gaps:
+- The smoke dataset is intentionally small and not medically meaningful.
+- Export validation still needs to be run against the generated model artifacts.
+
+Next recommended step:
+- Run the help checks, train/export the smoke model, and then validate it on held-out replay data.
+
+## 2026-06-12 — Host Predictor V2 training/export validation
+
+Changed:
+- Executed the host-side training/export/validation pipeline against the synthetic smoke dataset.
+- Wrote deterministic generated artifacts under `generated/` for the Predictor V2 table layout and validation summary.
+- Kept the work strictly host-only; no embedded flash or LCD behavior changed.
+
+Tests:
+- `python3 tools/train_predictor_v2.py --help`
+- `python3 tools/export_predictor_v2.py --help`
+- `python3 tools/validate_predictor_export.py --help`
+- `python3 tools/train_predictor_v2.py --input data/training/smoke_predictor_v2.csv --output generated/predictor_v2_training.json`
+- `python3 tools/export_predictor_v2.py --artifact generated/predictor_v2_training.json --output-dir generated`
+- `python3 tools/validate_predictor_export.py --model generated/predictor_v2_model.json --input data/training/smoke_predictor_v2.csv --output generated/predictor_v2_validation_report.md`
+- `make -f host.mk test`
+- `make -f host.mk regression`
+
+Known gaps:
+- The smoke dataset is synthetic and intentionally tiny.
+- Real training still needs larger replay/physiology data before the exported coefficients should be treated as meaningful.
+
+Next recommended step:
+- Keep the pipeline host-only for now and add a larger real dataset when one is available.
+
+## 2026-06-12 — Host Predictor V2 generated-output policy
+
+Changed:
+- Marked `generated/` as reproducible build output by default, with only `generated/README.md` and `generated/.gitignore` tracked.
+- Reran the host help checks and regression suite after the policy update to ensure nothing regressed.
+
+Tests:
+- `python3 tools/train_predictor_v2.py --help`
+- `python3 tools/export_predictor_v2.py --help`
+- `python3 tools/validate_predictor_export.py --help`
+- `make -f host.mk test`
+- `make -f host.mk regression`
+
+Known gaps:
+- The generated model files remain disposable and are not committed.
+
+Next recommended step:
+- Commit the source scripts, smoke data, and policy docs as the standalone host-only milestone.

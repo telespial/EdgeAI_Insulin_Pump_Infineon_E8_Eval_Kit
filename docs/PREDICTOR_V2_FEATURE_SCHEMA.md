@@ -59,3 +59,22 @@ The generated model tables live in `firmware/include/predictor_v2_generated.h` a
 - Missing history and missing physiology features use the median/default values during evaluation.
 - Poor SQI, stale CGM, or invalid model tables force a linear-trend fallback.
 - Outputs are clamped to a safe glucose range before they reach the controller and safety supervisor.
+
+## Training and Export Notes
+
+- Host-side training scripts live in `tools/train_predictor_v2.py`, `tools/export_predictor_v2.py`, and `tools/validate_predictor_export.py`.
+- The training pipeline consumes replay-style CSV rows and derives the 36-feature history vector from the sample sequence.
+- Supported smoke columns include:
+  - `timestamp`
+  - `glucose_mgdl`
+  - `sqi_pct`
+  - `cgm_age_s`
+  - `iob_u`
+  - `cob_g`
+  - `activity_state`
+  - `activity_confidence_pct`
+  - `motion_rms_5m`
+  - `motion_rms_15m`
+  - `active_minutes`
+  - `post_exercise_minutes`
+- The exported host artifacts are written under `generated/` and mirror the firmware table shape without changing embedded runtime behavior.
