@@ -645,6 +645,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 23:16 PDT
 - Final restore-point notes were committed and pushed as `da1d966` on `embedded-bringup-smoke-test`.
 
+## Update 2026-06-11 22:33 PDT
+- The last branch-only delta in `proj_cm55/Makefile` has been removed, so the CM55 runtime path now matches the `failsafe-e8-insulin-pump` baseline exactly.
+- The exact-baseline image was rebuilt, flashed, and verified at the tool level; the UART remained quiet during the short baseline capture window, which is consistent with the non-APS image.
+- The next step is a board-side LCD visual check against this exact restore-point image before reintroducing any APS sidecar behavior.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

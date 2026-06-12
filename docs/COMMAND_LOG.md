@@ -192,6 +192,14 @@
 [2026-06-11 23:14:00 PDT] cmd: check for remaining unstaged files | git status --short | exit=0 (docs/COMMAND_LOG.md still modified for final log sync)
 [2026-06-11 23:15:00 PDT] cmd: inspect project state tail | tail -n 20 docs/PROJECT_STATE.md | exit=0
 [2026-06-11 23:16:00 PDT] cmd: commit and push restore-point notes | git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Sync restore-point notes" && git push origin embedded-bringup-smoke-test | exit=0 (commit da1d966 pushed)
+[2026-06-11 22:33:00 PDT] cmd: inspect remaining branch diff | git status --short && git diff --stat failsafe-e8-insulin-pump..HEAD -- proj_cm55 | exit=0 (only proj_cm55/Makefile differed)
+[2026-06-11 22:33:00 PDT] cmd: check smoke-test flag usage | rg -n "APP_APS_SMOKE_TEST|ApsSmoke|SMOKE_TEST" proj_cm55 | exit=0 (flag only appeared in Makefile)
+[2026-06-11 22:33:00 PDT] cmd: verify current worktree state | git status --short && date '+%F %R %Z' | exit=0
+[2026-06-11 22:33:00 PDT] cmd: compare worktree against failsafe tree | git diff --stat failsafe-e8-insulin-pump -- proj_cm55 && git status --short | exit=0 (worktree only differs by Makefile line and local ninja logs from rebuild)
+[2026-06-11 22:33:00 PDT] cmd: clear local ninja log churn | git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log && git status --short | exit=0
+[2026-06-11 22:33:00 PDT] cmd: rebuild exact failsafe baseline | export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7 && export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc && export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 | exit=0
+[2026-06-11 22:33:00 PDT] cmd: flash exact failsafe baseline | export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7 && export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc && export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 | exit=0
+[2026-06-11 22:33:00 PDT] cmd: capture uart after flash | python3 - <<'PY' ... PY | exit=0 (no UART output during the 8-second baseline window)
 
 [14:39:22 PDT] git status --short
 
