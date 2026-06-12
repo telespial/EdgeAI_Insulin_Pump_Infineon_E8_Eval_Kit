@@ -858,3 +858,8 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - [x] Record the training source, metrics, baseline comparison, and safety-review correction
 - [x] Preserve the no-flash / no-APS-runtime-change constraints in the promotion notes
 - [x] Keep the branch ready for a GitHub PR without local merge
+
+## Update 2026-06-12 16:55 PDT
+- Merged the docs-only README alignment branch into `main`, which cleaned the repository homepage identity before the firmware model promotion merge.
+- Revalidated the Predictor V2 Candidate V1 dry-run branch after the README merge, then merged the candidate branch into `main` with host tests, regression, and embedded build all passing.
+- Confirmed the merged `main` tree still preserves the LCD/GUI path and did not require a flash or programming step.
