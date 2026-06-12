@@ -505,6 +505,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added `docs/RELEASE_READINESS.md` to capture branch status, merge readiness, blocking items, and the current merge recommendation.
 - Kept the audit focused on verification only without changing code or predictor/controller behavior.
 
+## Update 2026-06-11 21:26 PDT
+- Confirmed the release-readiness audit was committed and pushed to `origin/codex/bar-graph-tuning`.
+- The branch is clean again after the documentation-only verification pass.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
