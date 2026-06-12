@@ -31,10 +31,10 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 ## Result
 - Embedded build: success
 - Flash/program: success
-- UART smoke banner: success
-- UART smoke sequence: success
-- Observed on UART after the cooperative-sidecar fix: steps 0 through 3 printed cleanly without LCD loss during the watch window
-- Portable APS modules are now linked into the CM55 image, but they are not runtime-called on hardware yet
+- UART boot banner: success
+- One-shot APS probe: success
+- Observed on UART: exactly one `APS probe:` line per boot, with the LCD remaining alive
+- Portable APS modules are now linked into the CM55 image, and the boot-time probe verified the predictor/controller/safety path once
 - For the current verification pass, the more complete build/flash evidence is captured in `docs/BUILD_FLASH_VERIFICATION.md`
 
 ## Artifact Paths
@@ -51,8 +51,8 @@ make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84
 - RRAM: `159,744 / 524,288`
 - SOCMEM_RAM: `4,446,208 / 5,242,880`
 - SRAM: `399,882 / 1,048,576`
-- m55 NVM region: `250,496 / 3,932,160`
-- `build/app_combined.hex`: `5,206,276` bytes
+- m55 NVM region: `224,296 / 3,932,160`
+- `build/app_combined.hex`: `5,158,776` bytes
 
 ## Warnings
 - `ClampF32` unused warning in `cgm_model_runtime.c`

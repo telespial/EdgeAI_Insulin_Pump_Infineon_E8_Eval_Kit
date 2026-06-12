@@ -6873,3 +6873,17 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12: Checked the `docs/OPS_RUNBOOK.md` diff summary; it is an additive documentation update, so it can stay in scope for the publish commit.
 - 2026-06-12: Staged the embedded APS link milestone docs and the `CONF`/`ACC` label layout change for commit.
 - 2026-06-12: Created commit `2265765` (`embedded aps link and label layout`) containing the embedded APS link docs plus the `CONF`/`ACC` label placement fix.
+- 2026-06-12: Amended commit `cbe7b58` so the latest command-log entry is included in the published changeset.
+- 2026-06-12: Pushed `embedded-bringup-smoke-test` to `origin` at commit `cbe7b58`.
+- 2026-06-12: Added a compile-flagged one-shot APS probe hook to `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`.
+- 2026-06-12: `make -f host.mk test` passed again after adding the one-shot APS probe hook.
+- 2026-06-12: `make -f host.mk regression` passed again after adding the one-shot APS probe hook.
+- 2026-06-12: Ran the LCD-safe OpenOCD recovery/reset sequence successfully before the probe-enabled embedded build.
+- 2026-06-12: `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_EMBEDDED_PROBE=1 -j8` completed successfully; the CM55 image now contains the one-shot APS probe hook.
+- 2026-06-12: Moved the one-shot APS probe call to `proj_cm55/main.c` after the UART banner so it runs at boot before the scheduler starts.
+- 2026-06-12: Rebuilt the probe-enabled image after moving the boot-time probe call to `proj_cm55/main.c`; the CM55 memory map now reflects the probe landing in the boot path.
+- 2026-06-12: Collected the probe-enabled boot capture; UART showed a single `APS probe:` line during a clean reset-only watch pass.
+- 2026-06-12: `ls -lh build/app_combined.hex` reported a 5.0M image (5,158,776 bytes) after moving the probe call to boot.
+- 2026-06-12: Updated `docs/BUILD_FLASH_VERIFICATION.md`, `docs/BUILD_REPORT.md`, `docs/PROJECT_STATE.md`, `CODEX_PROGRESS_LOG.md`, and `ToDo.md` to record the one-shot runtime probe evidence and the boot-time call path.
+- 2026-06-12: Committed the one-shot APS boot probe milestone as `8b75bdd` on `embedded-bringup-smoke-test`.
+- 2026-06-12: Amended the boot-probe commit to include the command-log note; current commit hash is `6c671bb`.

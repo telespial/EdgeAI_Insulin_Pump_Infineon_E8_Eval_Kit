@@ -745,6 +745,10 @@ int main(void)
                "PSOC Edge MCU: Graphics LVGL Demo "
                "****************** \r\n\n");
 
+#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE != 0)
+        ApsEmbeddedProbe_RunOnce();
+#endif
+
         /* Start the RTOS Scheduler */
         vTaskStartScheduler();
 

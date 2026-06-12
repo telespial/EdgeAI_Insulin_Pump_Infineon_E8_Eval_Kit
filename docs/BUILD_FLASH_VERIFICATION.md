@@ -3,7 +3,7 @@
 ## Scope
 - Verify what is built, flashed, running on E84 hardware, or host-only.
 - No APS logic, GUI/LCD behavior, predictor behavior, or controller/safety behavior was changed for this report.
-- The portable APS modules are now embedded linked in `proj_cm55`, but they are not runtime called on hardware yet.
+- The portable APS modules are now embedded linked in `proj_cm55`, and the one-shot boot probe runtime-verified the predictor/controller/safety path on hardware.
 - Current repo state at capture time:
   - Branch: `embedded-bringup-smoke-test`
   - Commit: `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
@@ -19,9 +19,9 @@
 | IOB engine | yes | yes | yes | no | host test output (`PASS: iob ...`), CM55 link map | Embedded linked, not runtime called. |
 | COB engine | yes | yes | yes | no | host test output (`PASS: cob ...`), CM55 link map | Embedded linked, not runtime called. |
 | Activity engine | yes | yes | yes | no | host test output (`PASS: activity ...`), CM55 link map | Embedded linked, not runtime called. |
-| Controller/safety framework | yes | yes | yes | no | host test output (`PASS: controller ...`, `PASS: safety ...`), CM55 link map | Embedded linked, not runtime called. |
+| Controller/safety framework | yes | yes | yes | yes | host test output (`PASS: controller ...`, `PASS: safety ...`), CM55 probe output | Embedded linked, one-shot runtime verified. |
 | Audit logging | yes | yes | yes | no | fixture/audit CSV outputs, CM55 link map | Embedded linked, not runtime called. |
-| Embedded APS module link (no runtime execution) | yes | yes | yes | no | `make build ...`, `make program ...`, OpenOCD reset-run, UART banner | Portable APS modules are linked into the CM55 image, but no APS runtime path is invoked yet. |
+| Embedded APS one-shot runtime probe | yes | yes | yes | yes | `make build ...`, `make program ...`, OpenOCD reset-run, UART `APS probe:` line | One-shot probe ran on boot and returned to the existing GUI/LVGL flow. |
 
 ## Evidence Notes
 
@@ -145,7 +145,7 @@
   - `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
   - `embedded-bringup-smoke-test`
 
-### Embedded APS link — no runtime execution
+### Embedded APS link
 - Source files involved:
   - `firmware/src/iob_engine.c`
   - `firmware/src/cob_engine.c`
@@ -176,6 +176,32 @@
   - `m55_nvm`: `250,496 / 3,932,160`
   - No meaningful delta was observed versus the prior captured build summary in the command log.
 
+### Embedded APS one-shot runtime probe
+- Source files involved:
+  - `proj_cm55/main.c`
+  - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`
+  - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h`
+  - `firmware/src/predictor_v2.c`
+  - `firmware/src/controller_openaps.c`
+  - `firmware/src/safety_supervisor.c`
+- Build target:
+  - `proj_cm55`
+- Commands used:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_EMBEDDED_PROBE=1 -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_EMBEDDED_PROBE=1`
+  - OpenOCD reset-run: `init; flash banks; reset run; sleep 2500; shutdown`
+- Runtime call path:
+  - `main()` prints the boot banner, then calls `ApsEmbeddedProbe_RunOnce()`, which calls `PredictorV2_Reset()`, `PredictorV2_SetEnabled(true)`, `OpenApsController_Reset()`, `PredictorV2_Update(...)`, `OpenApsController_DetermineBasal(...)`, and `SafetySupervisor_Apply(...)` once.
+- UART evidence:
+  - `APS probe: BG=120 P15=125 P30=126 P60=127 ACTION=NO_CHANGE SAFETY=0x00000000 OK=111`
+- LCD / GUI evidence:
+  - LCD stayed alive after flash and reset-run; GUI remained on the baseline demo.
+- Probe execution:
+  - Single-reset capture shows one `APS probe:` line; the earlier program step also produced a normal boot, which is why the combined capture showed one line per boot.
+- Commit / branch:
+  - `11f430ded92c0127f72c52ff7d69dbdceb75ff42`
+  - `embedded-bringup-smoke-test`
+
 ## Firmware Map
 
 ### Requested APS modules
@@ -185,10 +211,10 @@
 | `firmware/src/cob_engine.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; host tests compiled and passed. |
 | `firmware/src/activity_engine.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; host tests compiled and passed. |
 | `firmware/src/aps_physiology.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; no runtime APS call site added. |
-| `firmware/src/predictor_v2.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; predictor behavior was not changed. |
+| `firmware/src/predictor_v2.c` | embedded linked, one-shot runtime verified | Present in host build and now linked into `proj_cm55/Makefile`; exercised once by the boot-time probe. |
 | `firmware/src/predictor_v2_generated.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; generated tables were not altered. |
-| `firmware/src/controller_openaps.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; controller behavior was not changed. |
-| `firmware/src/safety_supervisor.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; safety behavior was not changed. |
+| `firmware/src/controller_openaps.c` | embedded linked, one-shot runtime verified | Present in host build and now linked into `proj_cm55/Makefile`; exercised once by the boot-time probe. |
+| `firmware/src/safety_supervisor.c` | embedded linked, one-shot runtime verified | Present in host build and now linked into `proj_cm55/Makefile`; exercised once by the boot-time probe. |
 | `firmware/src/metrics.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; metrics behavior was not changed. |
 | `firmware/src/aps_log.c` | embedded linked, not runtime called | Present in host build and now linked into `proj_cm55/Makefile`; logging remains a no-op on target. |
 | `sim/audit_trace.c` | host only | Present in `CMakeLists.txt`; audit schema checks passed on host; not referenced from embedded subprojects. |
@@ -207,5 +233,5 @@
 
 ## Remaining Gaps
 - No fresh LCD photo was captured during this evidence pass.
-- The APS framework is now embedded linked, but it is still not runtime called on hardware.
-- The verification evidence is complete for the current board/repo state, but it does not claim any new runtime APS behavior on hardware.
+- Only the one-shot boot probe is runtime verified on hardware; the rest of the APS framework remains link-only.
+- The verification evidence is complete for the current board/repo state, but it does not claim broader embedded APS loop behavior on hardware.

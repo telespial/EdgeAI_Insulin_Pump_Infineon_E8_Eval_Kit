@@ -129,6 +129,27 @@ Known gaps:
 Next recommended step:
 - Add the first carefully gated APS runtime entrypoint only after the embedded link path is fully trusted.
 
+## 2026-06-12 — Embedded APS one-shot runtime probe
+
+Changed:
+- Moved the boot-time APS probe into `proj_cm55/main.c` so it runs once after the UART banner and before the scheduler starts.
+- Verified one boot-time execution of Predictor V2, controller, and safety supervisor on CM55 hardware.
+- Updated the evidence report to mark the probe-exercised modules as runtime verified.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_EMBEDDED_PROBE=1 -j8`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_EMBEDDED_PROBE=1`
+- OpenOCD reset-run before and after flash
+
+Known gaps:
+- Only the minimal boot probe is runtime verified; the rest of the APS framework remains link-only on hardware.
+- No fresh LCD photo was taken during the probe pass.
+
+Next recommended step:
+- Decide whether to add a second gated runtime probe for physiology context, or keep expanding from the existing one-shot boot probe.
+
 ## 2026-06-11 — Fixture and workflow pass
 
 Changed:

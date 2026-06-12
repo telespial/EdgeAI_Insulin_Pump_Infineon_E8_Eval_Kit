@@ -4,9 +4,12 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "controller_openaps.h"
 #include "cgm_model_runtime.h"
 #include "cgm_replay_subject001.h"
+#include "predictor_v2.h"
 #include "lvgl.h"
+#include "safety_supervisor.h"
 #include "pump_background_image_rgb565.h"
 
 enum
@@ -35,6 +38,86 @@ typedef struct
 } cgm_dashboard_t;
 
 static cgm_dashboard_t gDashboard;
+
+#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE != 0)
+static bool gApsProbeRan;
+
+static const char *action_to_string(aps_action_t action)
+{
+    switch (action)
+    {
+        case APS_ACTION_NO_CHANGE:
+            return "NO_CHANGE";
+        case APS_ACTION_REDUCE_BASAL:
+            return "REDUCE";
+        case APS_ACTION_SUSPEND_BASAL:
+            return "SUSPEND";
+        case APS_ACTION_INCREASE_BASAL:
+            return "INCREASE";
+        case APS_ACTION_CORRECTION_SUGGESTION:
+            return "CORRECTION";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+void ApsEmbeddedProbe_RunOnce(void)
+{
+    predictor_v2_input_t input = {0};
+    predictor_v2_output_t prediction = {0};
+    aps_controller_output_t command = {0};
+    bool prediction_ok;
+    bool controller_ok;
+    bool safety_ok;
+
+    input.cgm.epoch_s = 1u;
+    input.cgm.age_s = 0u;
+    input.cgm.glucose_mgdl = 120u;
+    input.cgm.trend_mgdl_min_x100 = 0;
+    input.cgm.sqi_pct = 95u;
+    input.cgm.sensor_flags = 0u;
+    input.cgm.valid = true;
+
+    input.physiology.iob_u = 0.5f;
+    input.physiology.insulin_activity_u_per_hr = 0.0f;
+    input.physiology.cob_g = 10.0f;
+    input.physiology.carb_absorption_g_per_hr = 0.0f;
+    input.physiology.basal_u_per_hr = 0.8f;
+    input.physiology.insulin_30m_u = 0.0f;
+    input.physiology.insulin_120m_u = 0.0f;
+    input.physiology.carbs_30m_g = 0.0f;
+    input.physiology.carbs_120m_g = 0.0f;
+    input.physiology.minutes_since_bolus = 0u;
+    input.physiology.minutes_since_meal = 0u;
+    input.physiology.activity_state = (uint8_t)ACTIVITY_SEDENTARY;
+    input.physiology.activity_confidence_pct = 95u;
+    input.physiology.motion_rms_5m = 0.0f;
+    input.physiology.motion_rms_15m = 0.0f;
+    input.physiology.active_minutes = 0u;
+    input.physiology.post_exercise_minutes = 0u;
+    input.physiology_present = true;
+
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    OpenApsController_Reset();
+
+    prediction_ok = PredictorV2_Update(&input, &prediction);
+    controller_ok = prediction_ok && OpenApsController_DetermineBasal(&input, &prediction, &command);
+    safety_ok = controller_ok && SafetySupervisor_Apply(1u, &input, &prediction, &command);
+
+    printf("APS probe: BG=120 P15=%u P30=%u P60=%u ACTION=%s SAFETY=0x%08lX OK=%u%u%u\n",
+           (unsigned int)prediction.pred_15m_mgdl,
+           (unsigned int)prediction.pred_30m_mgdl,
+           (unsigned int)prediction.pred_60m_mgdl,
+           action_to_string(command.action),
+           (unsigned long)command.reason_flags,
+           prediction_ok ? 1u : 0u,
+           controller_ok ? 1u : 0u,
+           safety_ok ? 1u : 0u);
+
+    gApsProbeRan = true;
+}
+#endif
 
 static uint16_t replay_glucose_at(uint32_t index)
 {

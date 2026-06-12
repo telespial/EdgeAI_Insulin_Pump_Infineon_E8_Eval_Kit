@@ -705,3 +705,8 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-12 07:45 PDT
 - Shifted the `CONF` and `ACC` labels closer to the left edges of their horizontal status bars in the CM55 dashboard.
 - Rebuilt the firmware successfully after the label move; no LCD or build regressions were observed.
+
+## Update 2026-06-12 08:05 PDT
+- Moved the one-shot APS probe call into `proj_cm55/main.c` so it runs after the UART boot banner and before the scheduler starts.
+- Rebuilt, programmed, and reset-run the probe-enabled image successfully; a clean reset-only capture showed exactly one `APS probe:` line.
+- The LCD/GUI stayed alive, and the probe returned immediately to the normal GUI flow without repeated output.

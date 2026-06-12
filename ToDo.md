@@ -150,4 +150,10 @@
 - [x] Keep APS runtime execution out of the hardware boot path
 - [x] Reflash the CM55 image and confirm the LCD/GUI stays alive
 - [x] Refresh the verification evidence report
-- [ ] Add the first gated APS runtime entrypoint
+
+## Milestone 15 — Embedded APS One-Shot Runtime Probe
+- [x] Add a gated one-shot APS probe entrypoint
+- [x] Call the probe once at boot after the UART banner
+- [x] Verify the probe on CM55 hardware
+- [x] Keep the GUI/LCD alive during probe boot
+- [ ] Add a second physiology-context probe only if needed
