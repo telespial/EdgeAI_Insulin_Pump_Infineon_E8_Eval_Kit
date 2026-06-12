@@ -164,3 +164,13 @@
   - Synced the repository homepage branch so GitHub will show the APS landing page instead of the older Graphics LVGL demo text.
 [2026-06-11 20:57:00 PDT] COMMAND: git status --short
   - Working tree clean after the main-branch push.
+[2026-06-11 21:30:00 PDT] COMMAND: git status --short && git branch --show-current && git switch main && git pull --ff-only && git switch -c update-main-aps-readme
+  - Created the docs-only branch `update-main-aps-readme` from `main` for homepage alignment work.
+[2026-06-11 21:31:00 PDT] COMMAND: git show main:README.md | sed -n '1,220p' && git show codex/bar-graph-tuning:README.md | sed -n '1,220p' && git show codex/bar-graph-tuning:docs/PROJECT_HISTORY.md | sed -n '1,220p' && git show codex/bar-graph-tuning:docs/LEGACY_DISPLAY_BRINGUP.md | sed -n '1,220p'
+  - Confirmed the legacy `main` README still contained the LVGL/Smart Pong bring-up framing and copied the APS landing-page/history docs from the feature branch.
+[2026-06-11 21:32:00 PDT] COMMAND: git diff --stat main..update-main-aps-readme -- README.md docs/PROJECT_HISTORY.md docs/LEGACY_DISPLAY_BRINGUP.md && git status --short
+  - Verified the docs-only diff is scoped to the homepage README plus the two history docs.
+[2026-06-11 21:33:00 PDT] COMMAND: git diff --stat main..update-main-aps-readme && git diff -- README.md && rg -n "Pong|Smart Pong|LVGL demo|music player" README.md && git status --short
+  - Verified the new README removes Pong/Smart Pong/LVGL demo framing; the legacy terms no longer appear in `README.md`.
+[2026-06-11 21:34:00 PDT] COMMAND: rm -rf host_build out && git status --short
+  - Removed generated host build and regression outputs so the branch stays docs-only.
