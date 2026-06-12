@@ -493,6 +493,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Confirmed the README heading structure matches the requested APS landing-page outline.
 - Kept the legacy display bring-up details in a separate historical document rather than on the homepage.
 
+## Update 2026-06-11 21:20 PDT
+- Confirmed the README replacement commit pushed successfully to `origin/codex/bar-graph-tuning`.
+- Kept the repository homepage focused on the APS research platform rather than the historical Pong/LVGL demo framing.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
