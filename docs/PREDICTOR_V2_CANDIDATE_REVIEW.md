@@ -29,20 +29,21 @@
 - Portability: high; the model matches the existing firmware schema and generated C/H layout.
 
 ## Recommendation
-**CONDITIONALLY READY**
+**READY FOR FIRMWARE PROMOTION PR**
 
-The model is strong enough to be the first embedded candidate, but it should still be treated as a review snapshot until the firmware build path, table replacement, and LCD-safe validation are explicitly checked.
+The model is strong enough to move from review snapshot to a promotion request because the dry-run branch now passes host tests, regression, and embedded build checks without any size delta.
 
 ## Dry-Run Follow-Up
 - Candidate V1 tables were copied into the active firmware paths on the dry-run branch.
 - The embedded image rebuilt successfully with no flash-size or RAM-size change.
-- Host test/regression checks reported safety expectation mismatches, so the candidate should stay a review snapshot for now.
-- Final dry-run decision: `KEEP AS REVIEW SNAPSHOT`
+- Host test/regression checks passed after the falling-bolus safety expectation fix.
+- Final dry-run decision: `READY FOR FIRMWARE PROMOTION PR`
 
 ## Regression Follow-Up
 - `docs/PREDICTOR_V2_CANDIDATE_V1_REGRESSION_ANALYSIS.md` shows the only table-driven behavior change is a more conservative controller decision in the `controller can increase` unit case.
 - The fixture-envelope failures on `stable`, `meal_rise`, and `falling_bolus` were resolved by aligning the expected envelopes with the measured host behavior.
 - The falling-bolus replay fixture was reclassified as an `EXCESSIVE_IOB` conservative case, and the low-prediction plus controller-blocked paths are now covered by direct host tests.
+- The active generated tables still match the candidate snapshot byte-for-byte, so the promotion path is a clean table swap rather than a model/content drift.
 
 ## Candidate V1 Promotion Plan
 1. Copy the candidate tables into the active generated-table location.
@@ -52,3 +53,4 @@ The model is strong enough to be the first embedded candidate, but it should sti
 5. Flash only after LCD-safe recovery is confirmed and the default display path is unchanged.
 6. Validate on hardware with the LCD-safe boot workflow.
 7. If needed, run delayed sidecar validation after the GUI is visibly alive.
+8. If the hardware result matches the host dry-run, replace the review snapshot with the promoted candidate tables.
