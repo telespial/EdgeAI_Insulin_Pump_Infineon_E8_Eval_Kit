@@ -460,6 +460,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Verified the new physiology layer with `make -f host.mk test` and `make -f host.mk regression`; both host and fixture suites passed.
 - Kept the baseline GUI, graphs, and prediction stack intact while adding deterministic physiology context only.
 
+## Update 2026-06-11 20:50 PDT
+- Verified that the branch root `README.md` is APS-first and differs substantially from `main`.
+- Confirmed that the repository landing page on GitHub will still show the `main` branch README until the default branch or `main` is updated.
+- Kept the project history and baseline-preservation narrative intact in the branch README.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
