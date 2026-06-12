@@ -1,4 +1,30 @@
-# PSOC&trade; Edge MCU: Graphics LVGL demo
+# APS Research Platform: E84 Embedded Smoke Test
+
+This repository extends the last stable Failsafe Restore Point of an existing Infineon PSoC Edge E84 application into an APS research platform. The smoke-test build prints a UART banner, runs a deterministic five-step glucose sequence, and validates the embedded multi-core boot path without changing medical logic.
+
+Future architecture planning now also covers RTOS readiness and OS abstraction so the current research loop can migrate cleanly later without changing predictor, controller, safety, or regression behavior.
+
+Project lineage and evolution are documented in `docs/PROJECT_HISTORY.md`.
+The physiology context modules are documented in `docs/PHYSIOLOGY_ENGINE.md`.
+
+Smoke-test build and flash command:
+
+```bash
+make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+```
+
+Smoke-test UART output includes:
+
+- `APS Research Platform`
+- `Build: <date/time>`
+- `Core: CM55`
+- `Predictor: present`
+- `Controller: present`
+- `Safety: present`
+- `Mode: smoke test only`
+
+## Original LVGL graphics demo
 
 This code example demonstrates how to render a 2D graphics demo using the Light and Versatile Graphics (LVGL) on the PSOC&trade; Edge MCU with the following supported displays.
 
@@ -35,6 +61,16 @@ DEFINES+=APP_SMART_PONG_MODE=1
 ```
 
 in `proj_cm55/Makefile`, then rebuild and reprogram.
+
+## RTOS Readiness
+
+The current firmware remains bare-metal / FreeRTOS-style today, but the repo now includes forward-planning docs for a future RTOS migration:
+
+- `docs/RTOS_MIGRATION_PLAN.md`
+- `docs/OSAL_PLAN.md`
+- `ARCHITECTURE_DECISIONS.md`
+
+These documents are planning guidance only and do not change runtime behavior.
 
    To build the application for the 7-inch display, set the following macro in *common.mk*:
 
@@ -190,11 +226,81 @@ See [Using the code example](docs/using_the_code_example.md) for instructions on
 
       OR
 
-      To use the 10.1 inch WF101JTYAHMNB0 display:
+To use the 10.1 inch WF101JTYAHMNB0 display:
 
       ```
       CONFIG_DISPLAY = WF101JTYAHMNB0_DISP
       ```
+
+## APS Research Foundation
+
+This repo now also includes a host-side research/simulation foundation for the E84 CGM artificial-pancreas handoff.
+
+Host build and test:
+
+```bash
+cmake -S . -B host_build
+cmake --build host_build -j2
+./host_build/e84_aps_host_tests
+```
+
+Host simulation examples:
+
+```bash
+./host_build/e84_aps_sim --scenario stable
+./host_build/e84_aps_sim --scenario meal_rise
+./host_build/e84_aps_sim --replay data/sample_replay.csv --out out/audit.csv
+```
+
+One-command host workflow:
+
+```bash
+make -f host.mk configure
+make -f host.mk build
+make -f host.mk test
+make -f host.mk sim
+make -f host.mk regression
+make -f host.mk gold
+make -f host.mk clean
+```
+
+The host framework is research-only, intentionally separate from the embedded LVGL demo path, and emits baseline-vs-ML comparison metrics plus an auditable CSV trace.
+
+### Audit CSV schema
+
+The audit CSV schema is stable for this research loop unless it is intentionally versioned. Columns:
+
+```text
+timestamp,glucose_mgdl,sqi_pct,iob_u,cob_g,baseline_pred_15,baseline_pred_30,baseline_pred_60,ml_pred_15,ml_pred_30,ml_pred_60,actual_15,actual_30,actual_60,baseline_error_15,baseline_error_30,baseline_error_60,ml_error_15,ml_error_30,ml_error_60,controller_without_ml,controller_with_ml,safety_final_action,safety_reason_codes
+```
+
+The replay loader also accepts an optional `cgm_age_s` helper column for stale-CGM fixtures.
+
+### Fixture regression matrix
+
+The repeatable fixture matrix runs every committed replay fixture and writes per-fixture outputs under `out/fixture_matrix/`:
+
+```bash
+scripts/run_fixture_matrix.sh
+make -f host.mk regression
+```
+
+Each run produces paired audit and summary files such as `out/fixture_matrix/stable_audit.csv` and `out/fixture_matrix/stable_summary.txt`.
+`make -f host.mk regression` now performs host build, unit tests, fixture simulations, schema checks, reason-code checks, and numeric metric envelope checks.
+
+### Gold regression matrix
+
+The tighter gold lane runs the deterministic gold fixtures under `data/gold/` and writes outputs under `out/gold_fixture_matrix/`:
+
+```bash
+make -f host.mk gold
+```
+
+Gold fixtures are software regression guards, not clinical validation.
+
+### Predictor V2 feature schema
+
+Predictor V2 now uses a stable 30-feature export-ready vector with explicit generated model tables for 15m, 30m, and 60m horizons. The feature order and fallback rules are documented in `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`.
 
 5. Build and program the application
 

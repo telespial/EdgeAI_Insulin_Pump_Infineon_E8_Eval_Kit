@@ -157,3 +157,6 @@
 [2026-06-11 14:52:30 PDT] cmd: push golden restore point docs and tag | exit=1
 [2026-06-11 14:53:00 PDT] cmd: move golden restore tag to amended commit | exit=0
 [2026-06-11 14:54:00 PDT] cmd: verify final golden tag alignment | exit=0
+[2026-06-11 20:53:00 PDT] COMMAND: git branch --show-current; git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || true; git branch -a | sed -n '1,20p'; git show main:README.md | sed -n '1,40p'
+[2026-06-11 20:54:00 PDT] COMMAND: git switch main
+[2026-06-11 20:55:00 PDT] COMMAND: git show codex/bar-graph-tuning:README.md > README.md && git diff --stat -- README.md && sed -n '1,40p' README.md
