@@ -732,3 +732,7 @@ PY
 [2026-06-11 20:43:00 PDT] COMMAND: rm -rf host_build out && git status --short
   - Removed generated host build and fixture output directories; the working tree now only shows source and documentation changes.
 [2026-06-11 20:44:00 PDT] COMMAND: git status --short
+[2026-06-11 20:45:00 PDT] COMMAND: git add ARCHITECTURE_DECISIONS.md CMakeLists.txt CODEX_PROGRESS_LOG.md README.md SAFETY_CHECKLIST.md ToDo.md VALIDATION_PLAN.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md docs/PHYSIOLOGY_ENGINE.md firmware/include/aps_types.h firmware/include/activity_engine.h firmware/include/cob_engine.h firmware/include/iob_engine.h firmware/src/activity_engine.c firmware/src/cob_engine.c firmware/src/iob_engine.c sim/replay_loader.c sim/replay_loader.h sim/scenario_runner.c sim/simulation_runner.c tests/test_runner.c && git commit -m "Add physiology engine context" && git push origin codex/bar-graph-tuning
+  - Committed and pushed the physiology-engine milestone to the working branch.
+[2026-06-11 20:46:00 PDT] COMMAND: git status --short
+  - Working tree clean after the push.
