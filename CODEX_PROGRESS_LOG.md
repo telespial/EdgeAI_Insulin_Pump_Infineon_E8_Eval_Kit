@@ -104,3 +104,21 @@ Known gaps:
 
 Next recommended step:
 - Rebuild the host path, run the fixture regression tests, and confirm `make -f host.mk sim` writes both `out/audit.csv` and `out/summary.txt`.
+
+## 2026-06-11 — Fixture matrix pass
+
+Changed:
+- Added `scripts/run_fixture_matrix.sh` to build the host simulator and run every committed replay fixture into `out/fixture_matrix/`.
+- Added `make -f host.mk regression` as the repeatable fixture-matrix entry point.
+- Added a minimal GitHub Actions workflow that runs the host regression matrix on push and pull requests.
+- Documented the matrix workflow and output layout in the README.
+
+Tests:
+- Pending matrix run after the script and workflow additions.
+
+Known gaps:
+- The matrix checks are presence-oriented and intentionally avoid brittle numeric thresholds.
+- The repository still keeps host regression separate from the embedded firmware build flow.
+
+Next recommended step:
+- Run the matrix script, verify the generated per-fixture outputs, and then lock in any missing fixture behavior checks.

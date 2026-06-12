@@ -223,6 +223,7 @@ make -f host.mk configure
 make -f host.mk build
 make -f host.mk test
 make -f host.mk sim
+make -f host.mk regression
 make -f host.mk clean
 ```
 
@@ -237,6 +238,17 @@ timestamp,glucose_mgdl,sqi_pct,iob_u,cob_g,baseline_pred_15,baseline_pred_30,bas
 ```
 
 The replay loader also accepts an optional `cgm_age_s` helper column for stale-CGM fixtures.
+
+### Fixture regression matrix
+
+The repeatable fixture matrix runs every committed replay fixture and writes per-fixture outputs under `out/fixture_matrix/`:
+
+```bash
+scripts/run_fixture_matrix.sh
+make -f host.mk regression
+```
+
+Each run produces paired audit and summary files such as `out/fixture_matrix/stable_audit.csv` and `out/fixture_matrix/stable_summary.txt`.
 
 5. Build and program the application
 

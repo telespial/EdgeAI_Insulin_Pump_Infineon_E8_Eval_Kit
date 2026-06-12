@@ -477,3 +477,14 @@
 [2026-06-11 17:43 PDT] cmd: run host.mk clean workflow | exit=0
 
 [2026-06-11 17:45 PDT] cmd: commit and push replay fixtures and host workflow milestone | exit=0
+
+[2026-06-11 17:50 PDT] cmd: add executable bit to fixture matrix script and inspect new workflow files | exit=0
+
+[2026-06-11 17:56 PDT] cmd: run host.mk regression fixture matrix | exit=0
+[2026-06-11 17:56 PDT] cmd: inspect generated fixture matrix outputs | exit=0
+
+[2026-06-11 17:57 PDT] cmd: clean host_build and out after fixture matrix validation | exit=0
+
+[2026-06-11 17:59 PDT] cmd: final git status check before fixture matrix commit | exit=0
+
+[2026-06-11 18:00 PDT] cmd: commit and push fixture matrix regression workflow | exit=0

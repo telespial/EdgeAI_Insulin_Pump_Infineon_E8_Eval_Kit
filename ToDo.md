@@ -75,6 +75,7 @@
 - [x] Add replay metrics summary for MAE/RMSE, TIR/TBR/TAR, and disagreement counts
 - [x] Add committed replay fixtures for regression testing
 - [x] Add stable host workflows for configure/build/test/sim/clean
+- [x] Add fixture regression matrix runner
 
 ## Milestone 8 — E84 Portability
 - [ ] Add memory estimate
@@ -94,6 +95,7 @@
 - [x] Add known limitations
 - [x] Add research-only warning
 - [x] Lock the audit CSV schema in docs
+- [x] Document fixture matrix and host regression workflow
 
 ## Milestone 10 — Final Review
 - [ ] Run all tests

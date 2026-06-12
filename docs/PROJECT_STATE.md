@@ -384,6 +384,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added a dedicated host workflow file: `host.mk` with `configure`, `build`, `test`, `sim`, and `clean` targets.
 - Documented the stable audit CSV schema and the committed replay fixture set in the project README.
 
+## Update 2026-06-11 17:50 PDT
+- Added a scripted fixture regression matrix that builds the host simulator and runs every committed replay fixture into `out/fixture_matrix/`.
+- Added `make -f host.mk regression` as the repeatable host regression entry point.
+- Added a minimal GitHub Actions workflow to run the matrix on push and pull requests.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
