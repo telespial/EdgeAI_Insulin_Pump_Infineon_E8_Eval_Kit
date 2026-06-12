@@ -514,3 +514,17 @@ Results:
 
 Next recommended step:
 - If needed, add a second real-data import pass with better meal/activity annotations rather than changing the model architecture yet.
+
+## 2026-06-12 — Predictor V2 export readiness review
+
+Changed:
+- Added `docs/PREDICTOR_V2_EXPORT_READINESS.md` to capture current metrics, relative improvements, proxy features, and export risks.
+- Added `tools/summarize_predictor_v2_export.py` to summarize generated artifacts into a reproducible manifest.
+- Staged a review-only candidate snapshot under `firmware/model_candidates/enriched_real_dataset_v1/`.
+
+Results:
+- The enriched real-data model is conditionally ready as a candidate coefficient set.
+- The export manifest confirms 36 features and all three horizons are present with matching C/H outputs.
+
+Next recommended step:
+- Compare the candidate snapshot against the current embedded defaults and only then decide whether to wire it into firmware.

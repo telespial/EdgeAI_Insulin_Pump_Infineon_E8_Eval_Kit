@@ -186,3 +186,9 @@
 - [x] Derive series-aware proxy physiology features from the real dataset
 - [x] Retrain/export/validate Predictor V2 on the enriched real dataset
 - [x] Keep the work host-only and leave embedded runtime behavior untouched
+
+## Milestone 20 — Predictor V2 Export Readiness Review
+- [x] Generate an export manifest for the enriched candidate model
+- [x] Write an export-readiness report with risks and recommendation
+- [x] Stage a review-only candidate snapshot under `firmware/model_candidates/`
+- [x] Keep the active embedded firmware tables unchanged

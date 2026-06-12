@@ -4886,18 +4886,62 @@ Info : Section start address 0x60340400 breaks the required alignment of flash b
 Info : Padding 1024 bytes from 0x60340000
 Info : Padding image section 0 at 0x60342970 with 1680 bytes (bank write end alignment)
 Warn : Adding extra erase range, 0x60343000 .. 0x6037ffff
-[100%] [################################] [ Erasing     ]
-[100%] [################################] [ Programming ]
+
+[100%] [################################] [ Erasing     ]
+
+[100%] [################################] [ Programming ]
 Info : Section start address 0x60580400 breaks the required alignment of flash bank cat1d.cm33.smif1_ns
 Info : Padding 1024 bytes from 0x60580000
 Info : Padding image section 1 at 0x607446d0 with 2352 bytes (bank write end alignment)
 Warn : Adding extra erase range, 0x60745000 .. 0x6077ffff
-[ 12%] [###                             ] [ Erasing     ][ 25%] [########                        ] [ Erasing     ][ 37%] [###########                     ] [ Erasing     ][ 50%] [################                ] [ Erasing     ][ 62%] [###################             ] [ Erasing     ][ 75%] [########################        ] [ Erasing     ][ 87%] [###########################     ] [ Erasing     ][100%] [################################] [ Erasing     ]
-[  4%] [#                               ] [ Programming ][  7%] [##                              ] [ Programming ][ 10%] [###                             ] [ Programming ][ 13%] [####                            ] [ Programming ][ 17%] [#####                           ] [ Programming ][ 19%] [######                          ] [ Programming ][ 23%] [#######                         ] [ Programming ][ 26%] [########                        ] [ Programming ][ 30%] [#########                       ] [ Programming ][ 33%] [##########                      ] [ Programming ][ 35%] [###########                     ] [ Programming ][ 38%] [############                    ] [ Programming ][ 41%] [#############                   ] [ Programming ][ 44%] [##############                  ] [ Programming ][ 48%] [###############                 ] [ Programming ][ 51%] [################                ] [ Programming ][ 54%] [#################               ] [ Programming ][ 58%] [##################              ] [ Programming ][ 60%] [###################             ] [ Programming ][ 63%] [####################            ] [ Programming ][ 66%] [#####################           ] [ Programming ][ 69%] [######################          ] [ Programming ][ 73%] [#######################         ] [ Programming ][ 76%] [########################        ] [ Programming ][ 79%] [#########################       ] [ Programming ][ 83%] [##########################      ] [ Programming ][ 86%] [###########################     ] [ Programming ][ 88%] [############################    ] [ Programming ][ 91%] [#############################   ] [ Programming ][ 94%] [##############################  ] [ Programming ][ 97%] [############################### ] [ Programming ][100%] [################################] [ Programming ]
+
+[ 12%] [###                             ] [ Erasing     ]
+[ 25%] [########                        ] [ Erasing     ]
+[ 37%] [###########                     ] [ Erasing     ]
+[ 50%] [################                ] [ Erasing     ]
+[ 62%] [###################             ] [ Erasing     ]
+[ 75%] [########################        ] [ Erasing     ]
+[ 87%] [###########################     ] [ Erasing     ]
+[100%] [################################] [ Erasing     ]
+
+[  4%] [#                               ] [ Programming ]
+[  7%] [##                              ] [ Programming ]
+[ 10%] [###                             ] [ Programming ]
+[ 13%] [####                            ] [ Programming ]
+[ 17%] [#####                           ] [ Programming ]
+[ 19%] [######                          ] [ Programming ]
+[ 23%] [#######                         ] [ Programming ]
+[ 26%] [########                        ] [ Programming ]
+[ 30%] [#########                       ] [ Programming ]
+[ 33%] [##########                      ] [ Programming ]
+[ 35%] [###########                     ] [ Programming ]
+[ 38%] [############                    ] [ Programming ]
+[ 41%] [#############                   ] [ Programming ]
+[ 44%] [##############                  ] [ Programming ]
+[ 48%] [###############                 ] [ Programming ]
+[ 51%] [################                ] [ Programming ]
+[ 54%] [#################               ] [ Programming ]
+[ 58%] [##################              ] [ Programming ]
+[ 60%] [###################             ] [ Programming ]
+[ 63%] [####################            ] [ Programming ]
+[ 66%] [#####################           ] [ Programming ]
+[ 69%] [######################          ] [ Programming ]
+[ 73%] [#######################         ] [ Programming ]
+[ 76%] [########################        ] [ Programming ]
+[ 79%] [#########################       ] [ Programming ]
+[ 83%] [##########################      ] [ Programming ]
+[ 86%] [###########################     ] [ Programming ]
+[ 88%] [############################    ] [ Programming ]
+[ 91%] [#############################   ] [ Programming ]
+[ 94%] [##############################  ] [ Programming ]
+[ 97%] [############################### ] [ Programming ]
+[100%] [################################] [ Programming ]
 Info : Padding image section 2 at 0x70107a44 with 1468 bytes (bank write end alignment)
 Warn : Adding extra erase range, 0x70108000 .. 0x7013ffff
-[100%] [################################] [ Erasing     ]
-[100%] [################################] [ Programming ]
+
+[100%] [################################] [ Erasing     ]
+
+[100%] [################################] [ Programming ]
 wrote 1900544 bytes from file /home/user/projects/embedded/codemaster/projects/.tmp_flash_82f5dd1/build/app_combined.hex in 19.524782s (95.059 KiB/s)
 shutdown command invoked
 Info : cat1d.dap: powering down debug domain...
@@ -6972,3 +7016,9 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - 2026-06-12 13:30 PDT: Reran `make -f host.mk test` and `make -f host.mk regression` after the final feature-vector tweak; both host suites still pass.
 - 2026-06-12 13:35 PDT: Removed transient build/output directories again after the final host-suite rerun; the remaining diff is source/docs/data only.
 - 2026-06-12 13:40 PDT: Committed the feature-enrichment pass as `47ba6dc` on `recover-lcd-after-aps-probe`.
+- 2026-06-12 13:45 PDT: Generated `generated/predictor_v2_export_manifest.md` with `tools/summarize_predictor_v2_export.py`; manifest confirms 36 features, all three horizons, and matching generated C/H files.
+- 2026-06-12 13:45 PDT: Staged the review-only candidate snapshot under `firmware/model_candidates/enriched_real_dataset_v1/` without wiring it into the firmware build.
+- 2026-06-12 13:50 PDT: Ran `python3 tools/summarize_predictor_v2_export.py --generated-dir generated --out generated/predictor_v2_export_manifest.md`; manifest reports 36 features, all three horizons, and matching generated C/H tables.
+- 2026-06-12 13:50 PDT: Re-ran `make -f host.mk test` and `make -f host.mk regression`; both host suites passed after adding the export-readiness review materials.
+- 2026-06-12 13:55 PDT: Removed transient build/output directories after the export-readiness validation; the remaining diff is docs, script, and candidate snapshot only.
+- 2026-06-12 14:00 PDT: Committed the export-readiness review bundle as `3353fb2` on `recover-lcd-after-aps-probe`.

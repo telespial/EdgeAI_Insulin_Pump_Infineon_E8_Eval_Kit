@@ -815,3 +815,8 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Regenerated `data/training/predictor_v2_real_dataset.csv` with decay-based IOB/COB, SQI, CGM-age, and activity proxies plus glucose-dynamics helpers.
 - Retrained and revalidated Predictor V2 on the enriched real dataset; the new pass materially improved both holdout and validation metrics while remaining host-only.
 - `make -f host.mk test` and `make -f host.mk regression` still pass after the enrichment pass.
+
+## Update 2026-06-12 13:45 PDT
+- Added a Predictor V2 export-readiness review and a generated export manifest for the enriched real-data candidate.
+- Staged a review-only candidate snapshot under `firmware/model_candidates/enriched_real_dataset_v1/` without wiring it into the firmware build.
+- The candidate export is now conditionally ready for firmware review, but it still remains host-only evidence until the embedded table replacement is explicitly approved.
