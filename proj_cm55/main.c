@@ -728,16 +728,6 @@ int main(void)
     /* Initialize retarget-io middleware */
     init_retarget_io();
 
-#if (APP_APS_SMOKE_TEST == 1U)
-    printf("APS Research Platform\r\n");
-    printf("Build: %s %s\r\n", __DATE__, __TIME__);
-    printf("Core: CM55\r\n");
-    printf("Predictor: present\r\n");
-    printf("Controller: present\r\n");
-    printf("Safety: present\r\n");
-    printf("Mode: smoke test only\r\n");
-#endif
-
     /* Enable global interrupts */
     __enable_irq();
 
@@ -751,9 +741,18 @@ int main(void)
 
     if (pdPASS == task_return)
     {
+#if (APP_APS_SMOKE_TEST == 1U)
+        printf("APS Research Platform\r\n");
+        printf("Mode: Embedded smoke test\r\n");
+        printf("Predictor: present\r\n");
+        printf("Controller: present\r\n");
+        printf("Safety: present\r\n");
+        printf("Build: %s %s\r\n\n", __DATE__, __TIME__);
+#else
         printf("****************** "
                "PSOC Edge MCU: Graphics LVGL Demo "
                "****************** \r\n\n");
+#endif
 
         /* Start the RTOS Scheduler */
         vTaskStartScheduler();

@@ -218,6 +218,15 @@
 [14:51:57 PDT] inspect bar/graph layout before golden restore tweak
 
 [14:52:20 PDT] inspect restore points before creating a new golden snapshot
+[21:28:32 PDT] check current time before smoke-test recapture
+[21:32:53 PDT] capture boot-only smoke-test UART after forcing APP_INSULIN_PUMP_MODE=1
+[21:32:53 PDT] run boot-only `make program` for embedded smoke-test verification
+[21:32:53 PDT] capture full five-step APS smoke trace on UART
+[21:40:00 PDT] remove generated `.ninja_log` files from embedded subprojects
+[21:41:00 PDT] verify embedded smoke-test branch status after cleanup
+[21:24:05 PDT] rebuild and reflash embedded smoke-test image with APS banner fix
+[21:24:05 PDT] capture UART after reflashing smoke-test image
+[21:24:05 PDT] inspect smoke-test trigger path in CM55 app and main
 
 [14:53:03 PDT] build after bar/graph box resize
 
@@ -796,3 +805,63 @@ PY
   - Final verification showed a clean worktree and HEAD `7f5d05f` after the final bookkeeping push.
 [2026-06-11 21:28:00 PDT] COMMAND: make -f host.mk test && make -f host.mk regression
   - Host tests and the full sample/gold fixture regression suite passed with the physiology features already wired into Predictor V2.
+[2026-06-11 21:39:00 PDT] COMMAND: git status --short && git branch --show-current && git switch codex/bar-graph-tuning && git status --short && git branch --show-current && rg -n "APP_APS_SMOKE_TEST|APP_KIT_PSE84_EVAL_EPC2|KIT_PSE84_AI|make build|make program|TARGET=|TOOLCHAIN=" Makefile common.mk common_app.mk proj_cm33_s/Makefile proj_cm33_ns/Makefile proj_cm55/Makefile docs/OPS_RUNBOOK.md README.md
+  - Confirmed the APS branch is current and the embedded smoke-test/build wiring already exposes `APP_APS_SMOKE_TEST` and the E84 target defaults.
+[2026-06-11 21:40:00 PDT] COMMAND: git switch -c embedded-bringup-smoke-test && git branch --show-current && sed -n '1,220p' common.mk && sed -n '1,220p' proj_cm55/Makefile && sed -n '1,120p' docs/OPS_RUNBOOK.md
+  - Created the dedicated embedded validation branch and confirmed the build defaults and smoke-test flag wiring.
+[2026-06-11 21:41:00 PDT] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Build failed immediately because `CY_TOOLS_PATHS` was not set in the shell environment.
+[2026-06-11 21:42:00 PDT] COMMAND: export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Retrying the embedded build with the documented ModusToolbox environment variables.
+[2026-06-11 21:43:00 PDT] COMMAND: git status --short && ls -1 build/APP_KIT_PSE84_EVAL_EPC2/Debug && ls -1 proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug && ls -1 proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug && ls -1 proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug
+  - Confirmed all three core build outputs were generated successfully.
+[2026-06-11 21:44:00 PDT] COMMAND: export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Flash/program succeeded; the E84 image was written and verified successfully.
+[2026-06-11 21:45:00 PDT] COMMAND: ls -1 /dev/ttyACM* /dev/ttyUSB* && python3 - <<'PY' ... PY
+  - Confirmed `/dev/ttyACM0` is present and `pyserial` is installed for UART capture.
+[2026-06-11 21:46:00 PDT] COMMAND: python3 - <<'PY' ... PY
+  - UART capture after flash showed the legacy LVGL demo banner fragment instead of the new APS smoke-test banner, so the embedded smoke-test wiring still needs code inspection.
+[2026-06-11 21:47:00 PDT] COMMAND: rg -n "APP_APS_SMOKE_TEST|smoke test|APS Research Platform|Mode:" proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+  - Confirmed the smoke-test code exists in CM55 sources, but the non-smoke legacy banner still executes afterward.
+[2026-06-11 21:48:00 PDT] COMMAND: python3 - <<'PY' ... PY
+  - UART capture suggests the smoke define may not be taking effect at compile time, so I’m checking the generated compiler response files next.
+[2026-06-11 21:49:00 PDT] COMMAND: rg -n "APP_APS_SMOKE_TEST|DEFINES=" proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf.rsp proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.ninja proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/*.rsp proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug/*.rsp proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug/*.rsp
+  - Verified the build really was compiled with `APP_APS_SMOKE_TEST=1`, so the legacy banner is coming from unguarded runtime code.
+[2026-06-11 21:50:00 PDT] COMMAND: sed -n '720,770p' proj_cm55/main.c
+  - Confirmed the smoke-test banner had been printed twice; removed the pre-scheduler legacy banner block so only the smoke-test path remains.
+[2026-06-11 21:51:00 PDT] COMMAND: git status --short
+  - The embedded smoke-test branch now has only the intended source and docs changes staged in the working tree.
+[2026-06-11 21:52:00 PDT] COMMAND: export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1 && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Rebuilt and reflashed successfully after the smoke banner fix.
+[2026-06-11 21:53:00 PDT] COMMAND: python3 - <<'PY' ... PY
+  - A reset-triggered UART capture returned no lines, so I’m trying a plain listen on `/dev/ttyACM0`.
+[2026-06-11 21:54:00 PDT] COMMAND: python3 - <<'PY' ... PY
+  - The UART is still silent after reflashing, so I’m switching to a capture-first sequence before the next program attempt.
+[2026-06-11 21:55:00 PDT] COMMAND: write_stdin(session_id=64821) poll
+  - The embedded rebuild is still in progress after the smoke-path rollback to the GUI timer flow.
+[2026-06-11 21:56:00 PDT] COMMAND: write_stdin(session_id=64821) poll
+  - The CM55 rebuild continues; `run_smoke_sequence_once()` is currently unused, while `edgeai_insulin_pump_app_start()` remains the only insulin-pump entry path from `main()`.
+[2026-06-11 21:57:00 PDT] COMMAND: rg -n "run_smoke_sequence_once|dashboard_timer_cb|APP_APS_SMOKE_TEST|APS smoke step|edgeai_insulin_pump_app_start\\(" proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h
+  - Confirmed the smoke-test helper is unused and the active smoke path is timer-driven inside the GUI app.
+[2026-06-11 21:58:00 PDT] COMMAND: sed -n '320,430p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c && printf '\\n--- MAIN ---\\n' && sed -n '620,760p' proj_cm55/main.c
+  - Verified the GUI setup still creates the image, panel, labels, and chart before the timer handler runs; no direct smoke call remains in `main()`.
+[2026-06-11 21:59:00 PDT] COMMAND: write_stdin(session_id=64821) poll
+  - The CM55 rebuild completed successfully and produced fresh `proj_cm55.elf`, `proj_cm55.hex`, and `proj_cm55.bin` artifacts.
+[2026-06-11 22:00:00 PDT] COMMAND: python3 -u - <<'PY' ... PY
+  - Started a fresh UART listener on `/dev/ttyACM0` at 115200 baud to capture the next flash boot cleanly.
+[2026-06-11 22:01:00 PDT] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Flash/program completed successfully, but the UART banner reported the older `Build: Jun 11 2026 21:39:31` timestamp and only the first smoke step, so the flashed artifact appears stale and needs a forced rebuild.
+[2026-06-11 22:02:00 PDT] COMMAND: touch proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.h && export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+  - Forced CM55 recompilation succeeded and regenerated the ELF/HEX/BIN artifacts with the smoke-path rollback in place.
+[2026-06-11 22:03:00 PDT] COMMAND: apply_patch
+  - Disabled the active smoke timer in `APP_APS_SMOKE_TEST` mode so the GUI can stay stable and removed the now-unused one-shot smoke helper.
+[2026-06-11 22:04:00 PDT] COMMAND: export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+  - The GUI-stable CM55 rebuild completed successfully after disabling the smoke timer.
+[2026-06-11 22:05:00 PDT] COMMAND: python3 -u - <<'PY' ... PY
+  - The rebooted UART output now shows the APS banner only, with no smoke-step loop, which matches the LCD-safe rollback path.
+[2026-06-11 22:06:00 PDT] COMMAND: git status --short && git branch --show-current && git rev-parse --short HEAD
+  - Confirmed the worktree contains only the intended source/docs changes on `embedded-bringup-smoke-test`; build log files were the only noise.
+[2026-06-11 22:07:00 PDT] COMMAND: git restore proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log && git status --short
+  - Restored the generated Ninja logs so they do not muddy the final patch.
+[2026-06-11 22:08:00 PDT] COMMAND: apply_patch
+  - Updated `docs/BUILD_REPORT.md` so it reflects the current LCD-safe banner-only boot path instead of the earlier active smoke loop.

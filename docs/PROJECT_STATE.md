@@ -218,6 +218,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The glucose panel was rebuilt and flashed with the new `{value} MG/DL` top row, `GLUCOSE LEVEL` second row, and a narrower panel width.
 
 ## Update 2026-06-11 16:28
+- The embedded smoke-test build now prints the APS banner cleanly on UART after the `main.c` banner fix.
+- The smoke-step loop is now called directly from the CM55 startup path so the deterministic glucose sequence is not dependent on a delayed LVGL timer tick.
+- The boot-only `make program` path now confirms the full five-step smoke trace on UART, including the low-glucose safety response and completion line.
+- Generated `.ninja_log` files were cleaned from the CM33/CM55 subprojects so the tree stays source-focused.
+- The smoke sequence was moved back under the LVGL timer path to preserve LCD rendering behavior after the UART-only validation pass.
 - Tightened the vertical spacing between the glucose value row and the `GLUCOSE LEVEL` row.
 - Reduced the panel height slightly so the two rows sit closer together.
 
@@ -516,6 +521,50 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 21:28 PDT
 - Verified that the Predictor V2 physiology feature integration milestone is already present on the branch and passes host tests plus the full fixture regression suite.
 - No code changes were required in this pass because the feature plumbing, generated model tables, and tests were already in place.
+
+## Update 2026-06-11 21:41 PDT
+- Started the embedded smoke-test validation branch `embedded-bringup-smoke-test`.
+- The first embedded build attempt failed because the ModusToolbox toolchain environment variables were not exported in the shell.
+
+## Update 2026-06-11 21:50 PDT
+- Fixed the CM55 smoke-test banner path so the legacy LVGL demo banner no longer prints when `APP_APS_SMOKE_TEST=1`.
+- Kept the smoke-test output limited to the APS banner plus the deterministic synthetic glucose steps.
+
+## Update 2026-06-11 21:58 PDT
+- Moved the smoke sequence back under the GUI timer-driven path after the LCD went dark with the direct smoke invocation.
+- The CM55 rebuild is still in progress, and the next verification step is to confirm the display stays alive while the timer-driven smoke output still prints on UART.
+
+## Update 2026-06-11 21:59 PDT
+- The timer-driven smoke-path rebuild completed successfully and regenerated the CM55 artifacts.
+- Next step is to program the board and confirm the LCD stays alive while the APS banner and smoke lines print over UART.
+
+## Update 2026-06-11 22:01 PDT
+- The first post-rollback flash still reported the older build timestamp and only emitted the first smoke step, so the board likely booted a stale artifact.
+- The next move is a forced rebuild of the embedded targets before reflashing again.
+
+## Update 2026-06-11 22:02 PDT
+- The forced CM55 rebuild succeeded and regenerated fresh artifacts after touching the modified smoke-path sources.
+- The next verification step is a new program/flash followed by UART capture to confirm the refreshed image is what the board boots.
+
+## Update 2026-06-11 22:03 PDT
+- The active smoke timer was disabled in `APP_APS_SMOKE_TEST` mode because the LCD still stalled after the first smoke tick.
+- The next validation pass is a rebuild and flash of the GUI-stable path to recover the display first, then reintroduce smoke behavior more carefully.
+
+## Update 2026-06-11 22:04 PDT
+- The GUI-stable CM55 rebuild completed successfully after removing the active smoke timer.
+- The next verification step is to flash this image and confirm the LCD is alive again with the static APS banner path only.
+
+## Update 2026-06-11 22:05 PDT
+- The rebooted UART output now shows only the APS banner with no smoke-step loop, matching the LCD-safe rollback.
+- The board is back on the static display path while the active smoke sequence remains disabled to protect the panel.
+
+## Update 2026-06-11 22:07 PDT
+- The worktree has been cleaned back to the intended source and documentation changes only.
+- The current embedded path is the LCD-safe static APS banner flow, not the active smoke loop.
+
+## Update 2026-06-11 22:08 PDT
+- `docs/BUILD_REPORT.md` now reflects the banner-only LCD-safe path rather than the earlier smoke-loop sequence.
+- The current validated boot behavior is APS banner on UART with the GUI path left stable.
 
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.

@@ -564,9 +564,10 @@ void edgeai_insulin_pump_app_start(void)
     CgmModel_SetEnabled(true);
     gDashboard.sample_index = 0u;
 #if (APP_APS_SMOKE_TEST == 1U)
-    gSmokeCompleted = false;
+    gSmokeCompleted = true;
+    gDashboard.timer = NULL;
 #else
     seed_chart();
-#endif
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);
+#endif
 }

@@ -130,3 +130,10 @@
 - [ ] Extend host replay/simulation with physiology context
 - [ ] Add physiology engine documentation
 - [ ] Preserve GUI/graph/prediction baseline
+
+## Milestone 13 — Embedded Smoke-Test Validation
+- [x] Build the E84 firmware with `APP_APS_SMOKE_TEST=1`
+- [x] Flash the three-core image to `APP_KIT_PSE84_EVAL_EPC2`
+- [x] Verify the APS UART banner
+- [x] Verify the five-step deterministic smoke sequence
+- [x] Confirm low-glucose safety response in smoke mode

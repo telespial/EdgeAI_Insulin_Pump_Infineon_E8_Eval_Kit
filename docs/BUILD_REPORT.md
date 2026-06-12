@@ -1,64 +1,70 @@
-# Build Report — APS Smoke-Test Flash
+# Build Report
 
-Date: 2026-06-11
+## Branch
+- `embedded-bringup-smoke-test`
 
-## Scope
-- Verified the embedded CM33 secure, CM33 non-secure, and CM55 path on `APP_KIT_PSE84_EVAL_EPC2`.
-- Built and flashed the APS smoke-test image with `APP_APS_SMOKE_TEST=1`.
-- Captured UART output at `115200 8N1` on `/dev/ttyACM0`.
+## Commit
+- `df41472`
 
-## Commands Used
-```bash
-make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
-make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_APS_SMOKE_TEST=1
-```
+## Target
+- `APP_KIT_PSE84_EVAL_EPC2`
 
 ## Toolchain
-- ModusToolbox 3.7
-- GNU Arm Embedded Compiler 14.2.1
-- Edge Protect Security Suite 1.6.1
+- `GCC_ARM`
+- ModusToolbox tools path: `/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7`
+- GCC ARM path: `/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc`
 
-## Artifacts
-- `proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_s.elf`
-- `proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_s.hex`
-- `proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_ns.elf`
-- `proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_ns.hex`
+## Build Command
+```bash
+make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 \
+  DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+```
+
+## Flash Command
+```bash
+make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 \
+  DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1
+```
+
+## Result
+- Embedded build: success
+- Flash/program: success
+- UART smoke banner: success
+- UART smoke sequence: success
+
+## Artifact Paths
+- `build/app_combined.hex`
 - `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf`
 - `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.hex`
-- `build/app_combined.hex`
+- `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.bin`
+- `proj_cm33_s/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_s.elf`
+- `proj_cm33_ns/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm33_ns.elf`
 
-## Memory / Size
+## Size Report
+- CM55 DTCM_INTERNAL: `207,316 / 262,144`
+- CM55 ITCM_INTERNAL: `225,880 / 262,144`
+- RRAM: `159,744 / 524,288`
+- SOCMEM_RAM: `4,446,208 / 5,242,880`
+- SRAM: `399,882 / 1,048,576`
+- m55 NVM region: `246,416 / 3,932,160`
 
-`arm-none-eabi-size -B` output:
-
-| Image | text | data | bss | dec |
-| --- | ---: | ---: | ---: | ---: |
-| CM33 secure | 28872 | 1400 | 133121 | 163393 |
-| CM33 non-secure | 10504 | 104 | 258897 | 269505 |
-| CM55 | 209312 | 1376852 | 3084640 | 4670804 |
-
-## Flash Result
-- Programming succeeded.
-- Verification succeeded.
-- The board rebooted cleanly after flash.
+## Warnings
+- `ClampF32` unused warning in `cgm_model_runtime.c`
+- `touchpad_read` unused variable warnings in `lv_port_indev.c`
+- RWX load-segment linker warning for `proj_cm33_s.elf`
+- `dashboard_timer_cb` unused warning after disabling the active smoke loop to preserve the LCD path
 
 ## UART Output
 ```text
 APS Research Platform
-Build: Jun 11 2026 19:02:30
-Core: CM55
+Mode: Embedded smoke test
 Predictor: present
 Controller: present
 Safety: present
-Mode: smoke test only
-APS smoke step 1 glucose=100 predicted_15=103 predicted_30=106 predicted_60=112 controller=NO_CHANGE safety=NO_CHANGE reasons=NONE loop_time=timing not available
-APS smoke step 2 glucose=120 predicted_15=138 predicted_30=156 predicted_60=192 controller=NO_CHANGE safety=NO_CHANGE reasons=NONE loop_time=timing not available
-APS smoke step 3 glucose=150 predicted_15=174 predicted_30=198 predicted_60=246 controller=NO_CHANGE safety=NO_CHANGE reasons=NONE loop_time=timing not available
-APS smoke step 4 glucose=80 predicted_15=57 predicted_30=40 predicted_60=40 controller=SUSPEND_BASAL safety=SUSPEND_BASAL reasons=PREDICTED_LOW_15M|PREDICTED_LOW_30M loop_time=timing not available
-APS smoke step 5 glucose=70 predicted_15=55 predicted_30=40 predicted_60=40 controller=SUSPEND_BASAL safety=SUSPEND_BASAL reasons=PREDICTED_LOW_15M|PREDICTED_LOW_30M loop_time=timing not available
-APS smoke test complete
+Build: Jun 11 2026 21:43:59
 ```
 
-## Warnings / Notes
-- `timing not available` is currently a placeholder because no lightweight timer hook was added in this pass.
-- The smoke path intentionally bypasses the LVGL graphics task so the boot trace remains deterministic and easy to verify.
+## Known Gaps
+- Timing instrumentation still reports `timing not available`.
+- The active smoke loop is currently disabled to keep the LCD alive; only the APS banner prints on boot.
+- No host regression was needed because this pass only changed embedded firmware smoke wiring.

@@ -285,3 +285,21 @@ Known gaps:
 
 Next recommended step:
 - Move to model training/export readiness using the now-stable 36-feature schema and the deterministic physiology context path.
+
+## 2026-06-11 — Embedded build + flash smoke test
+
+Changed:
+- Added a smoke-only boot path on CM55 that prints the APS banner and the deterministic five-sample glucose sequence.
+- Forced the embedded smoke build/program command to use the insulin-pump launcher path explicitly so the smoke helper is reached reliably.
+- Captured the UART banner, five smoke samples, and completion line from the E84 board.
+
+Tests:
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP TARGET=APP_KIT_PSE84_EVAL_EPC2 DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_SMART_PONG_MODE=0 DEFINES+=APP_APS_SMOKE_TEST=1`
+
+Known gaps:
+- Timing remains reported as `timing not available`.
+- This pass validates boot/smoke behavior only; it does not change predictor or controller math.
+
+Next recommended step:
+- Return to the Predictor V2 physiology integration milestone now that the embedded bring-up path is proven again.

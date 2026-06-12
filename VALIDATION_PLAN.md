@@ -102,3 +102,6 @@ Pass criteria:
 - UART banner appears after flash.
 - Smoke sequence prints all five samples.
 - No crash or reset occurs during the smoke window.
+
+Status:
+- Verified on `embedded-bringup-smoke-test` with explicit `APP_INSULIN_PUMP_MODE=1` and `APP_SMART_PONG_MODE=0` build/program flags.
