@@ -25,6 +25,12 @@ Original E84 firmware
 
 Early LCD/touch demo code existed only as bring-up infrastructure for the display and touch path. It is not the identity of this repository.
 
+## Branch Status
+
+- Current homepage: `main`
+- Active APS development branch: `codex/bar-graph-tuning`
+- The active APS implementation and regression work remain on `codex/bar-graph-tuning` until embedded smoke testing is complete.
+
 ## What the Platform Does
 
 - CGM-style glucose input
@@ -105,6 +111,7 @@ Validation covers:
 ## Documentation Index
 
 - `docs/PROJECT_HISTORY.md`
+- `docs/LEGACY_DISPLAY_BRINGUP.md`
 - `docs/PHYSIOLOGY_ENGINE.md`
 - `docs/PREDICTOR_V2_FEATURE_SCHEMA.md`
 - `docs/RTOS_MIGRATION_PLAN.md`
@@ -117,4 +124,3 @@ Validation covers:
 ## Research Disclaimer
 
 This is a research and simulation platform only. It is not a medical device, not clinically validated, not FDA cleared, and must not be used for insulin dosing or patient care.
-
