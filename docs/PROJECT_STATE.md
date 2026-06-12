@@ -642,6 +642,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-11 23:15 PDT
 - Final docs sync is being kept aligned with the flashed restore-point baseline while the LCD visual check remains pending on the board.
 
+## Update 2026-06-11 23:16 PDT
+- Final restore-point notes were committed and pushed as `da1d966` on `embedded-bringup-smoke-test`.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.
