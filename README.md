@@ -1,8 +1,10 @@
 # APS Research Platform: E84 Embedded Smoke Test
 
-This repository now includes an APS research smoke-test path for the PSOC&trade; Edge E84 Evaluation Kit. The smoke-test build prints a UART banner, runs a deterministic five-step glucose sequence, and validates the embedded multi-core boot path without changing medical logic.
+This repository extends the last stable Failsafe Restore Point of an existing Infineon PSoC Edge E84 application into an APS research platform. The smoke-test build prints a UART banner, runs a deterministic five-step glucose sequence, and validates the embedded multi-core boot path without changing medical logic.
 
 Future architecture planning now also covers RTOS readiness and OS abstraction so the current research loop can migrate cleanly later without changing predictor, controller, safety, or regression behavior.
+
+Project lineage and evolution are documented in `docs/PROJECT_HISTORY.md`.
 
 Smoke-test build and flash command:
 

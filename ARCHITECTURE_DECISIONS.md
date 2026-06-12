@@ -79,3 +79,13 @@ Safety must remain the final authority and be able to override any lower-priorit
 
 Status:
 Accepted
+
+## ADR-009 — Preserve Failsafe Restore Baseline
+Decision:
+APS functionality shall be layered on top of the last stable Failsafe Restore Point and should not replace existing GUI, graphing, prediction, or platform infrastructure without explicit justification.
+
+Reason:
+The APS work is an extension of a working E84 platform, and preserving the proven baseline reduces regression risk while keeping the GUI, graphs, and prediction flow intact.
+
+Status:
+Accepted

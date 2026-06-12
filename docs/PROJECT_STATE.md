@@ -444,6 +444,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Flashed the updated CM55 image so the live UI reflects the adjusted label placement.
 - Kept the new RTOS migration and OSAL documents as planning-only material with no runtime behavior changes.
 
+## Update 2026-06-11 20:31 PDT
+- Documented that the APS branch extends the last stable Failsafe Restore Point rather than starting as a greenfield firmware project.
+- Added `docs/PROJECT_HISTORY.md` to show the platform evolution from the original E84 app through GUI, graphs, prediction, APS logic, validation, and future RTOS planning.
+- Updated the README so the project lineage is explicit at the top of the repo.
+
 ## Next Milestones
 1. Complete end-to-end validation for CS81/CS82 touch path with bridge firmware state.
 2. Continue gameplay polish and render artifact hardening under high speed.

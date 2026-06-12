@@ -1,7 +1,7 @@
 # RTOS Migration Plan
 
 ## Purpose
-This APS research platform should remain RTOS-ready so it can later support deterministic scheduling, task isolation, watchdog supervision, portability, easier scaling, and future safety certification paths without changing current predictor, controller, safety, or simulation behavior.
+This APS research platform extends the last stable Failsafe Restore Point and should remain RTOS-ready so it can later support deterministic scheduling, task isolation, watchdog supervision, portability, easier scaling, and future safety certification paths without changing current predictor, controller, safety, or simulation behavior.
 
 ## Candidate RTOS Platforms
 

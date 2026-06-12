@@ -215,3 +215,19 @@ Known gaps:
 
 Next recommended step:
 - Keep the current firmware stable and only revisit OSAL implementation after the embedded bring-up milestone is complete.
+
+## 2026-06-11 — Lineage clarification pass
+
+Changed:
+- Added `docs/PROJECT_HISTORY.md` to document the project’s lineage from the original E84 application through the Failsafe Restore Point and into APS development.
+- Updated the README, project state, RTOS plan, and architecture decisions to state that APS is layered on top of an existing working platform rather than being greenfield firmware.
+- Added ADR-009 to preserve the Failsafe Restore baseline as the default architectural assumption.
+
+Tests:
+- Documentation-only update; no build or regression behavior changed.
+
+Known gaps:
+- The project history is now explicit in docs, but the firmware/runtime behavior remains unchanged as intended.
+
+Next recommended step:
+- Keep future changes aligned with the documented baseline-preservation rule and avoid replacing working GUI/graph infrastructure without a clear justification.
