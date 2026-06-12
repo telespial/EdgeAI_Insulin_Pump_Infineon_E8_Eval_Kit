@@ -33,6 +33,12 @@
 
 The model is strong enough to be the first embedded candidate, but it should still be treated as a review snapshot until the firmware build path, table replacement, and LCD-safe validation are explicitly checked.
 
+## Dry-Run Follow-Up
+- Candidate V1 tables were copied into the active firmware paths on the dry-run branch.
+- The embedded image rebuilt successfully with no flash-size or RAM-size change.
+- Host test/regression checks reported safety expectation mismatches, so the candidate should stay a review snapshot for now.
+- Final dry-run decision: `KEEP AS REVIEW SNAPSHOT`
+
 ## Candidate V1 Promotion Plan
 1. Copy the candidate tables into the active generated-table location.
 2. Run `make -f host.mk test`.

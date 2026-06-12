@@ -825,3 +825,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added a feature-importance review for the enriched real-data Predictor V2 candidate so the coefficient landscape is now documented by horizon and feature group.
 - Added a candidate promotion review that keeps the active embedded tables unchanged while comparing the review snapshot against the active firmware layout.
 - The active firmware tables were not modified in this milestone; only host-side documentation and review artifacts changed.
+## Milestone 21 — Predictor V2 Candidate V1 Dry Run
+- [x] Replace the active generated tables with the candidate snapshot on a dry-run branch
+- [x] Confirm the embedded build still completes with the candidate tables
+- [x] Capture baseline and candidate image sizes for comparison
+- [x] Record the host safety expectation mismatch that still blocks promotion
+- [x] Keep the candidate as a review snapshot rather than promoting it to firmware

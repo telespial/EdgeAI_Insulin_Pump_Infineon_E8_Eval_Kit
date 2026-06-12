@@ -542,3 +542,7 @@ Results:
 
 Next recommended step:
 - If promotion is approved, copy the candidate tables into the active generated-table path and rerun the full host and LCD-safe validation path before any hardware flash.
+- 2026-06-12 14:30 PDT: Started the Predictor V2 candidate V1 dry-run branch and copied the candidate tables into the active firmware paths for build-only verification.
+- 2026-06-12 14:35 PDT: Ran `make -f host.mk test` and `make -f host.mk regression` on the dry-run branch; both host checks failed on the existing controller/safety expectations after the table swap.
+- 2026-06-12 14:40 PDT: Rebuilt the embedded image with the candidate tables and confirmed the build still completes; flash and RAM usage stayed unchanged at the combined-image level.
+- 2026-06-12 14:45 PDT: Wrote the dry-run report and kept Candidate V1 as a review snapshot because the host safety expectations still need attention.

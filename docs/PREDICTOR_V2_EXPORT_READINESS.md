@@ -55,6 +55,14 @@ The enriched importer derives proxy physiology from the real insulin-pump data:
 
 The enriched real-data model is strong enough to become a review candidate for firmware coefficient replacement, but it should remain a candidate snapshot until the embedded build path is rechecked and the hardware baseline is confirmed against the same export.
 
+Dry-run outcome:
+
+- active tables were replaced on `predictor-v2-candidate-v1-dry-run`
+- embedded build completed successfully
+- flash/RAM/image size stayed unchanged
+- host test/regression checks still failed on safety expectations
+- promotion should wait for the host expectation mismatch to be resolved
+
 Recommended next step:
 
 - compare the candidate snapshot against the current embedded default tables and confirm the firmware still builds cleanly before any runtime wiring changes.

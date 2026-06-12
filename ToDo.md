@@ -192,3 +192,9 @@
 - [x] Write an export-readiness report with risks and recommendation
 - [x] Stage a review-only candidate snapshot under `firmware/model_candidates/`
 - [x] Keep the active embedded firmware tables unchanged
+## Milestone 21 — Predictor V2 Candidate V1 Dry Run
+- [x] Swap the active tables to the candidate snapshot on a dry-run branch
+- [x] Verify the embedded build still links
+- [x] Measure image-size delta against the baseline
+- [x] Document the host regression mismatch that blocks promotion
+- [x] Keep the candidate as a review snapshot for now
