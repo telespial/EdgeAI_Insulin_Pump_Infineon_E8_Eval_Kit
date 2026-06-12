@@ -881,3 +881,5 @@ PY
   - Closed the recovery audit loop for the LCD-safe rollback pass.
 [2026-06-11 22:16:00 PDT] COMMAND: nl -ba proj_cm55/main.c ... && nl -ba proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c ... && nl -ba docs/BUILD_REPORT.md ...
   - Captured line anchors for the final summary: `main.c:629-750`, `edgeai_insulin_pump_app.c:366-572`, and `docs/BUILD_REPORT.md:1-70`.
+[2026-06-11 22:17:00 PDT] COMMAND: git status --short && git rev-parse --short HEAD && git add docs/COMMAND_LOG.md docs/PROJECT_STATE.md && git commit -m "Record final LCD-safe audit notes" && git push origin embedded-bringup-smoke-test && git status --short && git rev-parse --short HEAD
+  - Final clean branch state is `4c4b835` on `embedded-bringup-smoke-test`.
