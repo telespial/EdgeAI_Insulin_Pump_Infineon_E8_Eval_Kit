@@ -18,3 +18,7 @@
 ## Current Boundary
 - Structural reparenting of the frequently updated accuracy label from chart child to screen child is safe.
 - Arbitrary runtime text mutation on that same label path is still unsafe under the current render stack.
+
+## Working-Path Guidance
+- Reuse only proven numeric/percent-shaped update paths for the next display experiment.
+- Prefer existing status bars or the original percent label path before any new APS wording.

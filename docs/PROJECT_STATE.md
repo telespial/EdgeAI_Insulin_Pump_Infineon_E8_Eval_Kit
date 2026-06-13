@@ -889,3 +889,7 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Physical recovery result: LCD live / GUI visible.
 - Strongest current conclusion: arbitrary LVGL text mutation is unsafe on the current render stack, even on the proven screen-level accuracy-label path.
 - Next safest strategy is to avoid LVGL text mutation for APS display and instead use pre-rendered APS background art or existing numeric/bar paths only.
+
+## Update 2026-06-13 16:05 PDT
+- Added `docs/WORKING_DISPLAY_PATHS.md` to catalog every current dashboard display element, its parent subtree, update path, and observed LCD safety.
+- Confirmed the best next display experiment should stay within original numeric/percent-shaped paths instead of arbitrary APS strings.

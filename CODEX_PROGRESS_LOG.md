@@ -560,3 +560,4 @@ Next recommended step:
 - 2026-06-13 11:15 PDT — Ran `aps-screen-label-readout-v1`; build/program/reset-run passed for the compile-gated `APS 110` placeholder on the proven screen-level accuracy-label path.
 - 2026-06-13 15:30 PDT — Physical result for `aps-screen-label-readout-v1`: LCD blank / dead / frozen. Restored the known-good recovery image with no APS text flags; LCD came back live / GUI visible.
 - 2026-06-13 15:30 PDT — Closeout conclusion: current LVGL text mutation is unsafe for arbitrary APS display strings under this render stack, even on the screen-level accuracy-label path.
+- 2026-06-13 16:05 PDT — Added a working-display-path audit that separates proven-safe background/panel/chart/bar paths from known-fragile LVGL text-mutation paths.
