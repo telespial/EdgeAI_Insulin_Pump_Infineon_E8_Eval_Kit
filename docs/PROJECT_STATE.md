@@ -868,3 +868,11 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Programmed merged `main` commit `39f6361` to the E84 and verified the debugger could still acquire the device before and after the flash.
 - Confirmed the flashed image includes Candidate V1 tables and that the default UART boot did not print `APS probe:`.
 - Recorded the flash/programming evidence, while noting that a direct physical LCD view was not captured from the terminal session.
+
+## Update 2026-06-13
+- Stopped all APS / mini-terminal work and returned to the exact known-good baseline recovery flow.
+- Checked out a clean detached `HEAD` at `087abe1`, rebuilt with `CONFIG_DISPLAY=W4P3INCH_DISP`, and reflashed with no APS flags.
+- OpenOCD acquire/reset-run succeeded both before and after programming, reporting `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- UART capture after the flash was inconclusive and appeared garbled, so UART was not used as LCD evidence for this incident.
+- Physical LCD result is now confirmed: LCD on and GUI visible on the restored `087abe1` baseline.
+- The active LCD recovery incident is closed with the known-good LCD baseline restored.

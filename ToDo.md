@@ -224,3 +224,5 @@
 - [x] Keep the branch ready for GitHub PR creation
 - [x] Avoid any local merge or runtime change
 - [ ] Capture a direct physical LCD photo/video for the merged `39f6361` image
+- [x] Confirm the exact known-good baseline `087abe1` physically restores the LCD after the 2026-06-13 recovery flash
+- [ ] Keep future APS display work off the board until a new LCD-safe plan is reviewed from the restored `087abe1` baseline

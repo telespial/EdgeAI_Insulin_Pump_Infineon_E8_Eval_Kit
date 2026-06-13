@@ -98,3 +98,13 @@ Build: Jun 11 2026 21:43:59
 - Default image must not print `APS probe:`.
 - A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
 - UART boot alone is not enough to claim LCD success.
+
+## Update 2026-06-13
+- Exact baseline recovery pass used detached `HEAD` at `087abe1`.
+- Clean build succeeded with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- Program succeeded with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`.
+- No APS compile flags were used.
+- OpenOCD reset-run succeeded before and after programming and again reported `PSE846GPS2DBZC4A` / `CYBOOT_SUCCESS`.
+- UART remained inconclusive and was not used as LCD evidence.
+- Physical LCD is now confirmed recovered: panel on and GUI visible on the restored `087abe1` baseline.
+- Known-good LCD baseline restored.

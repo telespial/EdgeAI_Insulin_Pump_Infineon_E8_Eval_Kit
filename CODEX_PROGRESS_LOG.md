@@ -552,3 +552,7 @@ Next recommended step:
 - 2026-06-12 16:20 PDT: Re-ran the Candidate V1 dry-run recheck after the safety expectation fix; active generated tables still match the review snapshot byte-for-byte, host test/regression now pass, and the embedded build stayed size-neutral.
 - 2026-06-12 16:35 PDT: Prepared the Candidate V1 promotion PR notes with the training source, metrics, baseline comparison, dry-run validation, and safety-review correction; no runtime behavior changed.
 - 2026-06-12 17:00 PDT: Flashed merged `main` commit `39f6361` with Candidate V1 tables included; debugger acquire/reset-run succeeded before and after programming, and UART showed the legacy graphics boot banner without any `APS probe:` line.
+- 2026-06-13 11:05 PDT: Stopped APS work and began exact LCD recovery from clean detached `087abe1`.
+- 2026-06-13 11:20 PDT: Clean build and reflash of `087abe1` completed with no APS flags; OpenOCD reset-run succeeded before and after programming.
+- 2026-06-13 11:23 PDT: UART sample after recovery flash was inconclusive, so UART was not used as LCD evidence.
+- 2026-06-13 11:30 PDT: User physically confirmed LCD on and GUI visible on the restored exact baseline `087abe1`; the active LCD recovery incident is closed.

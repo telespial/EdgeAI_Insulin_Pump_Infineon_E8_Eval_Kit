@@ -269,3 +269,11 @@
 - No fresh LCD photo was captured during this evidence pass.
 - Only the one-shot boot probe is runtime verified on hardware; the rest of the APS framework remains link-only.
 - The verification evidence is complete for the current board/repo state, but it does not claim broader embedded APS loop behavior on hardware.
+
+## Update 2026-06-13
+- Recovery returned to the exact known-good baseline commit `087abe1`.
+- Embedded build and program both succeeded with no APS flags.
+- OpenOCD pre-reset and post-reset both reported `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- UART after the recovery flash was inconclusive, so it was not used as LCD evidence.
+- Physical LCD is now confirmed on with the GUI visible after the exact-baseline recovery flash.
+- Known-good LCD baseline restored; active incident closed.
