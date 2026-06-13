@@ -227,4 +227,6 @@
 
 - [ ] Record the physical LCD result for `move-accuracy-label-out-of-chart` before deciding whether chart-subtree invalidation is the root cause.
 
-- [ ] Next safest APS display step: reuse an existing non-chart screen-level label path for compact APS text before attempting any richer overlay.
+- [ ] Next safest APS display step: avoid arbitrary LVGL text mutation and use pre-rendered APS background art or existing numeric/bar paths only.
+
+- [x] Record the physical LCD result for `aps-screen-label-readout-v1` before attempting any richer APS text rotation.

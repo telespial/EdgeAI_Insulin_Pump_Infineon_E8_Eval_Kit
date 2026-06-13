@@ -112,3 +112,13 @@ Build: Jun 11 2026 21:43:59
 - Physical LCD result: live / GUI visible and accuracy label appears
 - Existing `lv_label_set_text()` path remained unchanged
 - Fix candidate: keep frequently updated status labels out of the chart subtree
+
+## APS Screen Label Readout V1
+- Branch: `aps-screen-label-readout-v1`
+- Change: compile-gated `header_buffer` placeholder `APS 110` on existing screen-level `prediction_accuracy_label`
+- Build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: blank / dead / frozen
+- Recovery image result: exact known-good recovery image restored LCD live / GUI visible
+- Conclusion: screen-level label reparenting is not sufficient by itself; arbitrary LVGL text mutation on this path is still unsafe under the current render stack

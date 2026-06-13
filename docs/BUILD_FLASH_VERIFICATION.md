@@ -283,3 +283,17 @@
 - Physical LCD result: live / GUI visible and accuracy label appears
 - Build/program/OpenOCD all passed
 - Likely root cause: chart-child label invalidation under chart refresh/full-render/VG-Lite
+
+## Failed Flash Verification — APS Screen Label Readout V1
+- Branch: `aps-screen-label-readout-v1`
+- Build command: `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_SCREEN_LABEL_READOUT=1 -j8`
+- Program command: `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_SCREEN_LABEL_READOUT=1`
+- OpenOCD reset-run before program: passed (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD reset-run after program: passed (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: blank / dead / frozen
+
+## Confirmed Recovery — APS Screen Label Readout V1 Failure
+- Recovery baseline: known-good source restored with no APS text flags
+- Recovery build/program/OpenOCD: passed
+- Recovery physical result: LCD live / GUI visible
+- Conclusion: no APS math and no new LVGL objects were involved; arbitrary LVGL text mutation remains unsafe on this render stack

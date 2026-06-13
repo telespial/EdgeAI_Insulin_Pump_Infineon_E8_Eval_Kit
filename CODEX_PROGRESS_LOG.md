@@ -556,3 +556,7 @@ Next recommended step:
 - 2026-06-13 10:35 PDT — Ran the move-accuracy-label-out-of-chart experiment from `087abe1`; build/program/reset-run succeeded and we are paused for physical LCD verification.
 
 - 2026-06-13 10:50 PDT — Hardware pass: moving `prediction_accuracy_label` out of the chart subtree kept the LCD live while preserving the existing text update call.
+
+- 2026-06-13 11:15 PDT — Ran `aps-screen-label-readout-v1`; build/program/reset-run passed for the compile-gated `APS 110` placeholder on the proven screen-level accuracy-label path.
+- 2026-06-13 15:30 PDT — Physical result for `aps-screen-label-readout-v1`: LCD blank / dead / frozen. Restored the known-good recovery image with no APS text flags; LCD came back live / GUI visible.
+- 2026-06-13 15:30 PDT — Closeout conclusion: current LVGL text mutation is unsafe for arbitrary APS display strings under this render stack, even on the screen-level accuracy-label path.

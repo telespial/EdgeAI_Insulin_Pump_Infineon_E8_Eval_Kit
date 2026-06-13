@@ -7059,3 +7059,30 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
 - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
 - `python3 - <<'PY' ... update LVGL move-accuracy docs/results`
+
+## 2026-06-13 Codex
+- `git checkout 6f8ac6c && git checkout -b aps-screen-label-readout-v1`
+- `sed -n '330,360p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`
+- `apply_patch` compile-gated `push_sample()` header_buffer formatting for `APP_APS_SCREEN_LABEL_READOUT=1`
+- `export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7`
+- `export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc`
+- `export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools`
+- `make clean`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_SCREEN_LABEL_READOUT=1 -j8`
+- `OPENOCD=...; SCRIPTS=...; QSPIDIR=...; "$OPENOCD" ... -c 'init; flash banks; reset run; sleep 2000; shutdown'
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_SCREEN_LABEL_READOUT=1`
+- `OPENOCD=...; SCRIPTS=...; QSPIDIR=...; "$OPENOCD" ... -c 'init; flash banks; reset run; sleep 2000; shutdown'`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_SCREEN_LABEL_READOUT=1`
+- `OPENOCD=...; SCRIPTS=...; QSPIDIR=...; "$OPENOCD" ... -c 'init; flash banks; reset run; sleep 2000; shutdown'`
+- `python3 - <<'PY' ... update APS screen-label readout pending-result docs`
+
+## 2026-06-13 Codex
+- `git checkout 6f8ac6c -- proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`
+2026-06-13T15:21:49-07:00 | make clean && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+2026-06-13T15:22:02-07:00 | pre-program OpenOCD reset-run
+2026-06-13T15:22:04-07:00 | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+2026-06-13T15:22:32-07:00 | post-program OpenOCD reset-run
+2026-06-13T15:26:10-07:00 | git status --short
+2026-06-13T15:26:18-07:00 | git checkout -- proj_cm33_s/.ninja_log proj_cm33_ns/.ninja_log proj_cm55/.ninja_log
+2026-06-13T15:26:38-07:00 | update docs for APS screen label readout failure closeout
+2026-06-13T15:27:31-07:00 | git commit -m "document aps screen label readout failure" (pending)

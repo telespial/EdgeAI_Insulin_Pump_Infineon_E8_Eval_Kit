@@ -878,3 +878,14 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Confirmed on hardware that moving `gDashboard.prediction_accuracy_label` from a chart child to a screen child preserves the LCD and GUI.
 - The existing `lv_label_set_text()` update path in `push_sample()` remained unchanged; only the label parent/placement changed.
 - Current root-cause conclusion: chart-child label invalidation is the likely LCD kill path under the present full-render display stack.
+
+## Update 2026-06-13 11:15 PDT
+- Started branch `aps-screen-label-readout-v1` from `6f8ac6c` to validate a compact APS-style placeholder on the proven screen-level label path.
+- Only the `push_sample()` `header_buffer` formatting was compile-gated to `APS 110`; the existing `lv_label_set_text()` call and chart logic stayed unchanged.
+- Build/program/OpenOCD reset-run all passed, but the physical LCD result was blank / dead / frozen.
+
+## Update 2026-06-13 15:30 PDT
+- Restored the known-good recovery image source with no APS text flags and reflashed it cleanly.
+- Physical recovery result: LCD live / GUI visible.
+- Strongest current conclusion: arbitrary LVGL text mutation is unsafe on the current render stack, even on the proven screen-level accuracy-label path.
+- Next safest strategy is to avoid LVGL text mutation for APS display and instead use pre-rendered APS background art or existing numeric/bar paths only.
