@@ -39,8 +39,23 @@ typedef struct
 
 static cgm_dashboard_t gDashboard;
 
-#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
-static bool gApsProbeRan;
+#if defined(APP_APS_SIDECAR_DEMO) && (APP_APS_SIDECAR_DEMO == 1)
+#define APS_SIDECAR_DEMO_PERIOD_MS 5000u
+#define APS_SIDECAR_DEMO_SEQUENCE_LEN 8u
+
+typedef struct
+{
+    bool initialized;
+    uint32_t last_service_ms;
+    uint32_t sequence_index;
+    lv_obj_t *panel;
+    lv_obj_t *status_label;
+} aps_sidecar_demo_t;
+
+static aps_sidecar_demo_t gApsSidecar;
+
+static const uint16_t kApsSidecarDemoBgMgdl[APS_SIDECAR_DEMO_SEQUENCE_LEN] = {110u, 125u, 145u, 160u, 150u, 130u, 105u, 90u};
+#endif
 
 static const char *action_to_string(aps_action_t action)
 {
@@ -60,6 +75,9 @@ static const char *action_to_string(aps_action_t action)
             return "UNKNOWN";
     }
 }
+
+#if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
+static bool gApsProbeRan;
 
 void ApsEmbeddedProbe_RunOnce(void)
 {
@@ -116,6 +134,192 @@ void ApsEmbeddedProbe_RunOnce(void)
            safety_ok ? 1u : 0u);
 
     gApsProbeRan = true;
+}
+#endif
+
+#if defined(APP_APS_SIDECAR_DEMO) && (APP_APS_SIDECAR_DEMO == 1)
+static uint16_t aps_sidecar_demo_bg_at(uint32_t index)
+{
+    return kApsSidecarDemoBgMgdl[index % APS_SIDECAR_DEMO_SEQUENCE_LEN];
+}
+
+static void aps_sidecar_build_input(uint32_t sequence_index, predictor_v2_input_t *input)
+{
+    uint16_t glucose_mgdl = aps_sidecar_demo_bg_at(sequence_index);
+
+    if (input == NULL)
+    {
+        return;
+    }
+
+    *input = (predictor_v2_input_t){0};
+    input->cgm.epoch_s = 1000u + sequence_index * 300u;
+    input->cgm.age_s = 0u;
+    input->cgm.glucose_mgdl = glucose_mgdl;
+    input->cgm.trend_mgdl_min_x100 = 0;
+    input->cgm.sqi_pct = 95u;
+    input->cgm.sensor_flags = 0u;
+    input->cgm.valid = true;
+
+    input->physiology.iob_u = 0.5f;
+    input->physiology.insulin_activity_u_per_hr = 0.0f;
+    input->physiology.cob_g = 10.0f;
+    input->physiology.carb_absorption_g_per_hr = 0.0f;
+    input->physiology.basal_u_per_hr = 0.8f;
+    input->physiology.insulin_30m_u = 0.0f;
+    input->physiology.insulin_120m_u = 0.0f;
+    input->physiology.carbs_30m_g = 0.0f;
+    input->physiology.carbs_120m_g = 0.0f;
+    input->physiology.minutes_since_bolus = 0u;
+    input->physiology.minutes_since_meal = 0u;
+    input->physiology.activity_state = (uint8_t)ACTIVITY_SEDENTARY;
+    input->physiology.activity_confidence_pct = 95u;
+    input->physiology.motion_rms_5m = 0.0f;
+    input->physiology.motion_rms_15m = 0.0f;
+    input->physiology.active_minutes = 0u;
+    input->physiology.post_exercise_minutes = 0u;
+    input->physiology_present = true;
+}
+
+static void aps_sidecar_update_label(uint16_t glucose_mgdl,
+                                    const predictor_v2_output_t *prediction,
+                                    const aps_controller_output_t *command,
+                                    bool safety_ok)
+{
+    char buffer[192];
+    const char *safety_text = safety_ok ? "NORMAL" : "BLOCKED";
+    const char *action_text = (command != NULL) ? action_to_string(command->action) : "UNKNOWN";
+    uint16_t pred_15m = (prediction != NULL) ? prediction->pred_15m_mgdl : glucose_mgdl;
+    uint16_t pred_30m = (prediction != NULL) ? prediction->pred_30m_mgdl : glucose_mgdl;
+    uint16_t pred_60m = (prediction != NULL) ? prediction->pred_60m_mgdl : glucose_mgdl;
+
+    if (gApsSidecar.status_label == NULL)
+    {
+        return;
+    }
+
+    snprintf(buffer,
+             sizeof(buffer),
+             "APS DEMO\nBG: %u  P15: %u\nP30: %u  P60: %u\nACT: %s  SAFE: %s",
+             (unsigned int)glucose_mgdl,
+             (unsigned int)pred_15m,
+             (unsigned int)pred_30m,
+             (unsigned int)pred_60m,
+             action_text,
+             safety_text);
+    lv_label_set_text(gApsSidecar.status_label, buffer);
+}
+
+void ApsSidecar_Service(uint32_t now_ms)
+{
+    predictor_v2_input_t input;
+    predictor_v2_output_t prediction = {0};
+    aps_controller_output_t command = {0};
+    bool prediction_ok;
+    bool controller_ok;
+    bool safety_ok;
+    uint16_t glucose_mgdl;
+    uint32_t elapsed_ms;
+
+    if (!gApsSidecar.initialized)
+    {
+        return;
+    }
+
+    if (gApsSidecar.last_service_ms == 0u)
+    {
+        elapsed_ms = APS_SIDECAR_DEMO_PERIOD_MS;
+    }
+    else if (now_ms >= gApsSidecar.last_service_ms)
+    {
+        elapsed_ms = now_ms - gApsSidecar.last_service_ms;
+    }
+    else
+    {
+        elapsed_ms = APS_SIDECAR_DEMO_PERIOD_MS;
+    }
+
+    if (elapsed_ms < APS_SIDECAR_DEMO_PERIOD_MS)
+    {
+        return;
+    }
+
+    gApsSidecar.last_service_ms = now_ms;
+    glucose_mgdl = aps_sidecar_demo_bg_at(gApsSidecar.sequence_index);
+    aps_sidecar_build_input(gApsSidecar.sequence_index, &input);
+
+    prediction_ok = PredictorV2_Update(&input, &prediction);
+    controller_ok = prediction_ok && OpenApsController_DetermineBasal(&input, &prediction, &command);
+    safety_ok = controller_ok && SafetySupervisor_Apply(now_ms / 1000u, &input, &prediction, &command);
+
+    printf("APS sidecar: BG=%u P15=%u P30=%u P60=%u ACTION=%s SAFE=0x%08lX OK=%u%u%u\n",
+           (unsigned int)glucose_mgdl,
+           (unsigned int)prediction.pred_15m_mgdl,
+           (unsigned int)prediction.pred_30m_mgdl,
+           (unsigned int)prediction.pred_60m_mgdl,
+           action_to_string(command.action),
+           (unsigned long)command.reason_flags,
+           prediction_ok ? 1u : 0u,
+           controller_ok ? 1u : 0u,
+           safety_ok ? 1u : 0u);
+
+    aps_sidecar_update_label(glucose_mgdl, &prediction, &command, safety_ok);
+    gApsSidecar.sequence_index = (gApsSidecar.sequence_index + 1u) % APS_SIDECAR_DEMO_SEQUENCE_LEN;
+}
+
+void ApsSidecar_Init(void)
+{
+    lv_obj_t *screen;
+    lv_obj_t *panel;
+    lv_obj_t *label;
+    uint32_t now_ms;
+
+    if (gApsSidecar.initialized)
+    {
+        return;
+    }
+
+    screen = lv_screen_active();
+    if (screen == NULL)
+    {
+        return;
+    }
+
+    panel = lv_obj_create(screen);
+    if (panel != NULL)
+    {
+        lv_obj_set_size(panel, 180, 114);
+        lv_obj_align(panel, LV_ALIGN_BOTTOM_LEFT, 16, -16);
+        lv_obj_set_style_radius(panel, 14, 0);
+        lv_obj_set_style_border_width(panel, 2, 0);
+        lv_obj_set_style_border_color(panel, lv_color_hex(0x78D8FF), 0);
+        lv_obj_set_style_bg_color(panel, lv_color_hex(0x08111A), 0);
+        lv_obj_set_style_bg_opa(panel, LV_OPA_80, 0);
+        lv_obj_set_style_pad_left(panel, 10, 0);
+        lv_obj_set_style_pad_right(panel, 10, 0);
+        lv_obj_set_style_pad_top(panel, 8, 0);
+        lv_obj_set_style_pad_bottom(panel, 8, 0);
+        lv_obj_clear_flag(panel, LV_OBJ_FLAG_SCROLLABLE);
+
+        label = lv_label_create(panel);
+        if (label != NULL)
+        {
+            gApsSidecar.status_label = label;
+            lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
+            lv_obj_set_width(label, LV_PCT(100));
+            lv_obj_set_style_text_color(label, lv_color_hex(0xEAF6FF), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
+        }
+        gApsSidecar.panel = panel;
+    }
+
+    gApsSidecar.initialized = true;
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    OpenApsController_Reset();
+    now_ms = lv_tick_get();
+    gApsSidecar.last_service_ms = (now_ms > APS_SIDECAR_DEMO_PERIOD_MS) ? (now_ms - APS_SIDECAR_DEMO_PERIOD_MS) : 0u;
+    ApsSidecar_Service(now_ms);
 }
 #endif
 
@@ -369,6 +573,9 @@ static void dashboard_timer_cb(lv_timer_t *timer)
 
     (void)timer;
     push_sample(replay_glucose_at(index));
+#if defined(APP_APS_SIDECAR_DEMO) && (APP_APS_SIDECAR_DEMO == 1)
+    ApsSidecar_Service(lv_tick_get());
+#endif
 }
 
 void edgeai_insulin_pump_app_start(void)
@@ -548,4 +755,7 @@ void edgeai_insulin_pump_app_start(void)
     gDashboard.sample_index = 0u;
     seed_chart();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);
+#if defined(APP_APS_SIDECAR_DEMO) && (APP_APS_SIDECAR_DEMO == 1)
+    ApsSidecar_Init();
+#endif
 }

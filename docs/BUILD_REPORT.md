@@ -98,3 +98,18 @@ Build: Jun 11 2026 21:43:59
 - Default image must not print `APS probe:`.
 - A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
 - UART boot alone is not enough to claim LCD success.
+
+## APS Sidecar Demo
+
+- Added a compile-flag-gated LCD-safe APS sidecar design that runs only after the GUI is already alive.
+- The sidecar is wired into the existing cooperative dashboard timer path, not into boot-time `main()`.
+- It uses a deterministic demo glucose sequence and is intended to update a small APS status panel plus UART output.
+- Sidecar host/build/flash verification still needs to be run.
+
+## APS Sidecar Demo Verification
+
+- Built the sidecar-enabled image with `APP_INSULIN_PUMP_MODE=1` and `APP_APS_SIDECAR_DEMO=1`.
+- Flash/programming succeeded and OpenOCD reset-run still detected `PSE846GPS2DBZC4A` with `CYBOOT_SUCCESS`.
+- UART captured one `APS sidecar:` line after the LVGL boot banner, showing the deterministic demo step executed once.
+- The sidecar remains a low-rate cooperative service at 5000 ms and does not run from boot-time `main()`.
+- The board continued through the boot path without a reset loop; direct physical LCD confirmation should still be taken from the live board view.

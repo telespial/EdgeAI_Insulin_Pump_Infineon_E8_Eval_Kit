@@ -868,3 +868,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Programmed merged `main` commit `39f6361` to the E84 and verified the debugger could still acquire the device before and after the flash.
 - Confirmed the flashed image includes Candidate V1 tables and that the default UART boot did not print `APS probe:`.
 - Recorded the flash/programming evidence, while noting that a direct physical LCD view was not captured from the terminal session.
+
+## Update 2026-06-12 17:10 PDT
+- Added an LCD-safe APS sidecar demo branch that keeps the GUI in control and only runs the Predictor V2/controller/safety path after the dashboard is already alive.
+- The sidecar is gated behind `APP_APS_SIDECAR_DEMO=1` and uses the cooperative dashboard timer path instead of boot-time `main()`.
+- The sidecar uses a deterministic glucose demo sequence and updates a compact APS status panel plus UART output.
+- Host validation and LCD-safe flash verification for the sidecar demo still need to be run.
+
+## Update 2026-06-12 17:25 PDT
+- Rebuilt and flashed the sidecar demo with both `APP_INSULIN_PUMP_MODE=1` and `APP_APS_SIDECAR_DEMO=1`, which is the required combination for the cooperative insulin-pump GUI path to initialize and call the sidecar service.
+- OpenOCD reset-run still acquires `PSE846GPS2DBZC4A` cleanly before and after programming.
+- UART now shows both the LVGL boot banner and a single `APS sidecar:` line from the deterministic demo step.
+- The sidecar update rate is 5000 ms, and the call path is the cooperative dashboard timer / app-start initialization path rather than boot-time `main()`.
+- Physical LCD confirmation is still expected from the local board view; the terminal evidence confirms the app stayed alive and the sidecar ran without a reset loop.

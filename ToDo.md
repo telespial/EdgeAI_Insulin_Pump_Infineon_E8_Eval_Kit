@@ -224,3 +224,5 @@
 - [x] Keep the branch ready for GitHub PR creation
 - [x] Avoid any local merge or runtime change
 - [ ] Capture a direct physical LCD photo/video for the merged `39f6361` image
+- [ ] Capture a direct physical LCD photo/video for the sidecar demo image
+- [x] Run host tests and LCD-safe flash verification for the new APS sidecar demo branch

@@ -269,3 +269,34 @@
 - No fresh LCD photo was captured during this evidence pass.
 - Only the one-shot boot probe is runtime verified on hardware; the rest of the APS framework remains link-only.
 - The verification evidence is complete for the current board/repo state, but it does not claim broader embedded APS loop behavior on hardware.
+
+## Update 2026-06-12 17:10 PDT
+- Started the LCD-safe APS sidecar demo branch and wired the sidecar into the cooperative dashboard flow behind `APP_APS_SIDECAR_DEMO=1`.
+- The sidecar is designed to run only after GUI startup, with a 5-second demo cadence and a small on-screen status panel.
+- Host test/build/flash verification for the sidecar demo has not been run yet, so no hardware claim is made here.
+
+## Update 2026-06-12 17:25 PDT — APS Sidecar Demo
+
+- Branch:
+  - `lcd-safe-aps-sidecar-demo`
+- Build flags:
+  - `APP_INSULIN_PUMP_MODE=1`
+  - `APP_APS_SIDECAR_DEMO=1`
+- Build command:
+  - `make clean`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_APS_SIDECAR_DEMO=1 -j8`
+- Program command:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_INSULIN_PUMP_MODE=1 DEFINES+=APP_APS_SIDECAR_DEMO=1`
+- OpenOCD reset-run:
+  - Passed before programming.
+  - Passed after programming.
+- UART evidence:
+  - `****************** PSOC Edge MCU: Graphics LVGL Demo ******************`
+  - `APS sidecar: BG=110 P15=190 P30=367 P60=350 ACTION=NO_CHANGE SAFE=0x00000201 OK=111`
+- LCD / GUI evidence:
+  - The app stayed alive through the reset/program cycle and emitted the sidecar line only once at boot.
+  - Physical LCD confirmation remains tied to the live board view; terminal evidence alone is not enough to claim it.
+- Sidecar behavior:
+  - No boot-time APS probe was enabled.
+  - No smoke loop was enabled.
+  - The sidecar was called from the cooperative GUI/app path at a 5000 ms cadence.
