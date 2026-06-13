@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "activity_engine.h"
+#include "aps_physiology.h"
 #include "controller_openaps.h"
 #include "cgm_model_runtime.h"
 #include "cgm_replay_subject001.h"
@@ -18,6 +20,10 @@ enum
     CGM_REPLAY_STEP_MS = 1400u,
     CGM_REPLAY_SAMPLE_MINUTES = 5u,
     BAR_GRAPH_COUNT = 3u,
+#if defined(APP_APS_MINI_TERMINAL) && (APP_APS_MINI_TERMINAL == 1)
+    APS_MINI_TERMINAL_UPDATE_MS = 5000u,
+    APS_MINI_TERMINAL_SEQUENCE_COUNT = 8u,
+#endif
 };
 
 typedef struct
@@ -38,6 +44,33 @@ typedef struct
 } cgm_dashboard_t;
 
 static cgm_dashboard_t gDashboard;
+
+#ifndef APP_APS_MINI_TERMINAL
+#define APP_APS_MINI_TERMINAL (0U)
+#endif
+
+#ifndef APP_APS_MINI_TERMINAL_DEBUG
+#define APP_APS_MINI_TERMINAL_DEBUG (0U)
+#endif
+
+#if defined(APP_APS_MINI_TERMINAL) && (APP_APS_MINI_TERMINAL == 1)
+typedef struct
+{
+    lv_obj_t *panel;
+    lv_obj_t *label;
+    lv_timer_t *timer;
+    char text[128];
+    uint8_t sequence_index;
+    uint32_t base_epoch_s;
+} aps_mini_terminal_t;
+
+static aps_mini_terminal_t gApsMiniTerminal;
+
+static const uint16_t kApsMiniTerminalBgSequence[APS_MINI_TERMINAL_SEQUENCE_COUNT] =
+{
+    110u, 125u, 145u, 160u, 150u, 130u, 105u, 90u
+};
+#endif
 
 #if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
 static bool gApsProbeRan;
@@ -116,6 +149,267 @@ void ApsEmbeddedProbe_RunOnce(void)
            safety_ok ? 1u : 0u);
 
     gApsProbeRan = true;
+}
+#endif
+
+#if defined(APP_APS_MINI_TERMINAL) && (APP_APS_MINI_TERMINAL == 1)
+static const char *mini_terminal_action_string(aps_action_t action)
+{
+    switch (action)
+    {
+        case APS_ACTION_INCREASE_BASAL:
+        case APS_ACTION_CORRECTION_SUGGESTION:
+            return "INC";
+        case APS_ACTION_REDUCE_BASAL:
+        case APS_ACTION_SUSPEND_BASAL:
+            return "REDUCE";
+        case APS_ACTION_NO_CHANGE:
+        default:
+            return "HOLD";
+    }
+}
+
+static const char *mini_terminal_safe_string(uint32_t reason_flags)
+{
+    if ((reason_flags & (APS_SAFETY_REASON_PREDICTED_LOW_15M |
+                         APS_SAFETY_REASON_PREDICTED_LOW_30M |
+                         APS_SAFETY_REASON_RAPID_FALL)) != 0u)
+    {
+        return "LOW";
+    }
+
+    if ((reason_flags & APS_SAFETY_REASON_EXCESSIVE_IOB) != 0u)
+    {
+        return "IOB";
+    }
+
+    return "NORMAL";
+}
+
+static int16_t mini_terminal_trend_x100(uint8_t sequence_index)
+{
+    int32_t delta_mgdl;
+
+    if (sequence_index == 0u)
+    {
+        return 0;
+    }
+
+    delta_mgdl = (int32_t)kApsMiniTerminalBgSequence[sequence_index] -
+                 (int32_t)kApsMiniTerminalBgSequence[sequence_index - 1u];
+
+    return (int16_t)((delta_mgdl * 100) / (int32_t)CGM_REPLAY_SAMPLE_MINUTES);
+}
+
+static void mini_terminal_seed_events(uint32_t first_epoch_s)
+{
+    aps_event_t meal_and_bolus = {0};
+
+    meal_and_bolus.epoch_s = first_epoch_s - (3u * 300u);
+    meal_and_bolus.bolus_u = 0.8f;
+    meal_and_bolus.carbs_g = 18.0f;
+    ApsPhysiology_AddEvent(&meal_and_bolus);
+}
+
+static void mini_terminal_fill_input(uint32_t epoch_s,
+                                     uint16_t glucose_mgdl,
+                                     int16_t trend_x100,
+                                     predictor_v2_input_t *input,
+                                     aps_physiology_state_t *physiology,
+                                     activity_features_t *activity)
+{
+    if (input == NULL || physiology == NULL || activity == NULL)
+    {
+        return;
+    }
+
+    ApsPhysiology_Update(epoch_s, physiology);
+    (void)ActivityEngine_Update(epoch_s, 0, 0, 1000, false, 0u, activity);
+
+    input->cgm.epoch_s = epoch_s;
+    input->cgm.age_s = 0u;
+    input->cgm.glucose_mgdl = glucose_mgdl;
+    input->cgm.trend_mgdl_min_x100 = trend_x100;
+    input->cgm.sqi_pct = 95u;
+    input->cgm.sensor_flags = 0u;
+    input->cgm.valid = true;
+    input->physiology = *physiology;
+    input->physiology.activity_state = (uint8_t)activity->state;
+    input->physiology.activity_confidence_pct = activity->confidence_pct;
+    input->physiology.motion_rms_5m = activity->motion_rms_5m;
+    input->physiology.motion_rms_15m = activity->motion_rms_15m;
+    input->physiology.active_minutes = activity->active_minutes;
+    input->physiology.post_exercise_minutes = activity->post_exercise_minutes;
+    input->physiology_present = true;
+}
+
+static void mini_terminal_prime_predictor(uint32_t first_epoch_s)
+{
+    uint8_t sample_index;
+    predictor_v2_input_t input = {0};
+    predictor_v2_output_t output = {0};
+    aps_physiology_state_t physiology = {0};
+    activity_features_t activity = {0};
+
+    ApsPhysiology_Reset();
+    ActivityEngine_Reset();
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    OpenApsController_Reset();
+    mini_terminal_seed_events(first_epoch_s);
+
+    for (sample_index = 0u; sample_index < 12u; ++sample_index)
+    {
+        uint32_t epoch_s = first_epoch_s - ((uint32_t)(12u - sample_index) * APS_TICK_SECONDS);
+        memset(&input, 0, sizeof(input));
+        mini_terminal_fill_input(epoch_s,
+                                 kApsMiniTerminalBgSequence[0u],
+                                 0,
+                                 &input,
+                                 &physiology,
+                                 &activity);
+        (void)PredictorV2_Update(&input, &output);
+    }
+}
+
+static void mini_terminal_refresh_label(uint16_t glucose_mgdl,
+                                        const predictor_v2_output_t *prediction,
+                                        const aps_physiology_state_t *physiology,
+                                        const aps_controller_output_t *command)
+{
+    if (gApsMiniTerminal.label == NULL || prediction == NULL || physiology == NULL || command == NULL)
+    {
+        return;
+    }
+
+    snprintf(gApsMiniTerminal.text,
+             sizeof(gApsMiniTerminal.text),
+             "APS STATUS\n"
+             "BG     %3u\n"
+             "P15    %3u\n"
+             "IOB    %0.1fU\n"
+             "COB    %2ug\n"
+             "ACT    %s\n"
+             "SAFE   %s",
+             (unsigned int)glucose_mgdl,
+             (unsigned int)prediction->pred_15m_mgdl,
+             (double)physiology->iob_u,
+             (unsigned int)(physiology->cob_g + 0.5f),
+             mini_terminal_action_string(command->action),
+             mini_terminal_safe_string(command->reason_flags));
+    lv_label_set_text_static(gApsMiniTerminal.label, gApsMiniTerminal.text);
+}
+
+static void mini_terminal_run_step(void)
+{
+    predictor_v2_input_t input = {0};
+    predictor_v2_output_t prediction = {0};
+    aps_controller_output_t command = {0};
+    aps_physiology_state_t physiology = {0};
+    activity_features_t activity = {0};
+    uint32_t epoch_s;
+    uint16_t glucose_mgdl;
+    int16_t trend_x100;
+
+    if (gApsMiniTerminal.sequence_index >= APS_MINI_TERMINAL_SEQUENCE_COUNT)
+    {
+        gApsMiniTerminal.sequence_index = 0u;
+        mini_terminal_prime_predictor(gApsMiniTerminal.base_epoch_s);
+    }
+
+    epoch_s = gApsMiniTerminal.base_epoch_s + ((uint32_t)gApsMiniTerminal.sequence_index * APS_TICK_SECONDS);
+    glucose_mgdl = kApsMiniTerminalBgSequence[gApsMiniTerminal.sequence_index];
+    trend_x100 = mini_terminal_trend_x100(gApsMiniTerminal.sequence_index);
+    mini_terminal_fill_input(epoch_s, glucose_mgdl, trend_x100, &input, &physiology, &activity);
+
+    if (!PredictorV2_Update(&input, &prediction))
+    {
+        return;
+    }
+    if (!OpenApsController_DetermineBasal(&input, &prediction, &command))
+    {
+        return;
+    }
+    if (!SafetySupervisor_Apply(epoch_s, &input, &prediction, &command))
+    {
+        return;
+    }
+
+    mini_terminal_refresh_label(glucose_mgdl, &prediction, &physiology, &command);
+
+#if defined(APP_APS_MINI_TERMINAL_DEBUG) && (APP_APS_MINI_TERMINAL_DEBUG == 1)
+    printf("APSDBG BG=%u IOB=%.2f COB=%.1f P15=%u P30=%u P60=%u ACT=%s SAFE=%s\r\n",
+           (unsigned int)glucose_mgdl,
+           (double)physiology.iob_u,
+           (double)physiology.cob_g,
+           (unsigned int)prediction.pred_15m_mgdl,
+           (unsigned int)prediction.pred_30m_mgdl,
+           (unsigned int)prediction.pred_60m_mgdl,
+           mini_terminal_action_string(command.action),
+           mini_terminal_safe_string(command.reason_flags));
+#endif
+
+    gApsMiniTerminal.sequence_index++;
+}
+
+static void mini_terminal_timer_cb(lv_timer_t *timer)
+{
+    (void)timer;
+    mini_terminal_run_step();
+}
+
+static void ApsMiniTerminal_Init(lv_obj_t *screen)
+{
+    if (screen == NULL)
+    {
+        return;
+    }
+
+    memset(&gApsMiniTerminal, 0, sizeof(gApsMiniTerminal));
+    gApsMiniTerminal.base_epoch_s = 8u * 3600u;
+    gApsMiniTerminal.panel = lv_obj_create(screen);
+    if (gApsMiniTerminal.panel == NULL)
+    {
+        return;
+    }
+
+    lv_obj_set_size(gApsMiniTerminal.panel, 150, 112);
+    lv_obj_align(gApsMiniTerminal.panel, LV_ALIGN_BOTTOM_LEFT, 14, -14);
+    lv_obj_set_style_radius(gApsMiniTerminal.panel, 10, 0);
+    lv_obj_set_style_border_width(gApsMiniTerminal.panel, 1, 0);
+    lv_obj_set_style_border_color(gApsMiniTerminal.panel, lv_color_hex(0x2AD66B), 0);
+    lv_obj_set_style_bg_color(gApsMiniTerminal.panel, lv_color_hex(0x020B05), 0);
+    lv_obj_set_style_bg_opa(gApsMiniTerminal.panel, LV_OPA_80, 0);
+    lv_obj_set_style_pad_left(gApsMiniTerminal.panel, 8, 0);
+    lv_obj_set_style_pad_right(gApsMiniTerminal.panel, 8, 0);
+    lv_obj_set_style_pad_top(gApsMiniTerminal.panel, 8, 0);
+    lv_obj_set_style_pad_bottom(gApsMiniTerminal.panel, 6, 0);
+    lv_obj_clear_flag(gApsMiniTerminal.panel, LV_OBJ_FLAG_SCROLLABLE);
+
+    gApsMiniTerminal.label = lv_label_create(gApsMiniTerminal.panel);
+    if (gApsMiniTerminal.label == NULL)
+    {
+        return;
+    }
+
+    lv_obj_set_width(gApsMiniTerminal.label, LV_PCT(100));
+    lv_obj_set_style_text_color(gApsMiniTerminal.label, lv_color_hex(0x72FF9A), 0);
+    lv_obj_set_style_text_font(gApsMiniTerminal.label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_line_space(gApsMiniTerminal.label, 1, 0);
+    lv_obj_align(gApsMiniTerminal.label, LV_ALIGN_TOP_LEFT, 0, 0);
+    snprintf(gApsMiniTerminal.text,
+             sizeof(gApsMiniTerminal.text),
+             "APS STATUS\n"
+             "BG     ---\n"
+             "P15    ---\n"
+             "IOB    --.-U\n"
+             "COB    --g\n"
+             "ACT    HOLD\n"
+             "SAFE   NORMAL");
+    lv_label_set_text_static(gApsMiniTerminal.label, gApsMiniTerminal.text);
+
+    mini_terminal_prime_predictor(gApsMiniTerminal.base_epoch_s);
+    gApsMiniTerminal.timer = lv_timer_create(mini_terminal_timer_cb, APS_MINI_TERMINAL_UPDATE_MS, NULL);
 }
 #endif
 
@@ -548,4 +842,8 @@ void edgeai_insulin_pump_app_start(void)
     gDashboard.sample_index = 0u;
     seed_chart();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);
+
+#if defined(APP_APS_MINI_TERMINAL) && (APP_APS_MINI_TERMINAL == 1)
+    ApsMiniTerminal_Init(screen);
+#endif
 }

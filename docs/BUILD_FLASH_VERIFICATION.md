@@ -277,3 +277,21 @@
 - UART after the recovery flash was inconclusive, so it was not used as LCD evidence.
 - Physical LCD is now confirmed on with the GUI visible after the exact-baseline recovery flash.
 - Known-good LCD baseline restored; active incident closed.
+
+## APS Mini Terminal V1 Review Snapshot
+- Branch: `aps-mini-terminal-v1`
+- Code path added: compile-gated lower-left APS mini terminal using real Predictor V2 / controller / safety calls from the insulin-pump app timer path.
+- Host verification:
+  - `make -f host.mk test` ✅
+  - `make -f host.mk regression` ✅
+- Embedded build verification:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_MINI_TERMINAL=1 -j8` ✅
+- Flash verification:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_MINI_TERMINAL=1` ✅
+  - OpenOCD post-reset showed `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS` ✅
+- UART verification:
+  - Inconclusive / garbled; not used as proof.
+- Physical LCD verification:
+  - Failed. User reported the screen is dead after this image.
+- Status:
+  - Preserve for review only; not safe to reflash as a known-good image.

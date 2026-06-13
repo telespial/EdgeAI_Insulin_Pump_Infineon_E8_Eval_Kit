@@ -108,3 +108,19 @@ Build: Jun 11 2026 21:43:59
 - UART remained inconclusive and was not used as LCD evidence.
 - Physical LCD is now confirmed recovered: panel on and GUI visible on the restored `087abe1` baseline.
 - Known-good LCD baseline restored.
+
+## APS Mini Terminal V1 Review Snapshot
+- Branch under review: `aps-mini-terminal-v1`
+- Build flag used: `DEFINES+=APP_APS_MINI_TERMINAL=1`
+- Host checks passed before the embedded flash:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+- Embedded build succeeded:
+  - `make clean`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_MINI_TERMINAL=1 -j8`
+- Embedded program succeeded:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_MINI_TERMINAL=1`
+- OpenOCD stayed healthy after programming and again reported `PSE846GPS2DBZC4A` / `CYBOOT_SUCCESS`.
+- UART capture remained garbled and is not considered evidence.
+- Physical hardware result is negative: LCD blank / screen dead after the mini terminal image.
+- This state is being committed and pushed for engineering review rather than treated as a usable baseline.

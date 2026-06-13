@@ -876,3 +876,12 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - UART capture after the flash was inconclusive and appeared garbled, so UART was not used as LCD evidence for this incident.
 - Physical LCD result is now confirmed: LCD on and GUI visible on the restored `087abe1` baseline.
 - The active LCD recovery incident is closed with the known-good LCD baseline restored.
+
+## Update 2026-06-13 APS Mini Terminal V1
+- Created branch `aps-mini-terminal-v1` from the recovered baseline to stage a compile-gated lower-left APS mini terminal.
+- Added a cooperative 5-second APS mini terminal path in `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`, behind `APP_APS_MINI_TERMINAL=1`.
+- Host validation passed with `make -f host.mk test` and `make -f host.mk regression`.
+- Embedded build and program both succeeded with `DEFINES+=APP_APS_MINI_TERMINAL=1`.
+- OpenOCD remained healthy before and after programming, again reporting `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical hardware result after the mini terminal flash is bad: screen dead / LCD blank.
+- This branch is being preserved and pushed for engineering review; it is not a safe LCD baseline.
