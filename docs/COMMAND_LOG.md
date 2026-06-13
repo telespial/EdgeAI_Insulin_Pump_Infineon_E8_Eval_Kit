@@ -7041,3 +7041,21 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 [2026-06-12 16:35 PDT] prepare Candidate V1 promotion PR notes | docs/PREDICTOR_V2_CANDIDATE_V1_PROMOTION_PR.md and related project logs updated | exit=0 (promotion-ready summary recorded with no runtime or flash changes)
 [2026-06-12 16:55 PDT] merged `update-main-aps-readme` into `main`, revalidated Candidate V1 on the merged tree, and merged `predictor-v2-candidate-v1-dry-run` into `main` | `git checkout main && git pull origin main && git merge --no-ff predictor-v2-candidate-v1-dry-run -m "merge Predictor V2 Candidate V1"` | exit=0 (README identity is cleaned on `main`; host tests, regression, and embedded build all passed after the merge; no flash performed)
 [2026-06-12 17:00 PDT] flashed merged `main` commit `39f6361` to the E84, then performed pre- and post-program OpenOCD reset-run checks and captured UART boot evidence | `make clean && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`, `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`, OpenOCD reset-run | exit=0 (build and program passed; device detected as `PSE846GPS2DBZC4A` with `CYBOOT_SUCCESS`; UART showed the legacy LVGL boot banner and no `APS probe:` line; direct physical LCD confirmation was not captured in the terminal session)
+
+- `git stash push -m 'temp-command-log-before-move-accuracy-test' docs/COMMAND_LOG.md && git checkout 087abe1 && git checkout -b move-accuracy-label-out-of-chart && git status --short && git rev-parse --short HEAD && git branch --show-current`
+- `export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7`
+- `export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc`
+- `export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools`
+- `make clean`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- `OPENOCD=...; SCRIPTS=...; QSPIDIR=...; "$OPENOCD" ... -c 'init; flash banks; reset run; sleep 2000; shutdown'
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- `OPENOCD=...; SCRIPTS=...; QSPIDIR=...; "$OPENOCD" ... -c 'init; flash banks; reset run; sleep 2000; shutdown'`
+- `git status --short`
+- `tail -n 40 docs/LVGL_OBJECT_ISOLATION_MATRIX.md`
+- `tail -n 60 docs/PROJECT_STATE.md`
+- `tail -n 40 docs/BUILD_REPORT.md && tail -n 40 docs/BUILD_FLASH_VERIFICATION.md`
+- `make clean`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- `python3 - <<'PY' ... update LVGL move-accuracy docs/results`

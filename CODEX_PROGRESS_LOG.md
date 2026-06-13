@@ -552,3 +552,7 @@ Next recommended step:
 - 2026-06-12 16:20 PDT: Re-ran the Candidate V1 dry-run recheck after the safety expectation fix; active generated tables still match the review snapshot byte-for-byte, host test/regression now pass, and the embedded build stayed size-neutral.
 - 2026-06-12 16:35 PDT: Prepared the Candidate V1 promotion PR notes with the training source, metrics, baseline comparison, dry-run validation, and safety-review correction; no runtime behavior changed.
 - 2026-06-12 17:00 PDT: Flashed merged `main` commit `39f6361` with Candidate V1 tables included; debugger acquire/reset-run succeeded before and after programming, and UART showed the legacy graphics boot banner without any `APS probe:` line.
+
+- 2026-06-13 10:35 PDT — Ran the move-accuracy-label-out-of-chart experiment from `087abe1`; build/program/reset-run succeeded and we are paused for physical LCD verification.
+
+- 2026-06-13 10:50 PDT — Hardware pass: moving `prediction_accuracy_label` out of the chart subtree kept the LCD live while preserving the existing text update call.

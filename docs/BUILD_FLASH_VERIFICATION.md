@@ -269,3 +269,17 @@
 - No fresh LCD photo was captured during this evidence pass.
 - Only the one-shot boot probe is runtime verified on hardware; the rest of the APS framework remains link-only.
 - The verification evidence is complete for the current board/repo state, but it does not claim broader embedded APS loop behavior on hardware.
+
+## Pending Flash Verification — Move Accuracy Label Out of Chart
+- Branch: `move-accuracy-label-out-of-chart`
+- Exact source baseline: `087abe1`
+- Build command: `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program command: `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD reset-run before program: passed (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD reset-run after program: passed (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: pending
+
+## Confirmed Flash Verification — Move Accuracy Label Out of Chart
+- Physical LCD result: live / GUI visible and accuracy label appears
+- Build/program/OpenOCD all passed
+- Likely root cause: chart-child label invalidation under chart refresh/full-render/VG-Lite

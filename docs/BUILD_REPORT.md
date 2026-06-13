@@ -98,3 +98,17 @@ Build: Jun 11 2026 21:43:59
 - Default image must not print `APS probe:`.
 - A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
 - UART boot alone is not enough to claim LCD success.
+
+## LVGL Move Accuracy Label Out of Chart Test
+- Branch: `move-accuracy-label-out-of-chart`
+- Baseline commit: `087abe1`
+- Change: `gDashboard.prediction_accuracy_label` parent moved from `chart` to `screen`; same text update path retained
+- Build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: pending
+
+## Confirmed LVGL Accuracy Label Reparent Pass
+- Physical LCD result: live / GUI visible and accuracy label appears
+- Existing `lv_label_set_text()` path remained unchanged
+- Fix candidate: keep frequently updated status labels out of the chart subtree

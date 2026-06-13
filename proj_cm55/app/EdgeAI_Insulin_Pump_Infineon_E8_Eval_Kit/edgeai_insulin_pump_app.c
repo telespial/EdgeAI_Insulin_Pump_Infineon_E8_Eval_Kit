@@ -527,12 +527,12 @@ void edgeai_insulin_pump_app_start(void)
             style_prediction_label(label);
         }
 
-        label = lv_label_create(chart);
+        label = lv_label_create(screen);
         if (label != NULL)
         {
             gDashboard.prediction_accuracy_label = label;
             lv_label_set_text(label, "0%");
-            lv_obj_align_to(label, gDashboard.prediction_label, LV_ALIGN_OUT_RIGHT_MID, 18, 0);
+            lv_obj_set_pos(label, 500, 338);
             lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
             lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
             lv_obj_set_style_shadow_color(label, lv_color_hex(0xFF4A6A), 0);

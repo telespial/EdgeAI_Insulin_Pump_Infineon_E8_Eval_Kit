@@ -868,3 +868,13 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Programmed merged `main` commit `39f6361` to the E84 and verified the debugger could still acquire the device before and after the flash.
 - Confirmed the flashed image includes Candidate V1 tables and that the default UART boot did not print `APS probe:`.
 - Recorded the flash/programming evidence, while noting that a direct physical LCD view was not captured from the terminal session.
+
+## Update 2026-06-13 10:35 PDT
+- Started LVGL experiment branch `move-accuracy-label-out-of-chart` from exact LCD-good baseline `087abe1`.
+- Moved `gDashboard.prediction_accuracy_label` out of the chart subtree to `screen` while keeping the existing `push_sample()` text update path unchanged.
+- Clean build, program, and LCD-safe OpenOCD reset-run completed successfully; physical LCD result is still pending.
+
+## Update 2026-06-13 10:50 PDT
+- Confirmed on hardware that moving `gDashboard.prediction_accuracy_label` from a chart child to a screen child preserves the LCD and GUI.
+- The existing `lv_label_set_text()` update path in `push_sample()` remained unchanged; only the label parent/placement changed.
+- Current root-cause conclusion: chart-child label invalidation is the likely LCD kill path under the present full-render display stack.

@@ -224,3 +224,7 @@
 - [x] Keep the branch ready for GitHub PR creation
 - [x] Avoid any local merge or runtime change
 - [ ] Capture a direct physical LCD photo/video for the merged `39f6361` image
+
+- [ ] Record the physical LCD result for `move-accuracy-label-out-of-chart` before deciding whether chart-subtree invalidation is the root cause.
+
+- [ ] Next safest APS display step: reuse an existing non-chart screen-level label path for compact APS text before attempting any richer overlay.
