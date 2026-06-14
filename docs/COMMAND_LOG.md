@@ -7246,3 +7246,7 @@ find current proj_cm55 elf for restore artifact capture
 copied build/app_combined.hex and proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf to ../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_*
 git add docs/RESTORE_POINTS.md docs/PROJECT_STATE.md docs/BUILD_REPORT.md docs/COMMAND_LOG.md ToDo.md ../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_app_combined.hex ../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_proj_cm55.elf
 git commit -m "promote aps placeholder restore point" (docs + restore-point metadata only; failsafe artifacts remain external)
+git tag -f golden-e8-insulin-pump b27a47e
+git tag -f failsafe-e8-insulin-pump b27a47e
+git push origin numeric-only-aps-source-test
+git push origin -f golden-e8-insulin-pump failsafe-e8-insulin-pump

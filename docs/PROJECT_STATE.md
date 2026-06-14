@@ -962,6 +962,6 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - `087abe1` remains an older historical recovery point, while `9fb4e7c` is the prior physically verified golden/failsafe truth point immediately beneath this new candidate.
 
 ## Update 2026-06-14 APS Placeholder Promoted
-- Promoted commit `c77941f` to the new insulin-pump golden/failsafe restore point after physical LCD confirmation.
+- Promoted commit `b27a47e` to the new insulin-pump golden/failsafe restore point after physical LCD confirmation.
 - The approved LCD truth point is now the white `Artificial Pancreas` header plus green placeholder readout block.
 - Matching failsafe restore artifacts were captured under `../failsafe/` and the restore tags were moved to this commit.
