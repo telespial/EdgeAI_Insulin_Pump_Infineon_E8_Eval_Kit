@@ -571,3 +571,4 @@ Next recommended step:
 - 2026-06-14: Hardware confirmed the CRT terminal is now driven by the APS demo-state path while the main center glucose card remains on the original dashboard path; next tiny display-only change is renaming rapid-fall safety text from `FALL` to `RAPID`.
 - 2026-06-14: Preserved golden/failsafe tags at `e1ba009`, then built a replay-rate graph label candidate that slows replay to one 5-minute step every 5 seconds and adds a static `Replay:` / `60X` annotation; flash verification is still pending.
 - 2026-06-14: Added `VirtualPatientV1`, replaced the finite APS demo input sequence, passed host test/regression plus embedded build/program, and physically confirmed CRT values keep changing beyond 60 seconds with the LCD still live.
+- 2026-06-14: Added and verified the `Virtual Human` label above the glucose card, then shortened the CRT labels to `INS ONBD`, `CARBS`, and `INS RATE`; LCD stayed live and this became the new restore point.

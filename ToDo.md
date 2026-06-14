@@ -241,4 +241,4 @@
 - [x] Complete APS demo-state CRT wiring flash verification on hardware.
 - [x] Promote the APS demo-state CRT readout with `RAPID` safety wording as the next golden/failsafe restore point.
 - [ ] Flash-verify the replay-rate graph label candidate (`Replay:` / `60X`) and the slower 5-second replay cadence on hardware.
-- [ ] Add the static `Virtual Human` label under the figure and above the glucose card on the proven layout path.
+- [x] Add the static `Virtual Human` label under the figure and above the glucose card on the proven layout path.

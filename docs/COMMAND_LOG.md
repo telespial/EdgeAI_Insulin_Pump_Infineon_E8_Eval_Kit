@@ -7401,3 +7401,62 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14 11:42:25 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for VirtualPatientV1 milestone
 [2026-06-14 11:42:57 PDT] OpenOCD post-program reset-run for VirtualPatientV1 milestone
 [2026-06-14 13:16:57 PDT] user confirmed virtual patient CRT values change beyond 60 seconds; preparing golden/failsafe restore point and Virtual Human label
+[2026-06-14 13:19:20 PDT] patched static screen-level Virtual Human label above glucose card
+[2026-06-14 13:21:17 PDT] OpenOCD pre-program reset-run for Virtual Human label candidate
+[2026-06-14 13:21:28 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for Virtual Human label candidate
+[2026-06-14 13:21:57 PDT] OpenOCD post-program reset-run for Virtual Human label candidate
+[2026-06-14 13:25:27 PDT] patched Virtual Human y-offset and CRT labels to GLUCOSE/INS ONBRD/CARBS ONBRD/ACTION/INS DEVRATE/SAFETY
+
+- 2026-06-14: Built updated Virtual Human / CRT label text firmware on branch aps-demo-state-wiring; make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 passed.
+
+- 2026-06-14: Ran pre-program OpenOCD acquire/reset-run before flashing updated Virtual Human / CRT labels.
+
+- 2026-06-14: Programmed updated Virtual Human / CRT label text firmware with make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP.
+
+- 2026-06-14: Ran post-program OpenOCD acquire/reset-run after flashing updated Virtual Human / CRT labels.
+
+- 2026-06-14: Physical result for Virtual Human/CRT label rename build was LCD flashing colors; starting rollback to last known-good restore point before any further tweaks.
+
+- 2026-06-14: Restored firmware source files to commit 8a6ae38 and removed local ninja log churn before recovery rebuild.
+
+- 2026-06-14: Recovery rebuild for exact source state 8a6ae38 completed successfully with no experiment flags.
+
+- 2026-06-14: Ran pre-program OpenOCD acquire/reset-run before restoring known-good 8a6ae38 image.
+
+- 2026-06-14: Programmed recovery image from exact source state 8a6ae38 with make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP.
+
+- 2026-06-14: Ran post-program OpenOCD acquire/reset-run after restoring known-good 8a6ae38 image.
+
+- 2026-06-14: Re-trying Virtual Human / long CRT label tweak after rollback; inspecting current formatter and app text blocks before patching.
+
+- 2026-06-14: Inspecting current Virtual Human label alignment line before reapplying the y-offset tweak.
+
+- 2026-06-14: Inspecting exact formatter lines in aps_demo_state.c after patch-context mismatch.
+
+- 2026-06-14: Inspecting exact APS terminal fallback and placeholder blocks before final patch.
+
+- 2026-06-14: Reapplied Virtual Human label and long CRT label text retry on top of recovered baseline; starting rebuild.
+
+- 2026-06-14: Retry build for Virtual Human / long CRT labels completed successfully; starting safe flash flow.
+
+- 2026-06-14: Ran pre-program OpenOCD acquire/reset-run before retrying Virtual Human / long CRT label flash.
+
+- 2026-06-14: Programmed retry image for Virtual Human / long CRT labels with make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP.
+
+- 2026-06-14: Ran post-program OpenOCD acquire/reset-run after retrying Virtual Human / long CRT label flash.
+
+- 2026-06-14: Physical LCD confirmed live for the Virtual Human / long-label retry build; preparing minor text/position refinement (Virtual Human up 1/2 text height, INS ONBD/CARBS/INS RATE).
+
+- 2026-06-14: Patched Virtual Human upward half-text-height and shortened CRT labels to INS ONBD/CARBS/INS RATE.
+
+- 2026-06-14: Build retry hit a local tool-path typo for edgeprotecttools; correcting env and rebuilding before flash.
+
+- 2026-06-14: Corrected build env and completed successful build for Virtual Human half-height shift and shortened CRT labels; starting flash.
+
+- 2026-06-14: Ran pre-program OpenOCD acquire/reset-run before flashing half-height Virtual Human shift and shortened CRT labels.
+
+- 2026-06-14: Programmed half-height Virtual Human shift and shortened CRT labels with make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP.
+
+- 2026-06-14: Ran post-program OpenOCD acquire/reset-run after flashing half-height Virtual Human shift and shortened CRT labels.
+
+- 2026-06-14: User confirmed LCD live/GUI visible after half-height Virtual Human shift and shortened CRT labels; preparing new golden/failsafe restore commit and push.

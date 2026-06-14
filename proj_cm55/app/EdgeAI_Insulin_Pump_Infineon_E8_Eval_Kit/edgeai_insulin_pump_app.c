@@ -335,11 +335,11 @@ static void update_aps_terminal_label(uint32_t sample_index, uint16_t current_mg
     if (!ApsDemoState_Step(now_s, &state))
     {
         lv_label_set_text(gDashboard.aps_terminal_label,
-                          "BG: ERR\n"
-                          "IOB: ERR\n"
-                          "COB: ERR\n"
-                          "ACT: ERR\n"
-                          "INS: ERR\n"
+                          "GLUCOSE: ERR\n"
+                          "INS ONBD: ERR\n"
+                          "CARBS: ERR\n"
+                          "ACTION: ERR\n"
+                          "INS RATE: ERR\n"
                           "SAFETY: ERR");
         return;
     }
@@ -594,6 +594,17 @@ void edgeai_insulin_pump_app_start(void)
         label = lv_label_create(screen);
         if (label != NULL)
         {
+            lv_label_set_text(label, "Virtual Human");
+            lv_obj_set_style_text_color(label, lv_color_hex(0x5EA8FF), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
+            lv_obj_set_style_bg_opa(label, LV_OPA_TRANSP, 0);
+            lv_obj_set_style_pad_all(label, 0, 0);
+            lv_obj_align(label, LV_ALIGN_CENTER, 0, 83);
+        }
+
+        label = lv_label_create(screen);
+        if (label != NULL)
+        {
             lv_label_set_text(label, "Artificial Pancreas");
             lv_obj_set_pos(label, 16, 278);
             lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
@@ -612,11 +623,11 @@ void edgeai_insulin_pump_app_start(void)
         {
             gDashboard.aps_terminal_label = label;
             lv_label_set_text(label,
-                              "BG: 118\n"
-                              "IOB: 0.9\n"
-                              "COB: 22\n"
-                              "ACT: REST\n"
-                              "INS: 0.7\n"
+                              "GLUCOSE: 118\n"
+                              "INS ONBD: 0.9\n"
+                              "CARBS: 22\n"
+                              "ACTION: REST\n"
+                              "INS RATE: 0.7\n"
                               "SAFETY: OK");
             lv_obj_set_pos(label, 30, 311);
             lv_obj_set_style_text_color(label, lv_color_hex(0x72FF9A), 0);

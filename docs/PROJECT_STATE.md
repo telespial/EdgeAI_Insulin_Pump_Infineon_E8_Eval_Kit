@@ -979,6 +979,13 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - No new LVGL objects, timers, APS runtime math, Predictor V2 calls, controller calls, or safety calls were introduced.
 - Build/flash/physical LCD verification is now pending for this single-field step.
 
+## Update 2026-06-14 Virtual Human / Long CRT Labels Reverted
+- The attempted `Virtual Human` vertical shift plus longer CRT labels (`GLUCOSE`, `INS ONBRD`, `CARBS ONBRD`, `ACTION`, `INS DEVRATE`, `SAFETY`) produced a physical LCD failure pattern described as flashing colors.
+- Reverted firmware source files back to the exact known-good source state at commit `8a6ae38` before further experimentation.
+- Removed local build-log churn, rebuilt cleanly with no experiment flags, and restored the board using the documented LCD-safe OpenOCD reset-run before and after programming.
+- OpenOCD remained healthy during recovery with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical LCD confirmation after the recovery flash is still pending.
+
 ## Update 2026-06-14 BG-Only Placeholder Confirmed
 - Physical LCD confirmation is now in: LCD live / GUI visible and `BG` shows `112`.
 - This is the first physically verified single-field placeholder replacement built on top of the `2c8c6f1` restore point.
@@ -1127,3 +1134,15 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - CRT values: APS demo-state + virtual patient pipeline
   - Large center `mg/dL` card: original dashboard/replay path
 - This milestone is the new golden/failsafe restore candidate immediately before the `Virtual Human` label tweak.
+
+## Update 2026-06-14 Virtual Human + Short CRT Labels Confirmed
+- Retried the `Virtual Human` addition and longer CRT labels from the recovered `8a6ae38` baseline, then refined the text after physical confirmation.
+- Physical LCD confirmation is now in:
+  - LCD live
+  - GUI visible
+  - `Virtual Human` visible above the glucose card
+  - CRT block visible with shortened labels: `GLUCOSE`, `INS ONBD`, `CARBS`, `ACTION`, `INS RATE`, `SAFETY`
+- The final accepted refinement moved `Virtual Human` upward by roughly one-half text height and shortened the three longer CRT labels without changing the proven overall layout path.
+- Build/program passed with the documented LCD-safe OpenOCD reset-run before and after programming.
+- OpenOCD remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- This milestone is now the active golden/failsafe restore point for continued APS display work.

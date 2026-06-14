@@ -225,11 +225,11 @@ bool ApsDemoState_FormatTerminal(const aps_demo_state_t *state, char *buffer, si
 
     snprintf(buffer,
              buffer_size,
-             "BG: %3u\n"
-             "IOB: %s\n"
-             "COB: %s\n"
-             "ACT: %s\n"
-             "INS: %s\n"
+             "GLUCOSE: %3u\n"
+             "INS ONBD: %s\n"
+             "CARBS: %s\n"
+             "ACTION: %s\n"
+             "INS RATE: %s\n"
              "SAFETY: %s",
              (unsigned int)state->bg_mgdl,
              iob_buffer,

@@ -210,3 +210,15 @@ Build: Jun 11 2026 21:43:59
 - OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
 - Physical LCD result: live / GUI visible and CRT values continue changing beyond 60 seconds
 - Runtime note: CRT is now continuously driven by real APS demo-state plumbing plus a deterministic looping virtual patient
+
+## Virtual Human + Short CRT Labels
+- Branch: `aps-demo-state-wiring`
+- Change:
+  - added static blue `Virtual Human` label above the glucose card
+  - shortened CRT labels to `INS ONBD`, `CARBS`, and `INS RATE`
+  - nudged `Virtual Human` upward by roughly one-half text height in the final accepted layout
+- Embedded build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible with the accepted `Virtual Human` + shortened CRT label layout
+- Scope note: APS runtime plumbing is unchanged; this is a display wording/layout refinement only

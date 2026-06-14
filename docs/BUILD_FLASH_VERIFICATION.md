@@ -468,3 +468,14 @@
 - Notes:
   - Large center `mg/dL` display remains on the original dashboard path and can differ from CRT `BG:`
   - This is the current continuous APS CRT restore candidate before the `Virtual Human` label addition
+
+## Confirmed Flash Verification — Virtual Human + Short CRT Labels
+- Branch: `aps-demo-state-wiring`
+- Build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible with `Virtual Human` above the glucose card and shortened CRT labels
+- Notes:
+  - CRT live values continue using the APS demo-state + virtual patient pipeline
+  - This is the current active golden/failsafe display restore point

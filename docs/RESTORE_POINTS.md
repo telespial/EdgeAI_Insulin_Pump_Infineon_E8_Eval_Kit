@@ -187,3 +187,16 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - the center `mg/dL` card remains on the original dashboard/replay path and can differ from CRT `BG`
   - `APS_SAFETY_REASON_RAPID_FALL` now displays as `RAPID`
 - Intent: this supersedes the prior live CRT restore point and is now the required golden/failsafe source of truth for continued APS demo-state work.
+
+## Update 2026-06-14 Virtual Human + Short CRT Labels Restore Point
+- Status: active required restore truth for the physically verified `Virtual Human` label plus shortened CRT APS labels.
+- Commit: `89bf899`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260614_134223_virtual_human_label_refine_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260614_134223_virtual_human_label_refine_proj_cm55.elf`
+- Physical result:
+  - LCD live
+  - GUI visible
+  - `Virtual Human` visible above the glucose card
+  - CRT labels render as `GLUCOSE`, `INS ONBD`, `CARBS`, `ACTION`, `INS RATE`, `SAFETY`
+- Intent: this supersedes the prior `RAPID`-wording-only APS demo-state restore point and is now the required golden/failsafe source of truth.
