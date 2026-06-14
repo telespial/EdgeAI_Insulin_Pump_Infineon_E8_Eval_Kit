@@ -7146,3 +7146,49 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 [2026-06-14T07:48:19-07:00] COMMAND: commit current LCD-safe prediction layout and retag golden/failsafe restore points
 [2026-06-14T07:48:34-07:00] COMMAND: verify clean tree and final restore tags after remote push
 [2026-06-14T07:49:17-07:00] COMMAND: removed duplicate PROJECT_STATE entry for 2026-06-14 prediction title two-line restore note
+[2026-06-14T07:49:37-07:00] COMMAND: start small left-side red Artificial Pancreas label tweak from current golden LCD-safe state
+[2026-06-14T07:50:11-07:00] COMMAND: inspect dashboard labels to choose the smallest-risk path for left-side Artificial Pancreas text
+[2026-06-14T07:51:26-07:00] COMMAND: add static bright red left-side Artificial Pancreas label at roughly 2/3 screen height
+[2026-06-14 07:51:26 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:51:27 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 07:52:48 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 07:52:51 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:53:10 PDT] cmd: openocd post-program lcd-safe reset-run
+[2026-06-14T08:02:52-07:00] COMMAND: move Artificial Pancreas label up by roughly four text heights
+[2026-06-14 08:02:52 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 08:02:52 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 08:04:10 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 08:04:13 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 08:04:42 PDT] cmd: openocd post-program lcd-safe reset-run
+[2026-06-14T08:05:52-07:00] COMMAND: move Artificial Pancreas label down by roughly one text height
+[2026-06-14 08:05:52 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 08:05:52 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 08:07:17 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 08:07:19 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 08:07:39 PDT] cmd: openocd post-program lcd-safe reset-run
+[2026-06-14T08:08:37-07:00] COMMAND: change Artificial Pancreas label color from red to bright orange
+[2026-06-14 08:08:37 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 08:08:37 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 08:10:05 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 08:10:07 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 08:10:36 PDT] cmd: openocd post-program lcd-safe reset-run
+
+[2026-06-14T08:11:15-07:00] COMMAND: review startup/state/runbook before Artificial Pancreas label background tweak
+
+[2026-06-14T08:11:23-07:00] COMMAND: read local START_HERE, PROJECT_STATE, OPS_RUNBOOK before label background tweak
+
+[2026-06-14T08:11:52-07:00] COMMAND: update PROJECT_STATE for Artificial Pancreas black background label
+[2026-06-14T08:11:52-07:00] COMMAND: apply same-label black background/padding styling for Artificial Pancreas readability
+[2026-06-14T08:11:52-07:00] COMMAND: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14T08:11:52-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14T08:13:27-07:00] COMMAND: openocd pre-program reset-run
+[2026-06-14T08:13:29-07:00] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14T08:13:49-07:00] COMMAND: openocd post-program reset-run
+
+[2026-06-14T08:15:32-07:00] COMMAND: inspect status before final Artificial Pancreas golden-point update
+
+[2026-06-14T08:16:03-07:00] COMMAND: shift Artificial Pancreas label left by one character width and promote this layout as the new golden/failsafe restore point
+[2026-06-14T08:16:12-07:00] COMMAND: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for final golden/failsafe point
+[2026-06-14T08:16:12-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for final golden/failsafe point
+[2026-06-14T08:17:54-07:00] COMMAND: copy final golden/failsafe restore artifacts to ../failsafe/e8_insulin_pump_20260614_081754_artificial_pancreas_truth_{app_combined.hex,proj_cm55.elf}
+[2026-06-14T08:18:28-07:00] COMMAND: stage final Artificial Pancreas truth-point commit and move golden/failsafe tags

@@ -541,6 +541,22 @@ void edgeai_insulin_pump_app_start(void)
             lv_obj_set_style_shadow_ofs_x(label, 0, 0);
             lv_obj_set_style_shadow_ofs_y(label, 0, 0);
         }
+
+        label = lv_label_create(screen);
+        if (label != NULL)
+        {
+            lv_label_set_text(label, "Artificial Pancreas");
+            lv_obj_set_pos(label, 16, 278);
+            lv_obj_set_style_text_color(label, lv_color_hex(0xFF8C1A), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+            lv_obj_set_style_bg_color(label, lv_color_hex(0x000000), 0);
+            lv_obj_set_style_bg_opa(label, LV_OPA_60, 0);
+            lv_obj_set_style_pad_left(label, 4, 0);
+            lv_obj_set_style_pad_right(label, 4, 0);
+            lv_obj_set_style_pad_top(label, 2, 0);
+            lv_obj_set_style_pad_bottom(label, 2, 0);
+            lv_obj_set_style_radius(label, 2, 0);
+        }
     }
 
     CgmModel_Reset();

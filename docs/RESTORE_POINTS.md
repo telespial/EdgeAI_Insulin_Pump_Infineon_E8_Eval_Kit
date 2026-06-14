@@ -141,3 +141,10 @@ Known-good checkpoints for fast recovery when development changes break boot, di
 ## Notes
 - Use `failsafe-e8-smart-pong` when recovering from major regressions.
 - Use `golden-e8-smart-pong` as the default base for new feature work.
+
+## Update 2026-06-14 Final Artificial Pancreas Restore Point
+- Status: active required restore truth for the left-shifted bright-orange-on-black `Artificial Pancreas` layout.
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260614_081754_artificial_pancreas_truth_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260614_081754_artificial_pancreas_truth_proj_cm55.elf`
+- Intent: this supersedes older June 14 prediction-layout restore artifacts and is now the required golden/failsafe point-of-truth.

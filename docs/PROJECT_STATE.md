@@ -915,3 +915,14 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Changed the `EdgeAI Prediction` title to a two-line label at the same anchor point.
 - Shifted the large prediction score left by roughly one character width while keeping its current height.
 - No new LVGL objects or runtime logic changes were introduced.
+
+## Update 2026-06-14 Artificial Pancreas Left Label Tweak
+- Added one static bright red `Artificial Pancreas` screen-level label on the left side at roughly two-thirds screen height.
+- Kept the text height matched to the `EdgeAI Prediction` title by using `lv_font_montserrat_14`.
+- No timer, APS runtime logic, or label mutation path changes were introduced.
+- Moved the static bright red `Artificial Pancreas` label upward by roughly four text heights while keeping the same left alignment and font.
+- Moved the static bright red `Artificial Pancreas` label downward by roughly one text height while preserving the same left alignment, font, and color.
+- Changed the static `Artificial Pancreas` label color from bright red to bright orange while preserving its size and position.
+- Added a subtle black background box directly on the static `Artificial Pancreas` label to improve readability over the background image without adding any new LVGL objects.
+- Shifted the static `Artificial Pancreas` label left by roughly one character width so the bright-orange text and subtle black backing box form the new point-of-truth LCD layout.
+- Declared the left-shifted bright-orange `Artificial Pancreas` label with subtle black backing as the new golden/failsafe point-of-truth restore state.
