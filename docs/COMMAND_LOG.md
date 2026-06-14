@@ -7313,3 +7313,40 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14 10:39:00 PDT] interrupted redundant rebuild/program attempt after physical confirmation to preserve the known-good live board state
 [2026-06-14 10:45:00 PDT] clean local build churn and promote live CRT terminal state as the next golden/failsafe restore point
 [2026-06-14 10:46:00 PDT] attempted fresh artifact rebuild for restore-point capture; interrupted after confirming source commit is the primary truth anchor for this milestone
+
+[2026-06-14T10:43:19-07:00] git branch --show-current && git rev-parse --short HEAD && git status --short
+
+[2026-06-14T10:43:33-07:00] git diff --stat -- CMakeLists.txt proj_cm55/Makefile proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c tests/test_runner.c firmware/include/aps_demo_state.h firmware/src/aps_demo_state.c
+[2026-06-14T10:43:33-07:00] rg -n "APS_DEMO_STATE|APS_CRT_REAL_STATE_WIRING|golden|failsafe|CRT" docs/PROJECT_STATE.md docs/BUILD_REPORT.md docs/BUILD_FLASH_VERIFICATION.md ToDo.md CODEX_PROGRESS_LOG.md docs || true
+
+[2026-06-14T10:43:42-07:00] inspect aps_demo_state sources and app integration points
+
+[2026-06-14T10:43:50-07:00] tail docs status files before aps demo state documentation update
+
+[2026-06-14T10:44:47-07:00] documented APS demo-state wiring milestone and pending flash verification
+
+[2026-06-14T10:44:47-07:00] cleaned transient build churn before LCD-safe program step
+
+[2026-06-14T10:45:01-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for APS demo-state wiring
+
+[2026-06-14T10:47:06-07:00] openocd pre-program reset-run for APS demo-state wiring
+
+[2026-06-14T10:47:16-07:00] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for APS demo-state wiring
+
+[2026-06-14T10:47:49-07:00] openocd post-program reset-run for APS demo-state wiring
+
+[2026-06-14T10:52:15-07:00] inspect current branch/status before RAPID safety-text change and restore-point promotion
+
+[2026-06-14T10:52:24-07:00] inspect restore-point docs before RAPID text patch
+
+[2026-06-14T10:53:03-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for RAPID safety-text restore-point candidate
+
+[2026-06-14T10:53:25-07:00] openocd pre-program reset-run for RAPID safety-text restore-point candidate
+
+[2026-06-14T10:53:34-07:00] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for RAPID safety-text restore-point candidate
+
+[2026-06-14T10:54:06-07:00] openocd post-program reset-run for RAPID safety-text restore-point candidate
+
+[2026-06-14T10:54:22-07:00] copied RAPID safety-text restore artifacts to ../failsafe
+
+[2026-06-14T10:54:46-07:00] cleaned .ninja_log churn before committing APS demo-state RAPID restore point

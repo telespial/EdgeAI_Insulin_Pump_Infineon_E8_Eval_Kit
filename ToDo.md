@@ -237,4 +237,6 @@
 - [x] Run `BG`-only placeholder replacement as the next single-field display experiment from `2c8c6f1`.
 - [x] Replace the remaining terminal placeholders with live `IOB`, `COB`, `INS`, and `SAFETY` values on the proven CRT path.
 
-- [ ] Promote the live multi-field CRT terminal state to the next golden/failsafe restore point if the user wants to lock it in.
+- [x] Promote the live multi-field CRT terminal state to the next golden/failsafe restore point if the user wants to lock it in.
+- [x] Complete APS demo-state CRT wiring flash verification on hardware.
+- [ ] Promote the APS demo-state CRT readout with `RAPID` safety wording as the next golden/failsafe restore point.

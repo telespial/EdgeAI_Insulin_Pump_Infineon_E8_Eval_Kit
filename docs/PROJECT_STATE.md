@@ -1054,3 +1054,29 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Physical LCD confirmation from the board is now in: the terminal data is live and the LCD remains healthy.
 - A transient `KitProg3` resource-busy error occurred on the first OpenOCD pre-reset attempt; the immediate retry succeeded with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
 - After physical confirmation, a redundant local rebuild/program retry was intentionally interrupted so the known-good board image would remain undisturbed.
+
+## Update 2026-06-14 APS Demo State Wiring In Progress
+- Promoted commit `efc1b0c` as the current golden/failsafe restore point immediately before APS demo-state integration.
+- Created branch `aps-demo-state-wiring` from that restore point.
+- Added shared APS demo-state APIs in `firmware/include/aps_demo_state.h` and `firmware/src/aps_demo_state.c`.
+- The CRT terminal now reads from a single `aps_demo_state_t` pipeline instead of directly formatting mixed placeholder/runtime values inside the display layer.
+- Current data origins in the new pipeline are:
+  - `BG` from the deterministic replay/demo glucose sequence
+  - `IOB` from `IobEngine_GetIobU()`
+  - `COB` from `CobEngine_GetCobG()`
+  - `ACT` from controller action mapping
+  - `INS` from the controller requested basal after safety processing
+  - `SAFETY` from controller/safety reason flags
+- Host validation passed with `make -f host.mk test` and `make -f host.mk regression`.
+- Embedded build passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- Programming and physical LCD verification are the next pending step; no board claim is made yet for this milestone.
+
+## Update 2026-06-14 APS Demo State Wiring Confirmed
+- Branch `aps-demo-state-wiring` was built, programmed, and reset with the documented LCD-safe flow.
+- OpenOCD pre/post reset-run both reported healthy `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical LCD confirmation is now in:
+  - LCD live
+  - GUI visible
+  - CRT terminal is updating from the APS demo-state pipeline
+  - CRT `BG` differs from the large center `mg/dL` display because the CRT now follows `aps_demo_state_t`, while the main glucose card still follows the original dashboard/replay path
+- Operator-facing safety text for `APS_SAFETY_REASON_RAPID_FALL` is being changed from `FALL` to `RAPID` to avoid implying a generic fault condition.

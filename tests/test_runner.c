@@ -1,3 +1,4 @@
+#include "aps_demo_state.h"
 #include "aps_physiology.h"
 #include "activity_engine.h"
 #include "controller_openaps.h"
@@ -807,6 +808,34 @@ static void test_physiology_feature_population(void)
     require_true("physiology feature vector still builds", PredictorV2_BuildFeatureVector(&input, &features));
 }
 
+static void test_aps_demo_state_pipeline(void)
+{
+    aps_demo_state_t state0;
+    aps_demo_state_t state1;
+    aps_demo_state_t state2;
+    char buffer[160];
+
+    memset(&state0, 0, sizeof(state0));
+    memset(&state1, 0, sizeof(state1));
+    memset(&state2, 0, sizeof(state2));
+    memset(buffer, 0, sizeof(buffer));
+
+    require_true("aps demo init", ApsDemoState_Init());
+    require_true("aps demo step 0", ApsDemoState_Step(0u, &state0));
+    require_true("aps demo step 1", ApsDemoState_Step(300u, &state1));
+    require_true("aps demo step 2", ApsDemoState_Step(600u, &state2));
+    require_true("aps demo bg changes", state0.bg_mgdl != state1.bg_mgdl);
+    require_true("aps demo iob changes", state1.iob_u != state2.iob_u);
+    require_true("aps demo cob changes", state0.cob_g != state1.cob_g);
+    require_true("aps demo action text", state2.action_text != NULL && strlen(state2.action_text) > 0u);
+    require_true("aps demo insulin generated", state2.insulin_u_hr >= 0.0f);
+    require_true("aps demo safety text", state2.safe_text != NULL && strlen(state2.safe_text) > 0u);
+    require_true("aps demo format terminal", ApsDemoState_FormatTerminal(&state2, buffer, sizeof(buffer)));
+    require_true("aps demo format bg sourced", strstr(buffer, "BG: ") != NULL);
+    require_true("aps demo format insulin sourced", strstr(buffer, "INS: ") != NULL);
+    require_true("aps demo format safety sourced", strstr(buffer, "SAFETY: ") != NULL);
+}
+
 int main(void)
 {
     ApsPhysiology_Reset();
@@ -837,6 +866,7 @@ int main(void)
     test_replay_fixture_regressions();
     test_bad_data_rejected_safely();
     test_physiology_feature_population();
+    test_aps_demo_state_pipeline();
 
     if (g_failures != 0)
     {

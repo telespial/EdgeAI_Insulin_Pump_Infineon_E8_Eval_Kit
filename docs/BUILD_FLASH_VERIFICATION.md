@@ -404,3 +404,37 @@
   - No new LVGL objects were added.
   - Rollback targets remain `471925b` for live `BG:` only and `909af0d` for the fully static placeholder restore point.
   - A redundant follow-up rebuild/program attempt was stopped after physical confirmation so the known-good board state stayed undisturbed.
+
+## Pending Flash Verification — APS Demo State Wiring
+- Branch: `aps-demo-state-wiring`
+- Expected visible state after flash:
+  - `BG:` from `aps_demo_state_t.bg_mgdl`
+  - `IOB:` from `aps_demo_state_t.iob_u`
+  - `COB:` from `aps_demo_state_t.cob_g`
+  - `ACT:` from controller action mapping
+  - `INS:` from `aps_demo_state_t.insulin_u_hr`
+  - `SAFETY:` from `aps_demo_state_t.safe_text`
+- Host validation: `make -f host.mk test` and `make -f host.mk regression` passed
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Physical LCD result: pending
+- Notes:
+  - No new LVGL objects were added.
+  - CRT formatting now reads from `aps_demo_state_t` instead of hardcoded display placeholders.
+
+## Confirmed Flash Verification — APS Demo State Wiring
+- Branch: `aps-demo-state-wiring`
+- Visible state confirmed on hardware:
+  - `BG:` from `aps_demo_state_t.bg_mgdl`
+  - `IOB:` from `aps_demo_state_t.iob_u`
+  - `COB:` from `aps_demo_state_t.cob_g`
+  - `ACT:` from controller action mapping
+  - `INS:` from `aps_demo_state_t.insulin_u_hr`
+  - `SAFETY:` from `aps_demo_state_t.safe_text`
+- Build: passed
+- Program: passed
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible and pancreas data appears to be coming from its own APS source
+- Notes:
+  - The large center `mg/dL` display still uses the original dashboard path and can differ from the CRT `BG:` line.
+  - `APS_SAFETY_REASON_RAPID_FALL` display text is being updated from `FALL` to `RAPID`.

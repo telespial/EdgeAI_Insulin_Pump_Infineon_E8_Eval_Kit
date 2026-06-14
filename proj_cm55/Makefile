@@ -78,6 +78,7 @@ CORE_NAME=CM55_0
 # manually add source code to the build process from a location not searched
 # by default, or otherwise not found by the build system.
 SOURCES+=
+SOURCES+=../firmware/src/aps_demo_state.c
 SOURCES+=../firmware/src/aps_log.c
 SOURCES+=../firmware/src/activity_engine.c
 SOURCES+=../firmware/src/aps_physiology.c

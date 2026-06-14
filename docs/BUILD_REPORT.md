@@ -172,3 +172,16 @@ Build: Jun 11 2026 21:43:59
 - OpenOCD pre-reset retry: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`) after one transient `KitProg3` resource-busy attempt
 - Physical LCD result: live data is visible on the CRT block
 - Scope note: the physically confirmed board state is the source of truth; a redundant local rebuild was intentionally interrupted after confirmation to avoid disturbing the known-good screen
+
+## APS Demo State Wiring
+- Branch: `aps-demo-state-wiring`
+- Restore base: `efc1b0c`
+- Change: CRT values are now sourced through `aps_demo_state_t` and the new `ApsDemoState_Init() / ApsDemoState_Step()` APIs instead of ad-hoc terminal placeholder/runtime formatting.
+- Host validation: `make -f host.mk test` and `make -f host.mk regression` passed
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible with CRT values coming from the APS demo-state pipeline
+- Display note: the large center `mg/dL` card still follows the original dashboard/replay path, so it can differ from the CRT `BG:` line by design at this milestone
+- Safety text note: `APS_SAFETY_REASON_RAPID_FALL` is being relabeled from `FALL` to `RAPID` for clearer operator wording
+- Scope note: no new LVGL objects or CRT layout changes were introduced in this milestone

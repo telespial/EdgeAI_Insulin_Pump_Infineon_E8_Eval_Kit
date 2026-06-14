@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_library(e84_aps_framework
+    firmware/src/aps_demo_state.c
     firmware/src/aps_log.c
     firmware/src/activity_engine.c
     firmware/src/cob_engine.c

@@ -171,3 +171,19 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - `BG`, `IOB`, `COB`, `INS`, and `SAFETY` are live on the CRT block
   - `ACT` remains intentionally static until a live activity path is wired
 - Intent: this supersedes the placeholder-only CRT restore point as the new golden/failsafe source of truth.
+
+## Update 2026-06-14 APS Demo State RAPID Restore Point
+- Status: active required restore truth for the APS demo-state CRT readout with `RAPID` safety wording.
+- Commit: pending commit created from branch `aps-demo-state-wiring`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260614_105422_aps_demo_state_rapid_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260614_105422_aps_demo_state_rapid_proj_cm55.elf`
+- Flash/build evidence:
+  - build passed with `CONFIG_DISPLAY=W4P3INCH_DISP`
+  - program passed
+  - OpenOCD pre/post reset-run both reported healthy `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Display behavior:
+  - CRT terminal values come from `aps_demo_state_t`
+  - the center `mg/dL` card remains on the original dashboard/replay path and can differ from CRT `BG`
+  - `APS_SAFETY_REASON_RAPID_FALL` now displays as `RAPID`
+- Intent: this supersedes the prior live CRT restore point and is now the required golden/failsafe source of truth for continued APS demo-state work.

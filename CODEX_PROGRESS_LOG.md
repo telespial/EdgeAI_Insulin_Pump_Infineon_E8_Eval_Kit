@@ -567,3 +567,5 @@ Next recommended step:
 - 2026-06-14: Ran the BG-only placeholder experiment; build/program/reset-run passed and the board physically confirmed `BG` now shows `112` with the LCD still alive.
 
 - 2026-06-14: Confirmed the CRT terminal now shows live `BG`, `IOB`, `COB`, `INS`, and `SAFETY` values on hardware while `ACT` remains static; host validation passed and the LCD stayed live.
+- 2026-06-14: Promoted `efc1b0c` as the new golden/failsafe restore point, then added the shared APS demo-state pipeline and rerouted the CRT terminal formatter through `aps_demo_state_t`; host validation and embedded build passed, flash verification pending.
+- 2026-06-14: Hardware confirmed the CRT terminal is now driven by the APS demo-state path while the main center glucose card remains on the original dashboard path; next tiny display-only change is renaming rapid-fall safety text from `FALL` to `RAPID`.
