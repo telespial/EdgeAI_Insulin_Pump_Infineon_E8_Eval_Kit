@@ -7352,3 +7352,37 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T10:54:46-07:00] cleaned .ninja_log churn before committing APS demo-state RAPID restore point
 
 [2026-06-14T10:55:04-07:00] tagged and pushed golden/failsafe restore point at commit 85e8925
+
+[2026-06-14T10:57:00-07:00] inspect why APS demo-state IOB/COB display as 0.0
+
+[2026-06-14T10:58:26-07:00] verify current branch/source state before deciding on UART breadcrumb for IOB/COB zeros
+
+[2026-06-14T10:58:55-07:00] added compile-gated APP_APS_UART_BREADCRUMB UART line in update_aps_terminal_label
+
+[2026-06-14T11:01:13-07:00] openocd pre-program reset-run for APP_APS_UART_BREADCRUMB image
+
+[2026-06-14T11:01:24-07:00] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_APS_UART_BREADCRUMB=1
+
+[2026-06-14T11:01:55-07:00] openocd post-program reset-run for APP_APS_UART_BREADCRUMB image
+
+[2026-06-14T11:03:20-07:00] inspect branch/status and current golden/failsafe tags before LCD recovery from UART breadcrumb experiment
+
+[2026-06-14T11:03:38-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for LCD recovery to golden commit e1ba009
+
+[2026-06-14T11:07:08-07:00] openocd pre-program reset-run for exact golden/failsafe restore point e1ba009
+
+[2026-06-14T11:07:39-07:00] first make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP failed because OpenOCD session still held KitProg3
+
+[2026-06-14T11:08:21-07:00] reran openocd pre-program reset-run sequentially for exact golden/failsafe restore point e1ba009
+
+[2026-06-14T11:08:37-07:00] successful make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for exact golden/failsafe restore point e1ba009
+
+[2026-06-14T11:09:08-07:00] openocd post-program reset-run for exact golden/failsafe restore point e1ba009
+
+[2026-06-14T11:14:18-07:00] inspect current branch/head/status/tags before adding replay-rate graph label
+
+[2026-06-14T11:15:07-07:00] inspect current graph-label layout and font availability in edgeai_insulin_pump_app.c and lv_conf.h
+
+[2026-06-14T11:15:30-07:00] patched replay-rate label and changed replay step interval to 5000 ms for 60X playback
+
+[2026-06-14T11:16:03-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for replay-rate graph label candidate

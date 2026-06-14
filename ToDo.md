@@ -240,3 +240,4 @@
 - [x] Promote the live multi-field CRT terminal state to the next golden/failsafe restore point if the user wants to lock it in.
 - [x] Complete APS demo-state CRT wiring flash verification on hardware.
 - [ ] Promote the APS demo-state CRT readout with `RAPID` safety wording as the next golden/failsafe restore point.
+- [ ] Flash-verify the replay-rate graph label candidate (`Replay:` / `60X`) and the slower 5-second replay cadence on hardware.

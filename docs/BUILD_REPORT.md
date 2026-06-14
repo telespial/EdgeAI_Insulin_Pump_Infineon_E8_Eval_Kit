@@ -185,3 +185,14 @@ Build: Jun 11 2026 21:43:59
 - Display note: the large center `mg/dL` card still follows the original dashboard/replay path, so it can differ from the CRT `BG:` line by design at this milestone
 - Safety text note: `APS_SAFETY_REASON_RAPID_FALL` is being relabeled from `FALL` to `RAPID` for clearer operator wording
 - Scope note: no new LVGL objects or CRT layout changes were introduced in this milestone
+
+## Replay Rate Graph Label Candidate
+- Branch: `aps-demo-state-wiring`
+- Golden/failsafe baseline preserved at `e1ba009` before this change
+- Change:
+  - replay timer interval set to `5000 ms`
+  - static `Replay:` / `60X` graph annotation added as a screen-level label
+- Build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: not run yet
+- Physical LCD result: pending
+- Scope note: this candidate changes display text placement and replay cadence only; APS runtime sourcing is unchanged

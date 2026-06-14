@@ -1080,3 +1080,26 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - CRT terminal is updating from the APS demo-state pipeline
   - CRT `BG` differs from the large center `mg/dL` display because the CRT now follows `aps_demo_state_t`, while the main glucose card still follows the original dashboard/replay path
 - Operator-facing safety text for `APS_SAFETY_REASON_RAPID_FALL` is being changed from `FALL` to `RAPID` to avoid implying a generic fault condition.
+
+## Update 2026-06-14 LCD Recovery After UART Breadcrumb Attempt
+- A temporary UART breadcrumb experiment was used to investigate why CRT `IOB` and `COB` appeared as `0.0` even though the APS demo-state source code advances both values after the first few steps.
+- During that experiment, the LCD went physically dark even though OpenOCD remained healthy and reported `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Firmware source was restored to the exact current golden/failsafe commit `e1ba009` before reflashing.
+- Recovery build passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- A first `make program` attempt failed because an earlier OpenOCD session still held the KitProg3 interface; rerunning the pre-reset and program steps sequentially fixed the issue.
+- Recovery program and post-reset both completed successfully with the documented LCD-safe sequence.
+- Physical LCD verification is now pending from the board after the exact `e1ba009` restore image.
+
+## Update 2026-06-14 Replay Rate Graph Label Candidate
+- Task classification: embedded build-only.
+- The current golden/failsafe restore tags remain intentionally locked to commit `e1ba009` before this next display tweak.
+- The dashboard replay cadence has been changed from `1400 ms` per sample to `5000 ms` per sample so one 5-minute replay step now advances every 5 seconds of wall time (`60X` replay).
+- Added a new static screen-level graph annotation label with text:
+  - `Replay:`
+  - `60X`
+- Placement intent:
+  - lower area of the graph box
+  - same left-start alignment as the `EdgeAI Prediction` label rows
+  - font size `lv_font_montserrat_28` to match the requested ~2/3 scale of the large prediction score
+- Embedded build passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- Flash/programming has not been run yet for this candidate; physical LCD status is not yet known.

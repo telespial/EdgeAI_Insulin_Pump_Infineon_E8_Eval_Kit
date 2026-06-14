@@ -438,3 +438,15 @@
 - Notes:
   - The large center `mg/dL` display still uses the original dashboard path and can differ from the CRT `BG:` line.
   - `APS_SAFETY_REASON_RAPID_FALL` display text is being updated from `FALL` to `RAPID`.
+
+## Pending Flash Verification — Replay Rate Graph Label Candidate
+- Branch: `aps-demo-state-wiring`
+- Golden/failsafe restore target preserved: `e1ba009`
+- Expected visible state after flash:
+  - graph retains the existing `EdgeAI Prediction` and large score layout
+  - a new static graph annotation reads `Replay:` and `60X`
+  - replay advances one 5-minute sample every `5000 ms`
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: pending
+- OpenOCD pre/post reset-run: pending
+- Physical LCD result: pending

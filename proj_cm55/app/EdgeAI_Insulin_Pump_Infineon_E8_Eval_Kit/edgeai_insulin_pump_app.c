@@ -15,7 +15,7 @@
 enum
 {
     CGM_GRAPH_POINTS = 32u,
-    CGM_REPLAY_STEP_MS = 1400u,
+    CGM_REPLAY_STEP_MS = 5000u,
     CGM_REPLAY_SAMPLE_MINUTES = 5u,
     BAR_GRAPH_COUNT = 3u,
 };
@@ -33,6 +33,7 @@ typedef struct
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
     lv_obj_t *aps_terminal_label;
+    lv_obj_t *replay_rate_label;
     lv_obj_t *status_labels[BAR_GRAPH_COUNT];
     lv_obj_t *status_bars[BAR_GRAPH_COUNT];
     lv_timer_t *timer;
@@ -576,6 +577,18 @@ void edgeai_insulin_pump_app_start(void)
             lv_obj_set_style_shadow_width(label, 8, 0);
             lv_obj_set_style_shadow_ofs_x(label, 0, 0);
             lv_obj_set_style_shadow_ofs_y(label, 0, 0);
+        }
+
+        label = lv_label_create(screen);
+        if (label != NULL)
+        {
+            gDashboard.replay_rate_label = label;
+            lv_label_set_text(label, "Replay:\n60X");
+            lv_obj_set_pos(label, 548, 391);
+            lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_28, 0);
+            lv_obj_set_style_text_line_space(label, 0, 0);
+            lv_obj_set_style_bg_opa(label, LV_OPA_TRANSP, 0);
         }
 
         label = lv_label_create(screen);
