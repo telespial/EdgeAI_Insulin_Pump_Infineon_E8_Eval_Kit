@@ -132,3 +132,8 @@ Build: Jun 11 2026 21:43:59
 - OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
 - Physical LCD result: live / GUI visible
 - Runtime scope: display-only placeholder, no APS runtime math
+
+## APS Placeholder Promotion
+- Approved restore-point commit: `c77941f`
+- The placeholder display is now the active golden/failsafe LCD restore truth for the insulin-pump layout.
+- Matching `.hex` and `proj_cm55.elf` artifacts were captured in `../failsafe/` for direct recovery use.

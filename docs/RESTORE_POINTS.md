@@ -148,3 +148,16 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - `../failsafe/e8_insulin_pump_20260614_081754_artificial_pancreas_truth_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260614_081754_artificial_pancreas_truth_proj_cm55.elf`
 - Intent: this supersedes older June 14 prediction-layout restore artifacts and is now the required golden/failsafe point-of-truth.
+
+## Update 2026-06-14 APS Placeholder Display Restore Point
+- Status: active required restore truth for the physically verified `Artificial Pancreas` placeholder header plus green readout block.
+- Commit: `c77941f`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_proj_cm55.elf`
+- Physical result:
+  - LCD live
+  - GUI visible
+  - white `Artificial Pancreas` header visible
+  - green placeholder block visible at the approved final position
+- Intent: this supersedes the earlier June 14 artificial-pancreas title-only restore point and is now the required golden/failsafe insulin-pump source of truth.

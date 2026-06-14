@@ -7234,3 +7234,15 @@ physical lcd confirmation: placeholder display live / gui visible
 git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
 git add proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c docs/APS_PLACEHOLDER_DISPLAY_V1.md docs/PROJECT_STATE.md docs/BUILD_REPORT.md docs/BUILD_FLASH_VERIFICATION.md docs/COMMAND_LOG.md CODEX_PROGRESS_LOG.md ToDo.md
 git commit -m "add aps placeholder display v1"
+
+## 2026-06-14 Promote c77941f to golden/failsafe restore point
+git status --short
+git rev-parse --short HEAD
+git branch --show-current
+git tag --list "*e8*insulin*pump*"
+git remote -v
+copy placeholder restore artifacts to ../failsafe
+find current proj_cm55 elf for restore artifact capture
+copied build/app_combined.hex and proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf to ../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_*
+git add docs/RESTORE_POINTS.md docs/PROJECT_STATE.md docs/BUILD_REPORT.md docs/COMMAND_LOG.md ToDo.md ../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_app_combined.hex ../failsafe/e8_insulin_pump_20260614_085312_aps_placeholder_display_proj_cm55.elf
+git commit -m "promote aps placeholder restore point" (docs + restore-point metadata only; failsafe artifacts remain external)
