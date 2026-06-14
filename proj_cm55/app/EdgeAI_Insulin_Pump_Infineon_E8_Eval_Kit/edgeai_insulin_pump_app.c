@@ -433,7 +433,6 @@ static void push_sample(uint16_t current_mgdl)
     update_aps_terminal_label(gDashboard.sample_index, current_mgdl);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     update_wifi_bar(gDashboard.sample_index);
-    update_battery_bar(gDashboard.sample_index);
     if (gDashboard.prediction_accuracy_label != NULL)
     {
         snprintf(header_buffer, sizeof(header_buffer), "%d%%", (int)accuracy_pct);
@@ -613,7 +612,23 @@ void edgeai_insulin_pump_app_start(void)
         lv_obj_set_style_bg_opa(bar, LV_OPA_60, LV_PART_INDICATOR);
     }
 
-    gDashboard.battery_bar = NULL;
+    bar = lv_bar_create(screen);
+    if (bar != NULL)
+    {
+        gDashboard.battery_bar = bar;
+        lv_obj_set_size(bar, 32, 84);
+        lv_obj_set_pos(bar, 725, 97);
+        lv_bar_set_range(bar, 0, 100);
+        lv_bar_set_value(bar, 100, LV_ANIM_OFF);
+        lv_obj_set_style_radius(bar, 4, LV_PART_MAIN);
+        lv_obj_set_style_radius(bar, 4, LV_PART_INDICATOR);
+        lv_obj_set_style_border_width(bar, 0, LV_PART_MAIN);
+        lv_obj_set_style_pad_all(bar, 0, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(bar, lv_color_hex(0x03110A), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(bar, LV_OPA_20, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(bar, lv_color_hex(0x53FF8C), LV_PART_INDICATOR);
+        lv_obj_set_style_bg_opa(bar, LV_OPA_60, LV_PART_INDICATOR);
+    }
 
     chart = lv_chart_create(screen);
     if (chart != NULL)

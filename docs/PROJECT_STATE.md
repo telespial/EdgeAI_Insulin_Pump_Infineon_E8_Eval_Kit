@@ -19,6 +19,24 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-14: Golden/failsafe restore point confirmed for the dual-indicator layout with:
+  - LCD live
+  - GUI visible
+  - WiFi bar visible and on the proven live update path
+  - battery bar visible as a static visual-only indicator
+  - static battery bar geometry `32x84 @ (725,97)`
+  - no backend/live battery update wiring active yet
+- 2026-06-14: The static-only battery-bar image was physically verified after LCD-safe programming:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD reset-run before and after programming
+  - physical result: LCD live and static battery bar looks right
+- 2026-06-14: Reintroduced the battery bar graphic as a static screen-level visual only:
+  - battery bar restored at `32x84 @ (725,97)`
+  - fixed full-charge display value
+  - no live/backend update path wired
+  - `push_sample()` no longer calls the battery update helper
+  - WiFi bar and existing live dashboard behavior remain unchanged in source
+- 2026-06-14: Build verification passed for the static-only battery-bar restore with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
 - 2026-06-14: Golden/failsafe restore point confirmed after rolling back the battery bar addition. Physical hardware result is now:
   - LCD live
   - GUI visible

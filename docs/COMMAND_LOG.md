@@ -7547,3 +7547,8 @@ update display-only placeholder values in source and sync pending verification d
 - 2026-06-14: Clean rebuild passed after reverting the battery bar object; proceeding with LCD-safe reflash to recover live updates.
 - 2026-06-14: Physical LCD confirmed live after battery-bar rollback; WiFi bar visible and this state is being promoted as the new golden/failsafe restore point.
 - 2026-06-14: Promoting the WiFi-live battery-bar rollback image to the active golden/failsafe restore point after physical confirmation that LCD is live, GUI visible, data is updating again, and the WiFi bar is visible.
+- 2026-06-14: Starting a narrow battery-bar restore request: add the battery bar graphic back as a static visual only, with no backend/live update wiring.
+- 2026-06-14: Restored the screen-level battery bar as a static visual at (725,97) with a fixed full-charge value and removed its live update call from push_sample().
+- 2026-06-14: Starting LCD-safe flash for the static-only battery-bar restore image.
+- 2026-06-14: Starting golden/failsafe promotion for the LCD-live static-battery state before re-enabling battery live updates.
+- 2026-06-14: Physical LCD confirmed live with static battery bar; promoting this exact state as the next golden/failsafe restore point before battery backend wiring.
