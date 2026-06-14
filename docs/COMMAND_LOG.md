@@ -7350,3 +7350,5 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T10:54:22-07:00] copied RAPID safety-text restore artifacts to ../failsafe
 
 [2026-06-14T10:54:46-07:00] cleaned .ninja_log churn before committing APS demo-state RAPID restore point
+
+[2026-06-14T10:55:04-07:00] tagged and pushed golden/failsafe restore point at commit 85e8925
