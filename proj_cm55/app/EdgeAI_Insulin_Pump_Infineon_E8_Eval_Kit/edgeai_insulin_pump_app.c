@@ -583,8 +583,8 @@ void edgeai_insulin_pump_app_start(void)
         if (label != NULL)
         {
             gDashboard.replay_rate_label = label;
-            lv_label_set_text(label, "Replay:\n60X");
-            lv_obj_set_pos(label, 548, 391);
+            lv_label_set_text(label, "Replay: 60X");
+            lv_obj_set_pos(label, 548, 430);
             lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
             lv_obj_set_style_text_font(label, &lv_font_montserrat_28, 0);
             lv_obj_set_style_text_line_space(label, 0, 0);

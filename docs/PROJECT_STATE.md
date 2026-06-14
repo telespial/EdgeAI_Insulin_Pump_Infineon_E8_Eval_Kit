@@ -1102,4 +1102,6 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - same left-start alignment as the `EdgeAI Prediction` label rows
   - font size `lv_font_montserrat_28` to match the requested ~2/3 scale of the large prediction score
 - Embedded build passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
-- Flash/programming has not been run yet for this candidate; physical LCD status is not yet known.
+- Flash/programming has now been run with the documented LCD-safe sequence.
+- OpenOCD pre/post reset-run were both healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical LCD status is still pending from the board for this candidate.

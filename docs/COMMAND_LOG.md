@@ -7386,3 +7386,9 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T11:15:30-07:00] patched replay-rate label and changed replay step interval to 5000 ms for 60X playback
 
 [2026-06-14T11:16:03-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for replay-rate graph label candidate
+
+[2026-06-14T11:19:32-07:00] openocd pre-program reset-run for replay-rate graph label candidate
+
+[2026-06-14T11:20:06-07:00] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for replay-rate graph label candidate
+
+[2026-06-14T11:21:32-07:00] openocd post-program reset-run for replay-rate graph label candidate
