@@ -34,6 +34,8 @@ typedef struct
     lv_obj_t *glucose_shadow_label;
     lv_obj_t *aps_terminal_label;
     lv_obj_t *replay_rate_label;
+    lv_obj_t *wifi_bar;
+    lv_obj_t *battery_bar;
     lv_obj_t *status_labels[BAR_GRAPH_COUNT];
     lv_obj_t *status_bars[BAR_GRAPH_COUNT];
     lv_timer_t *timer;
@@ -266,6 +268,28 @@ static int32_t calculate_prediction_accuracy_percent(uint16_t current_mgdl, uint
     return clamp_i32(accuracy, 0, 100);
 }
 
+static uint8_t wifi_signal_percent_at(uint32_t sample_index)
+{
+    static const uint8_t level_sequence[] = {96u, 96u, 82u, 82u, 82u, 68u, 68u, 100u, 100u, 74u, 74u, 74u, 91u, 91u, 88u, 88u};
+
+    return level_sequence[sample_index % (sizeof(level_sequence) / sizeof(level_sequence[0]))];
+}
+
+static uint8_t battery_level_percent_at(uint32_t sample_index)
+{
+    enum
+    {
+        BATTERY_MAX_PCT = 100,
+        BATTERY_MIN_PCT = 20,
+        BATTERY_CYCLE_SAMPLES = (72u * 60u) / CGM_REPLAY_SAMPLE_MINUTES,
+    };
+
+    uint32_t cycle_index = sample_index % BATTERY_CYCLE_SAMPLES;
+    uint32_t span = BATTERY_MAX_PCT - BATTERY_MIN_PCT;
+
+    return (uint8_t)(BATTERY_MAX_PCT - ((cycle_index * span) / BATTERY_CYCLE_SAMPLES));
+}
+
 static void update_status_bars(uint16_t current_mgdl, uint16_t predicted_mgdl, uint8_t confidence_pct)
 {
     int32_t accuracy;
@@ -289,6 +313,50 @@ static void update_status_bars(uint16_t current_mgdl, uint16_t predicted_mgdl, u
     {
         lv_obj_invalidate(gDashboard.status_bars[i]);
     }
+}
+
+static void update_wifi_bar(uint32_t sample_index)
+{
+    uint8_t signal_pct;
+
+    if (gDashboard.wifi_bar == NULL)
+    {
+        return;
+    }
+
+    signal_pct = wifi_signal_percent_at(sample_index);
+    lv_bar_set_value(gDashboard.wifi_bar, signal_pct, LV_ANIM_OFF);
+    lv_obj_set_style_bg_color(gDashboard.wifi_bar, lv_color_hex(0x53FF8C), LV_PART_INDICATOR);
+    lv_obj_invalidate(gDashboard.wifi_bar);
+}
+
+static void update_battery_bar(uint32_t sample_index)
+{
+    uint8_t battery_pct;
+    lv_color_t battery_color;
+
+    if (gDashboard.battery_bar == NULL)
+    {
+        return;
+    }
+
+    battery_pct = battery_level_percent_at(sample_index);
+    if (battery_pct > 50u)
+    {
+        battery_color = lv_color_hex(0x53FF8C);
+    }
+    else if (battery_pct > 30u)
+    {
+        battery_color = lv_color_hex(0xFFD45A);
+    }
+    else
+    {
+        battery_color = lv_color_hex(0xFF5A5A);
+    }
+
+    lv_bar_set_value(gDashboard.battery_bar, battery_pct, LV_ANIM_OFF);
+    lv_obj_set_style_bg_color(gDashboard.battery_bar, battery_color, LV_PART_INDICATOR);
+    lv_obj_invalidate(gDashboard.battery_bar);
 }
 
 static void update_chart_colors(uint16_t current_mgdl)
@@ -364,6 +432,8 @@ static void push_sample(uint16_t current_mgdl)
     update_glucose_label(current_mgdl);
     update_aps_terminal_label(gDashboard.sample_index, current_mgdl);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
+    update_wifi_bar(gDashboard.sample_index);
+    update_battery_bar(gDashboard.sample_index);
     if (gDashboard.prediction_accuracy_label != NULL)
     {
         snprintf(header_buffer, sizeof(header_buffer), "%d%%", (int)accuracy_pct);
@@ -524,6 +594,26 @@ void edgeai_insulin_pump_app_start(void)
             lv_obj_set_style_bg_opa(bar, LV_OPA_COVER, LV_PART_INDICATOR);
         }
     }
+
+    bar = lv_bar_create(screen);
+    if (bar != NULL)
+    {
+        gDashboard.wifi_bar = bar;
+        lv_obj_set_size(bar, 32, 84);
+        lv_obj_set_pos(bar, 683, 97);
+        lv_bar_set_range(bar, 0, 100);
+        lv_bar_set_value(bar, wifi_signal_percent_at(0u), LV_ANIM_OFF);
+        lv_obj_set_style_radius(bar, 4, LV_PART_MAIN);
+        lv_obj_set_style_radius(bar, 4, LV_PART_INDICATOR);
+        lv_obj_set_style_border_width(bar, 0, LV_PART_MAIN);
+        lv_obj_set_style_pad_all(bar, 0, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(bar, lv_color_hex(0x03110A), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(bar, LV_OPA_20, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(bar, lv_color_hex(0x53FF8C), LV_PART_INDICATOR);
+        lv_obj_set_style_bg_opa(bar, LV_OPA_60, LV_PART_INDICATOR);
+    }
+
+    gDashboard.battery_bar = NULL;
 
     chart = lv_chart_create(screen);
     if (chart != NULL)

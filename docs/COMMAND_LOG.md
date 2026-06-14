@@ -7460,3 +7460,90 @@ update display-only placeholder values in source and sync pending verification d
 - 2026-06-14: Ran post-program OpenOCD acquire/reset-run after flashing half-height Virtual Human shift and shortened CRT labels.
 
 - 2026-06-14: User confirmed LCD live/GUI visible after half-height Virtual Human shift and shortened CRT labels; preparing new golden/failsafe restore commit and push.
+
+- 2026-06-14: Inspecting docs/runbook and current WiFi/battery indicator code path before adding simulated level bars tied to replay rate.
+
+- 2026-06-14: Inspecting whether the upper-right WiFi/battery indicators are separate UI objects or background art before recommending the safest animated implementation path.
+
+- 2026-06-14: Starting WiFi bar prototype by inspecting the proven CONF/ACC bar implementation for reuse.
+2026-06-14: git status --short
+2026-06-14: git branch --show-current
+2026-06-14: git rev-parse --short HEAD
+2026-06-14: rg -n "status_bars|status_labels|lv_bar_create|Replay:|battery|wifi" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+2026-06-14: sed -n '1,220p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+2026-06-14: sed -n '220,680p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+2026-06-14: rg -n "openocd|make build|make program|CY_TOOLS_PATHS|reset-run|PSE84_SMIF" docs/OPS_RUNBOOK.md docs/BUILD_FLASH_VERIFICATION.md docs/PROJECT_STATE.md
+2026-06-14: sed -n '1,80p' docs/PROJECT_STATE.md
+2026-06-14: sed -n '1,120p' docs/OPS_RUNBOOK.md
+2026-06-14: git diff -- proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c docs/PROJECT_STATE.md
+2026-06-14: make clean TOOLCHAIN=GCC_ARM
+2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+2026-06-14: OpenOCD pre-program reset-run for WiFi bar test
+2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+2026-06-14: OpenOCD post-program reset-run for WiFi bar test
+2026-06-14: git status --short
+2026-06-14: Inspecting current WiFi bar placement before resizing/rotating it per hardware feedback.
+2026-06-14: git status --short
+2026-06-14: make clean TOOLCHAIN=GCC_ARM
+2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+2026-06-14: OpenOCD pre-program reset-run for rotated WiFi bar update
+2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+2026-06-14: OpenOCD post-program reset-run for rotated WiFi bar update
+2026-06-14: LCD died after rotated WiFi bar experiment; restoring source to golden commit 7527ab2 before rebuild/reflash.
+2026-06-14: git status --short
+2026-06-14: User requested revert to the last LCD-live WiFi prototype (small horizontal bar), not the deeper golden restore point.
+2026-06-14: make clean TOOLCHAIN=GCC_ARM
+2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+- 2026-06-14: Verified clean rebuild completed for one-step-back WiFi rollback image (`make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`).
+- 2026-06-14: Preparing LCD-safe rollback to last known LCD-live WiFi prototype (small horizontal bar) after rotated WiFi bar caused blank LCD.
+- 2026-06-14: OpenOCD pre-program reset-run succeeded for WiFi rollback image (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`).
+- 2026-06-14: Programming one-step-back WiFi rollback image with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`.
+- 2026-06-14: Initial `make program` attempt failed because required ModusToolbox environment variables were not set; retrying with documented toolchain environment.
+- 2026-06-14: Program step completed successfully for one-step-back WiFi rollback image.
+- 2026-06-14: Running OpenOCD post-program reset-run for WiFi rollback image.
+- 2026-06-14: Requested minimal WiFi bar rotation retry after successful rollback; swapping only the WiFi bar geometry to a vertical footprint while keeping the same update path.
+- 2026-06-14: make clean TOOLCHAIN=GCC_ARM
+- 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+- 2026-06-14: OpenOCD pre-program reset-run for minimal vertical WiFi bar retry.
+- 2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for minimal vertical WiFi bar retry.
+- 2026-06-14: OpenOCD post-program reset-run for minimal vertical WiFi bar retry.
+- 2026-06-14: Requested WiFi bar size increase on the LCD-live vertical path; changing only the screen-level WiFi bar geometry to 5x thicker and 2x taller while preserving the existing update/styling path.
+- 2026-06-14: make clean TOOLCHAIN=GCC_ARM
+- 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+- 2026-06-14: OpenOCD pre-program reset-run for thicker/taller vertical WiFi bar update.
+- 2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for thicker/taller vertical WiFi bar update.
+- 2026-06-14: OpenOCD post-program reset-run for thicker/taller vertical WiFi bar update.
+- 2026-06-14: Requested WiFi bar width reduction and downward shift on the LCD-live vertical path; changing only the screen-level WiFi bar geometry from `40x84 @ 711,4` to `32x84 @ 711,88`.
+- 2026-06-14: make clean TOOLCHAIN=GCC_ARM
+- 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+- 2026-06-14: Clean rebuild completed for WiFi bar geometry update (`32x84 @ 711,88`) with `make clean TOOLCHAIN=GCC_ARM` and `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- 2026-06-14: OpenOCD LCD-safe pre-program reset-run passed for WiFi bar geometry update; healthy signs included `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed for the WiFi bar geometry update; flash write/verify completed successfully.
+- 2026-06-14: OpenOCD LCD-safe post-program reset-run passed for WiFi bar geometry update; healthy signs included `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: Requested WiFi bar position adjustment after LCD-live check; moved the existing `32x84` screen-level WiFi bar left by ~80% of its width and down 10 px, from `(711,88)` to `(685,98)`.
+- 2026-06-14: Clean rebuild completed for WiFi bar position adjustment (`32x84` moved from `(711,88)` to `(685,98)`) with `make clean TOOLCHAIN=GCC_ARM` and `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- 2026-06-14: OpenOCD LCD-safe pre-program reset-run passed for WiFi bar position adjustment; healthy signs included `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed for the WiFi bar position adjustment; flash write/verify completed successfully.
+- 2026-06-14: OpenOCD LCD-safe post-program reset-run passed for WiFi bar position adjustment; healthy signs included `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: Requested final WiFi bar nudge after live LCD check; moved the existing `32x84` screen-level WiFi bar from `(685,98)` to `(683,97)`.
+- 2026-06-14: Added a matching screen-level battery bar beside the WiFi bar using the same vertical bar rendering path; initial position `(699,97)`, size `32x84`, 72-hour-at-60x depletion cycle from 100% down to 20% before reset.
+- 2026-06-14: Requested battery bar horizontal spacing adjustment after dual-bar bring-up; moved the screen-level battery bar right by ~0.8 bar width from `(699,97)` to `(725,97)` while keeping the same size, update path, and styles.
+- 2026-06-14: git status --short; git rev-parse --short HEAD; tail -n 20 docs/PROJECT_STATE.md; tail -n 20 docs/COMMAND_LOG.md
+- 2026-06-14: Attempted to poll the prior OpenOCD post-reset session by session id after flash verification handoff; session id was no longer valid.
+- 2026-06-14: make clean TOOLCHAIN=GCC_ARM
+- 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+- 2026-06-14: Clean rebuild completed for battery bar spacing adjustment (`32x84` moved from `(699,97)` to `(725,97)`).
+- 2026-06-14: OpenOCD LCD-safe pre-program reset-run passed for battery bar spacing adjustment; healthy signs included `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for battery bar spacing adjustment.
+- 2026-06-14: Programming completed successfully for the battery bar spacing adjustment; flash write/verify passed.
+- 2026-06-14: OpenOCD LCD-safe post-program reset-run passed for battery bar spacing adjustment; healthy signs included `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: User reported battery-bar spacing image may not have actually flashed; starting a fresh LCD-safe reflash verification cycle from current source.
+- 2026-06-14: Re-running make program after user reported the prior battery-bar spacing image may not have actually flashed.
+- 2026-06-14: Initial reflash retry failed before programming because CY_TOOLS_PATHS was unset in the current shell; retrying with the documented ModusToolbox environment exports.
+- 2026-06-14: Verified fresh reflash completed successfully after loading the ModusToolbox environment; app_combined.hex write and verify both passed.
+- 2026-06-14: Physical LCD confirmed live after verified reflash, but user reported on-screen data is frozen; starting update-path inspection.
+- 2026-06-14: Inspecting LVGL memory/timer configuration after live-but-frozen LCD report; checking whether the added battery bar likely pushed the dashboard timer/allocation path over the edge.
+- 2026-06-14: Reverting the added battery bar object after user reported LCD was live but all data was frozen; keeping the proven WiFi bar path and removing the extra screen-level battery bar as the most likely timer/update-path trigger.
+- 2026-06-14: Clean rebuild passed after reverting the battery bar object; proceeding with LCD-safe reflash to recover live updates.
+- 2026-06-14: Physical LCD confirmed live after battery-bar rollback; WiFi bar visible and this state is being promoted as the new golden/failsafe restore point.
+- 2026-06-14: Promoting the WiFi-live battery-bar rollback image to the active golden/failsafe restore point after physical confirmation that LCD is live, GUI visible, data is updating again, and the WiFi bar is visible.

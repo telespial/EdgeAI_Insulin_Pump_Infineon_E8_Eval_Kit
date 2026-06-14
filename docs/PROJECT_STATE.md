@@ -19,6 +19,19 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-14: Golden/failsafe restore point confirmed after rolling back the battery bar addition. Physical hardware result is now:
+  - LCD live
+  - GUI visible
+  - data updating again
+  - WiFi bar visible
+  This is the current safe restore point for continued upper-right status-indicator work.
+- 2026-06-14: Nudged the screen-level WiFi bar to `(683,97)` after a live-LCD placement check and added a matching screen-level battery bar at `(699,97)` using the same proven-safe LVGL bar path. The battery bar follows a deterministic 72-hour-at-60x depletion cycle from 100% down to 20% before reset and changes indicator color green/yellow/red by level. Clean build, program, and OpenOCD pre/post reset-run all passed; physical LCD confirmation is pending.
+- 2026-06-14: Shifted the screen-level WiFi bar further left and slightly lower after a live-LCD placement check; the WiFi indicator remains `32x84` and is now positioned at `(685,98)`. Clean build, program, and OpenOCD pre/post reset-run all passed; physical LCD confirmation is pending.
+- 2026-06-14: Narrowed the screen-level WiFi bar by 20% and moved it down by its new bar height; the WiFi indicator is now `32x84` at `(711,88)` while preserving the same safe screen-level LVGL bar object, update path, and styles. Clean build, program, and OpenOCD pre/post reset-run all passed; physical LCD confirmation is pending.
+- 2026-06-14: Applied a WiFi bar geometry-only enlargement on the LCD-live vertical path: the screen-level WiFi bar is now `40x84` while preserving the same bar object, value source, and styles. Clean build, program, and OpenOCD pre/post reset-run all passed; physical LCD confirmation is pending.
+- 2026-06-14: Applied a minimal WiFi bar geometry-only retry by swapping the last LCD-live horizontal WiFi bar to a vertical footprint (`8x42`) while preserving the same screen-level bar object and update path. Clean build, program, and OpenOCD pre/post reset-run all passed; physical LCD confirmation is pending.
+- 2026-06-14: One-step-back recovery build flashed successfully after the rotated/thicker WiFi bar blanked the LCD; firmware is restored to the last LCD-live WiFi prototype with the original small horizontal screen-level WiFi bar. OpenOCD pre/post reset-run both reported `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- 2026-06-14: Restoring the last LCD-live WiFi prototype after the rotated/thicker variant blanked the display; this restore returns to the original small horizontal screen-level WiFi bar for safe recovery verification.
 - Build and program path verified with OpenOCD + KitProg3
 - Latest visible behavior: centered `SMART`/`PONG` banner, then gameplay
 - Smart Pong app path: `proj_cm55/app/EdgeAI_Smart_Pong_demo_Infineon_E8_Eval_Kit/`
@@ -1134,6 +1147,47 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - CRT values: APS demo-state + virtual patient pipeline
   - Large center `mg/dL` card: original dashboard/replay path
 - This milestone is the new golden/failsafe restore candidate immediately before the `Virtual Human` label tweak.
+
+## Update 2026-06-14 Battery Bar Rolled Back After Frozen-Data Report
+- The battery bar spacing image did flash successfully after a verified write/verify cycle, but the user then reported:
+  - LCD live
+  - GUI visible
+  - on-screen data frozen
+- The strongest working hypothesis is that the extra screen-level battery bar pushed the live dashboard update path over the edge even though the initial frame still rendered.
+- Applied the narrowest rollback:
+  - kept the proven screen-level WiFi bar
+  - removed the added screen-level battery bar object
+  - left the rest of the CRT/dashboard path unchanged
+- Clean rebuild passed with:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Reflash passed with the documented LCD-safe sequence:
+  - OpenOCD reset-run before programming
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD reset-run after programming
+- OpenOCD remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical confirmation is now pending for whether live updates resumed after removing the battery bar object.
+
+## Update 2026-06-14 Battery Bar Right Shift Applied
+- Kept the proven screen-level WiFi and battery status-bar path intact and changed only the battery bar horizontal spacing.
+- Current upper-right indicator geometry is now:
+  - WiFi bar: `32x84` at `(683,97)`
+  - Battery bar: `32x84` at `(725,97)`
+- Battery behavior remains the same:
+  - deterministic level cycle
+  - replay-scaled 72-hour drain
+  - green above 50%, yellow above 30%, red at 30% and below
+  - resets to full after reaching 20%
+- Clean rebuild passed with:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Programming passed with the documented LCD-safe sequence:
+  - OpenOCD reset-run before programming
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD reset-run after programming
+- OpenOCD remained healthy throughout with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- After the user suspected the first attempt may not have actually landed, the same image was re-programmed again with the full documented ModusToolbox environment loaded; write, verify, and post-program reset-run all completed successfully.
+- Physical LCD confirmation is pending for this spacing adjustment.
 
 ## Update 2026-06-14 Virtual Human + Short CRT Labels Confirmed
 - Retried the `Virtual Human` addition and longer CRT labels from the recovered `8a6ae38` baseline, then refined the text after physical confirmation.
