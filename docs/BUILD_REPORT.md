@@ -196,3 +196,17 @@ Build: Jun 11 2026 21:43:59
 - Program: not run yet
 - Physical LCD result: pending
 - Scope note: this candidate changes display text placement and replay cadence only; APS runtime sourcing is unchanged
+
+## Virtual Patient V1
+- Branch: `aps-demo-state-wiring`
+- Change:
+  - added `VirtualPatientV1` looping patient source
+  - replaced the finite APS demo input sequence
+  - fed controller-delivered insulin back into the next patient step
+- Host validation: `make -f host.mk test` passed
+- Regression validation: `make -f host.mk regression` passed
+- Embedded build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible and CRT values continue changing beyond 60 seconds
+- Runtime note: CRT is now continuously driven by real APS demo-state plumbing plus a deterministic looping virtual patient

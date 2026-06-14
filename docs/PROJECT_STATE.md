@@ -1105,3 +1105,25 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Flash/programming has now been run with the documented LCD-safe sequence.
 - OpenOCD pre/post reset-run were both healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
 - Physical LCD status is still pending from the board for this candidate.
+
+## Update 2026-06-14 Virtual Patient V1 Confirmed
+- Branch `aps-demo-state-wiring` now replaces the finite APS demo sequence with `VirtualPatientV1`.
+- New files:
+  - `firmware/include/virtual_patient_v1.h`
+  - `firmware/src/virtual_patient_v1.c`
+- `ApsDemoState_Step()` now sources BG / IOB / COB / activity context from the virtual patient and feeds controller-delivered insulin back into the next patient step.
+- Host validation passed:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+- Embedded validation passed:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD pre/post reset-run both healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD confirmation is now in:
+  - LCD live
+  - GUI visible
+  - CRT values continue changing as expected beyond 60 seconds
+- Current architecture split:
+  - CRT values: APS demo-state + virtual patient pipeline
+  - Large center `mg/dL` card: original dashboard/replay path
+- This milestone is the new golden/failsafe restore candidate immediately before the `Virtual Human` label tweak.

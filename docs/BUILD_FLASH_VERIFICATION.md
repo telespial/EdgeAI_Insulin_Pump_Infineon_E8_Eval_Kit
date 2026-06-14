@@ -450,3 +450,21 @@
 - Program: pending
 - OpenOCD pre/post reset-run: pending
 - Physical LCD result: pending
+
+## Confirmed Flash Verification — Virtual Patient V1
+- Branch: `aps-demo-state-wiring`
+- Build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible with CRT values changing beyond 60 seconds
+- Confirmed data path:
+  - `BG:` from `VirtualPatientV1` through `aps_demo_state_t`
+  - `IOB:` from `IobEngine`
+  - `COB:` from `CobEngine`
+  - `ACT:` from controller action mapping
+  - `INS:` from controller output after safety
+  - `SAFETY:` from safety flag mapping
+- Notes:
+  - Large center `mg/dL` display remains on the original dashboard path and can differ from CRT `BG:`
+  - This is the current continuous APS CRT restore candidate before the `Virtual Human` label addition

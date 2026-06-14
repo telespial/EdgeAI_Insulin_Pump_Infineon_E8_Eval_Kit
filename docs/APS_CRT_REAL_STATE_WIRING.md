@@ -4,12 +4,12 @@
 - Replace CRT placeholder values with APS demo-state values while preserving the proven LCD-safe CRT layout.
 
 ## Source Mapping
-- `BG` -> `aps_demo_state_t.bg_mgdl`
-- `IOB` -> `aps_demo_state_t.iob_u`
-- `COB` -> `aps_demo_state_t.cob_g`
-- `ACT` -> `aps_demo_state_t.action_text`
-- `INS` -> `aps_demo_state_t.insulin_u_hr`
-- `SAFETY` -> `aps_demo_state_t.safe_text`
+- `BG` -> `VirtualPatientV1` output propagated through `aps_demo_state_t.bg_mgdl`
+- `IOB` -> `IobEngine` state exposed through `aps_demo_state_t.iob_u`
+- `COB` -> `CobEngine` state exposed through `aps_demo_state_t.cob_g`
+- `ACT` -> controller action mapping in `aps_demo_state_t.action_text`
+- `INS` -> controller output after safety in `aps_demo_state_t.insulin_u_hr`
+- `SAFETY` -> safety flag mapping in `aps_demo_state_t.safe_text`
 
 ## Embedded Call Path
 - `edgeai_insulin_pump_app_start()`
@@ -34,3 +34,4 @@
 - No direct hardcoded medical placeholder values in the display formatter
 - No real insulin actuation
 - The board LCD remains the physical source of truth after flashing
+- Continuous CRT updates are now sourced from the looping virtual-patient pipeline instead of a finite demo sequence.

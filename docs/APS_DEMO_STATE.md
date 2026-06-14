@@ -19,19 +19,18 @@
 - `safe_text`
 
 ## Deterministic Input
-- BG sequence: `110, 125, 145, 160, 150, 130, 105, 90`
-- Step cadence: 5 minutes per state step
-- Meal injection: 24 g once at step 1
-- Bolus injection: 1.2 U once at step 2
-- Activity: sedentary placeholder physiology input
-- SQI: 95%
-- CGM age: 0 s
+- `ApsDemoState_Step()` now consumes `VirtualPatientV1` output instead of a finite hand-typed BG sequence.
+- Step cadence remains `5 minutes` per state step.
+- `VirtualPatientV1` continuously generates bounded BG, COB, IOB, activity factor, and basal context.
+- SQI remains `95%`.
+- CGM age remains `0 s`.
 
 ## Pipeline
-- Replay/demo glucose input enters `predictor_v2`
-- `iob_engine` and `cob_engine` provide physiology context
+- `VirtualPatientV1` produces BG / COB / IOB / activity context
+- `predictor_v2` evaluates the virtual-patient-derived physiology state
 - `controller_openaps` computes action / requested basal
 - `safety_supervisor` post-processes the controller result
+- delivered insulin feeds back into `VirtualPatientV1`
 - CRT formatting reads only from `aps_demo_state_t`
 
 ## Mapping
@@ -53,3 +52,4 @@
 - No real pump output
 - No hardware insulin command
 - CRT fallback text is error-only; normal display data is sourced from `aps_demo_state_t`
+- The large center `mg/dL` card still follows the original dashboard path and can differ from CRT `BG:`.

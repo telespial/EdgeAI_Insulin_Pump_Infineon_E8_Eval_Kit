@@ -7392,3 +7392,12 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T11:20:06-07:00] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for replay-rate graph label candidate
 
 [2026-06-14T11:21:32-07:00] openocd post-program reset-run for replay-rate graph label candidate
+[2026-06-14 11:40:05 PDT] make -f host.mk test
+[2026-06-14 11:40:11 PDT] make -f host.mk regression
+[2026-06-14 11:40:29 PDT] export CY_TOOLS_PATHS=... && export CY_COMPILER_GCC_ARM_DIR=... && export CY_TOOL_edgeprotecttools_EXE_ABS=... && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 11:41:42 PDT] embedded build failed: undefined reference to VirtualPatientV1_Init/Step from aps_demo_state.o during proj_cm55 link
+[2026-06-14 11:41:55 PDT] patched proj_cm55/Makefile to include ../firmware/src/virtual_patient_v1.c and reran make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 11:42:16 PDT] OpenOCD pre-program reset-run for VirtualPatientV1 milestone
+[2026-06-14 11:42:25 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for VirtualPatientV1 milestone
+[2026-06-14 11:42:57 PDT] OpenOCD post-program reset-run for VirtualPatientV1 milestone
+[2026-06-14 13:16:57 PDT] user confirmed virtual patient CRT values change beyond 60 seconds; preparing golden/failsafe restore point and Virtual Human label
