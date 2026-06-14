@@ -563,3 +563,4 @@ Next recommended step:
 - 2026-06-13 16:05 PDT — Added a working-display-path audit that separates proven-safe background/panel/chart/bar paths from known-fragile LVGL text-mutation paths.
 - 2026-06-14: Converted the existing Artificial Pancreas label into a single recolored multiline placeholder terminal to avoid adding another LVGL object before the next flash test.
 - 2026-06-14: Reworked the placeholder into two static screen-level labels, flashed the final `y=311` layout, and received physical LCD confirmation that the placeholder display is live and visible on hardware.
+- 2026-06-14: Locked `2c8c6f1` as the new golden/failsafe restore point and documented the next display-only milestone sequence starting with BG-only placeholder replacement.

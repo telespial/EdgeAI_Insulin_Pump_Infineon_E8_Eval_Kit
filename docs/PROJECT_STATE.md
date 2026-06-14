@@ -965,3 +965,9 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Promoted commit `b27a47e` to the new insulin-pump golden/failsafe restore point after physical LCD confirmation.
 - The approved LCD truth point is now the white `Artificial Pancreas` header plus green placeholder readout block.
 - Matching failsafe restore artifacts were captured under `../failsafe/` and the restore tags were moved to this commit.
+
+## Update 2026-06-14 APS Display Planning
+- Formalized the next display-only milestone plan from the new restore point `2c8c6f1`.
+- The next approved firmware experiment is `BG`-only placeholder replacement with all other placeholder fields left unchanged.
+- Future display work must proceed one visible placeholder field at a time with a full build/flash/physical LCD confirmation after each step.
+- Predictor V2, controller, safety, and physiology runtime remain intentionally deferred until the display path is proven stable with deterministic values.

@@ -7250,3 +7250,12 @@ git tag -f golden-e8-insulin-pump b27a47e
 git tag -f failsafe-e8-insulin-pump b27a47e
 git push origin numeric-only-aps-source-test
 git push origin -f golden-e8-insulin-pump failsafe-e8-insulin-pump
+
+## 2026-06-14 Plan next APS placeholder milestones
+sed -n 1,220p docs/PROJECT_STATE.md
+sed -n 1,220p docs/BUILD_FLASH_VERIFICATION.md
+sed -n 1,220p docs/MUST_READ_LCD_RECOVERY.md
+sed -n 1,220p docs/RESTORE_POINTS.md
+rg -n "placeholder|APS Placeholder|milestone|branch plan|readout" docs ToDo.md CODEX_PROGRESS_LOG.md
+create docs/APS_DISPLAY_MILESTONE_PLAN.md and docs/APS_DISPLAY_BRANCH_PLAN.md
+git status --short
