@@ -926,3 +926,37 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Added a subtle black background box directly on the static `Artificial Pancreas` label to improve readability over the background image without adding any new LVGL objects.
 - Shifted the static `Artificial Pancreas` label left by roughly one character width so the bright-orange text and subtle black backing box form the new point-of-truth LCD layout.
 - Declared the left-shifted bright-orange `Artificial Pancreas` label with subtle black backing as the new golden/failsafe point-of-truth restore state.
+
+- Flashed commit `9fb4e7c` with the LCD-safe reset-run procedure after promoting it to the golden/failsafe truth point.
+
+## Update 2026-06-14 Artificial Pancreas Placeholder Terminal
+- Expanded the proven static `Artificial Pancreas` screen-level label into a single multiline terminal-style block without creating any new LVGL objects.
+- The title is now bright white and the placeholder readout lines render in bright green using LVGL label recolor on the same existing label.
+- Added static placeholder rows for `BG`, `IOB`, `COB`, `ACT`, `INS`, and `SAFE`, offset below and slightly indented from the title inside the existing subtle black background box.
+- This is a display-only source change; build/flash and physical LCD verification are still pending.
+
+## Update 2026-06-14 Artificial Pancreas Placeholder Terminal Flash
+- Replaced the unsupported LVGL recolor call with a buildable static white header label plus a static green placeholder label.
+- Clean-built and flashed the placeholder terminal change with the documented LCD-safe OpenOCD reset-run before and after programming.
+- OpenOCD remained healthy before and after programming with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical LCD verification is pending user confirmation.
+
+## Update 2026-06-14 Artificial Pancreas Placeholder Position Tweak
+- Shifted the green placeholder readout block under `Artificial Pancreas` downward by 2 pixels.
+- The white header position and all text content remain unchanged.
+- This is a source-only layout tweak; no build or flash has been run yet for this adjustment.
+
+## Update 2026-06-14 Artificial Pancreas Placeholder Position Flash
+- Clean-built and flashed the 2-pixel downward shift for the green placeholder block with the documented LCD-safe OpenOCD reset-run before and after programming.
+- OpenOCD remained healthy before and after programming with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- Physical LCD verification is pending user confirmation.
+
+## Update 2026-06-14 Artificial Pancreas Placeholder Position Candidate
+- Shifted the green placeholder readout block under `Artificial Pancreas` downward by 1 additional pixel to `y=311`.
+- This build is being flashed as a candidate new truth-point pending physical LCD confirmation.
+
+## Update 2026-06-14 Artificial Pancreas Placeholder Confirmed
+- Physical LCD confirmation is now in: the white `Artificial Pancreas` header plus green placeholder block is live and visible on hardware.
+- The current source tree contains the confirmed placeholder layout implemented as two static screen-level labels with the green readout block at `x=30`, `y=311`.
+- No APS runtime math, Predictor V2 calls, controller calls, safety calls, or arbitrary dynamic LVGL text mutation were introduced for this placeholder milestone.
+- `087abe1` remains an older historical recovery point, while `9fb4e7c` is the prior physically verified golden/failsafe truth point immediately beneath this new candidate.

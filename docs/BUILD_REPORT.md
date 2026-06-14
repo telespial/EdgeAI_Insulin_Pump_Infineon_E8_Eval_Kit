@@ -122,3 +122,13 @@ Build: Jun 11 2026 21:43:59
 - Physical LCD result: blank / dead / frozen
 - Recovery image result: exact known-good recovery image restored LCD live / GUI visible
 - Conclusion: screen-level label reparenting is not sufficient by itself; arbitrary LVGL text mutation on this path is still unsafe under the current render stack
+
+## APS Placeholder Display V1
+- Baseline truth point underneath placeholder work: `9fb4e7c`
+- Change: added one static white `Artificial Pancreas` header label plus one static green placeholder readout label as screen children
+- Final green placeholder position: `x=30`, `y=311`
+- Build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible
+- Runtime scope: display-only placeholder, no APS runtime math

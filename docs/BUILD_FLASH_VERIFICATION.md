@@ -297,3 +297,11 @@
 - Recovery build/program/OpenOCD: passed
 - Recovery physical result: LCD live / GUI visible
 - Conclusion: no APS math and no new LVGL objects were involved; arbitrary LVGL text mutation remains unsafe on this render stack
+
+## Confirmed Flash Verification — APS Placeholder Display V1
+- Branch at flash time: `numeric-only-aps-source-test`
+- Source baseline under the placeholder: `9fb4e7c`
+- Build/program/OpenOCD all passed
+- OpenOCD remained healthy before and after programming with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result: live / GUI visible with the white `Artificial Pancreas` header and green placeholder readout block
+- Runtime scope: display-only placeholder, no APS runtime math

@@ -7192,3 +7192,45 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 [2026-06-14T08:16:12-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for final golden/failsafe point
 [2026-06-14T08:17:54-07:00] COMMAND: copy final golden/failsafe restore artifacts to ../failsafe/e8_insulin_pump_20260614_081754_artificial_pancreas_truth_{app_combined.hex,proj_cm55.elf}
 [2026-06-14T08:18:28-07:00] COMMAND: stage final Artificial Pancreas truth-point commit and move golden/failsafe tags
+[2026-06-14T08:20:45-07:00] COMMAND: flash commit 9fb4e7c using lcd-safe reset-run flow
+[2026-06-14T08:20:45-07:00] COMMAND: openocd pre-program reset-run
+[2026-06-14T08:20:47-07:00] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14T08:22:27-07:00] COMMAND: openocd post-program reset-run
+[2026-06-14T08:26:00-07:00] COMMAND: inspect repo instructions and current label positions before expanding Artificial Pancreas readout
+[2026-06-14T08:26:00-07:00] COMMAND: convert the existing Artificial Pancreas label into a single recolored multiline terminal with white title and green placeholder readouts
+[2026-06-14T08:31:00-07:00] COMMAND: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for Artificial Pancreas placeholder terminal
+[2026-06-14T08:31:00-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for Artificial Pancreas placeholder terminal
+[2026-06-14T08:31:00-07:00] COMMAND: openocd pre-program reset-run for Artificial Pancreas placeholder terminal
+[2026-06-14T08:31:00-07:00] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for Artificial Pancreas placeholder terminal
+[2026-06-14T08:31:00-07:00] COMMAND: openocd post-program reset-run for Artificial Pancreas placeholder terminal
+[2026-06-14T08:36:00-07:00] COMMAND: replace unsupported LVGL recolor call with buildable static white header plus static green placeholder label
+[2026-06-14T08:36:00-07:00] COMMAND: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP after recolor build fix
+[2026-06-14T08:36:00-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 after recolor build fix
+[2026-06-14T08:36:00-07:00] COMMAND: openocd pre-program reset-run after recolor build fix
+[2026-06-14T08:36:00-07:00] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP after recolor build fix
+[2026-06-14T08:36:00-07:00] COMMAND: openocd post-program reset-run after recolor build fix
+[2026-06-14T08:46:00-07:00] COMMAND: inspect Artificial Pancreas placeholder label position before 2px downward shift
+[2026-06-14T08:46:00-07:00] COMMAND: move the green Artificial Pancreas CRT placeholder block down by 2 pixels without flashing
+[2026-06-14T08:48:00-07:00] COMMAND: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for 2px Artificial Pancreas placeholder shift
+[2026-06-14T08:48:00-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for 2px Artificial Pancreas placeholder shift
+[2026-06-14T08:48:00-07:00] COMMAND: openocd pre-program reset-run for 2px Artificial Pancreas placeholder shift
+[2026-06-14T08:48:00-07:00] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for 2px Artificial Pancreas placeholder shift
+[2026-06-14T08:48:00-07:00] COMMAND: openocd post-program reset-run for 2px Artificial Pancreas placeholder shift
+[2026-06-14T09:00:00-07:00] COMMAND: inspect status before moving green CRT placeholder text down by 1 pixel and reflashing
+[2026-06-14T09:00:00-07:00] COMMAND: move green Artificial Pancreas CRT placeholder text down by 1 additional pixel
+[2026-06-14T09:00:00-07:00] COMMAND: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for 1px CRT shift truth-point candidate
+[2026-06-14T09:00:00-07:00] COMMAND: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for 1px CRT shift truth-point candidate
+[2026-06-14T09:00:00-07:00] COMMAND: openocd pre-program reset-run for 1px CRT shift truth-point candidate
+[2026-06-14T09:00:00-07:00] COMMAND: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for 1px CRT shift truth-point candidate
+[2026-06-14T09:00:00-07:00] COMMAND: openocd post-program reset-run for 1px CRT shift truth-point candidate
+
+## 2026-06-14 Current State Reconciliation Preflight
+PWD: /home/user/projects/embedded/codemaster/projects/Infineon/PSOC_EDGE_E8_EVAL/firmware_kit_epc2
+git status --short
+git rev-parse --short HEAD
+git branch --show-current
+git log --oneline -8
+physical lcd confirmation: placeholder display live / gui visible
+git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+git add proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c docs/APS_PLACEHOLDER_DISPLAY_V1.md docs/PROJECT_STATE.md docs/BUILD_REPORT.md docs/BUILD_FLASH_VERIFICATION.md docs/COMMAND_LOG.md CODEX_PROGRESS_LOG.md ToDo.md
+git commit -m "add aps placeholder display v1"

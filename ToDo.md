@@ -231,3 +231,5 @@
 - [ ] Try the next display experiment by preserving the original numeric/percent-shaped format on an existing safe path instead of introducing arbitrary APS text.
 
 - [x] Record the physical LCD result for `aps-screen-label-readout-v1` before attempting any richer APS text rotation.
+- [x] Record the physical LCD result for the static `Artificial Pancreas` placeholder display candidate.
+- [ ] Intentionally promote the confirmed placeholder layout to the next golden/failsafe restore point after commit/tag/push review.
