@@ -164,3 +164,11 @@ Build: Jun 11 2026 21:43:59
 - Program: passed
 - OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
 - Physical LCD result: live / GUI visible and CRT block is updating
+
+## Live Terminal Multi-Field Wiring Confirmed
+- Branch: `aps-terminal-live-bg-test`
+- Change: `IOB:`, `COB:`, `INS:`, and `SAFETY:` are now wired to live runtime sources; `ACT:` remains static by design because no activity sensor/runtime is wired yet
+- Host validation: `make -f host.mk test` and `make -f host.mk regression` passed
+- OpenOCD pre-reset retry: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`) after one transient `KitProg3` resource-busy attempt
+- Physical LCD result: live data is visible on the CRT block
+- Scope note: the physically confirmed board state is the source of truth; a redundant local rebuild was intentionally interrupted after confirmation to avoid disturbing the known-good screen

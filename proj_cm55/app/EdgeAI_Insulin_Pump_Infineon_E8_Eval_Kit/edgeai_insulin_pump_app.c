@@ -4,9 +4,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "cob_engine.h"
 #include "controller_openaps.h"
 #include "cgm_model_runtime.h"
 #include "cgm_replay_subject001.h"
+#include "iob_engine.h"
 #include "predictor_v2.h"
 #include "lvgl.h"
 #include "safety_supervisor.h"
@@ -39,6 +41,19 @@ typedef struct
 } cgm_dashboard_t;
 
 static cgm_dashboard_t gDashboard;
+
+typedef struct
+{
+    bool initialized;
+    bool meal_added;
+    bool bolus_added;
+    float iob_u;
+    float cob_g;
+    float insulin_u_per_hr;
+    uint32_t safety_flags;
+} aps_terminal_runtime_t;
+
+static aps_terminal_runtime_t gApsTerminalRuntime;
 
 #if defined(APP_APS_EMBEDDED_PROBE) && (APP_APS_EMBEDDED_PROBE == 1)
 static bool gApsProbeRan;
@@ -126,6 +141,151 @@ static uint16_t replay_glucose_at(uint32_t index)
 }
 
 static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum);
+static int16_t estimate_trend_x100(uint32_t index);
+
+static void format_tenths(char *buffer, size_t buffer_size, float value)
+{
+    int32_t tenths;
+    int32_t whole;
+    int32_t fractional;
+
+    if ((buffer == NULL) || (buffer_size == 0u))
+    {
+        return;
+    }
+
+    tenths = (int32_t)((value >= 0.0f) ? ((value * 10.0f) + 0.5f) : ((value * 10.0f) - 0.5f));
+    whole = tenths / 10;
+    fractional = abs(tenths % 10);
+    snprintf(buffer, buffer_size, "%ld.%ld", (long)whole, (long)fractional);
+}
+
+static const char *safety_text_from_flags(uint32_t safety_flags)
+{
+    if ((safety_flags & (APS_SAFETY_REASON_PREDICTED_LOW_15M |
+                         APS_SAFETY_REASON_PREDICTED_LOW_30M |
+                         APS_SAFETY_REASON_RAPID_FALL)) != 0u)
+    {
+        return "LOW";
+    }
+
+    if ((safety_flags & APS_SAFETY_REASON_EXCESSIVE_IOB) != 0u)
+    {
+        return "IOB";
+    }
+
+    if ((safety_flags & (APS_SAFETY_REASON_STALE_CGM |
+                         APS_SAFETY_REASON_BAD_SQI |
+                         APS_SAFETY_REASON_LOW_CONFIDENCE |
+                         APS_SAFETY_REASON_MISSING_PHYSIOLOGY |
+                         APS_SAFETY_REASON_CONTROLLER_BLOCKED)) != 0u)
+    {
+        return "HOLD";
+    }
+
+    return "OK";
+}
+
+static void aps_terminal_runtime_reset(void)
+{
+    IobEngine_Init(NULL);
+    CobEngine_Init(NULL);
+    PredictorV2_Reset();
+    PredictorV2_SetEnabled(true);
+    OpenApsController_Reset();
+
+    gApsTerminalRuntime.initialized = true;
+    gApsTerminalRuntime.meal_added = false;
+    gApsTerminalRuntime.bolus_added = false;
+    gApsTerminalRuntime.iob_u = 0.0f;
+    gApsTerminalRuntime.cob_g = 0.0f;
+    gApsTerminalRuntime.insulin_u_per_hr = 0.8f;
+    gApsTerminalRuntime.safety_flags = 0u;
+}
+
+static void aps_terminal_runtime_step(uint32_t sample_index, uint16_t current_mgdl)
+{
+    uint32_t now_s;
+    predictor_v2_input_t input = {0};
+    predictor_v2_output_t prediction = {0};
+    aps_controller_output_t command = {0};
+
+    if (!gApsTerminalRuntime.initialized)
+    {
+        aps_terminal_runtime_reset();
+    }
+
+    now_s = sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
+
+    if (!gApsTerminalRuntime.meal_added && now_s >= 900u)
+    {
+        (void)CobEngine_AddMeal(now_s, 24.0f, 180u);
+        gApsTerminalRuntime.meal_added = true;
+    }
+
+    if (!gApsTerminalRuntime.bolus_added && now_s >= 1200u)
+    {
+        (void)IobEngine_AddBolus(now_s, 1.2f);
+        gApsTerminalRuntime.bolus_added = true;
+    }
+
+    (void)IobEngine_Update(now_s);
+    (void)CobEngine_Update(now_s);
+
+    gApsTerminalRuntime.iob_u = IobEngine_GetIobU();
+    gApsTerminalRuntime.cob_g = CobEngine_GetCobG();
+
+    input.cgm.epoch_s = now_s;
+    input.cgm.age_s = 0u;
+    input.cgm.glucose_mgdl = current_mgdl;
+    input.cgm.trend_mgdl_min_x100 = estimate_trend_x100(sample_index);
+    input.cgm.sqi_pct = 92u;
+    input.cgm.sensor_flags = 0u;
+    input.cgm.valid = true;
+
+    input.physiology.iob_u = gApsTerminalRuntime.iob_u;
+    input.physiology.insulin_activity_u_per_hr = 0.0f;
+    input.physiology.cob_g = gApsTerminalRuntime.cob_g;
+    input.physiology.carb_absorption_g_per_hr = 0.0f;
+    input.physiology.basal_u_per_hr = 0.8f;
+    input.physiology.insulin_30m_u = 0.0f;
+    input.physiology.insulin_120m_u = 0.0f;
+    input.physiology.carbs_30m_g = 0.0f;
+    input.physiology.carbs_120m_g = 0.0f;
+    input.physiology.minutes_since_bolus = (uint16_t)(now_s / 60u);
+    input.physiology.minutes_since_meal = (uint16_t)(now_s / 60u);
+    input.physiology.activity_state = (uint8_t)ACTIVITY_SEDENTARY;
+    input.physiology.activity_confidence_pct = 95u;
+    input.physiology.motion_rms_5m = 0.0f;
+    input.physiology.motion_rms_15m = 0.0f;
+    input.physiology.active_minutes = 0u;
+    input.physiology.post_exercise_minutes = 0u;
+    input.physiology_present = true;
+
+    if (!PredictorV2_Update(&input, &prediction))
+    {
+        gApsTerminalRuntime.insulin_u_per_hr = input.physiology.basal_u_per_hr;
+        gApsTerminalRuntime.safety_flags = APS_SAFETY_REASON_LOW_CONFIDENCE;
+        return;
+    }
+
+    if (!OpenApsController_DetermineBasal(&input, &prediction, &command))
+    {
+        gApsTerminalRuntime.insulin_u_per_hr = input.physiology.basal_u_per_hr;
+        gApsTerminalRuntime.safety_flags = APS_SAFETY_REASON_CONTROLLER_BLOCKED;
+        return;
+    }
+
+    if (!SafetySupervisor_Apply(now_s, &input, &prediction, &command))
+    {
+        gApsTerminalRuntime.insulin_u_per_hr = input.physiology.basal_u_per_hr;
+        gApsTerminalRuntime.safety_flags = APS_SAFETY_REASON_CONTROLLER_BLOCKED;
+        return;
+    }
+
+    gApsTerminalRuntime.insulin_u_per_hr = command.requested_basal_u_per_hr;
+    gApsTerminalRuntime.safety_flags = command.reason_flags;
+}
 
 static lv_color_t glucose_status_color(uint16_t glucose_mgdl)
 {
@@ -317,24 +477,36 @@ static void update_glucose_label(uint16_t current_mgdl)
     lv_label_set_text(gDashboard.glucose_label, buffer);
 }
 
-static void update_aps_terminal_label(uint16_t current_mgdl)
+static void update_aps_terminal_label(uint32_t sample_index, uint16_t current_mgdl)
 {
     char buffer[128];
+    char iob_buffer[16];
+    char cob_buffer[16];
+    char insulin_buffer[16];
 
     if (gDashboard.aps_terminal_label == NULL)
     {
         return;
     }
 
+    aps_terminal_runtime_step(sample_index, current_mgdl);
+    format_tenths(iob_buffer, sizeof(iob_buffer), gApsTerminalRuntime.iob_u);
+    format_tenths(cob_buffer, sizeof(cob_buffer), gApsTerminalRuntime.cob_g);
+    format_tenths(insulin_buffer, sizeof(insulin_buffer), gApsTerminalRuntime.insulin_u_per_hr);
+
     snprintf(buffer,
              sizeof(buffer),
              "BG: %3u\n"
-             "IOB: 0.9\n"
-             "COB: 22\n"
+             "IOB: %s\n"
+             "COB: %s\n"
              "ACT: REST\n"
-             "INS: 0.7\n"
-             "SAFETY: OK",
-             (unsigned int)current_mgdl);
+             "INS: %s\n"
+             "SAFETY: %s",
+             (unsigned int)current_mgdl,
+             iob_buffer,
+             cob_buffer,
+             insulin_buffer,
+             safety_text_from_flags(gApsTerminalRuntime.safety_flags));
     lv_label_set_text(gDashboard.aps_terminal_label, buffer);
 }
 
@@ -348,7 +520,7 @@ static void push_sample(uint16_t current_mgdl)
     (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
     accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
     update_glucose_label(current_mgdl);
-    update_aps_terminal_label(current_mgdl);
+    update_aps_terminal_label(gDashboard.sample_index, current_mgdl);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     if (gDashboard.prediction_accuracy_label != NULL)
     {

@@ -7284,6 +7284,8 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14 10:17:00 PDT] create branch for live terminal value test from golden commit 909af0d
 [2026-06-14 10:19:00 PDT] patch green terminal label for colon format and live BG update; keep other fields placeholder for this step
 [2026-06-14 10:28:00 PDT] physical lcd result: live / GUI visible and CRT block is updating
+[2026-06-14 10:31:00 PDT] inspect runtime sources for IOB/COB/INS/SAFETY terminal wiring
+[2026-06-14 10:34:00 PDT] patch terminal label to wire live IOB/COB/INS/SAFETY runtime values and keep ACT static
 [2026-06-14 10:08:58 PDT] pre-program openocd reset-run for placeholder refresh
 [2026-06-14 10:09:00 PDT] make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
 [2026-06-14 10:09:00 PDT] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
@@ -7297,3 +7299,17 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14 10:18:10 PDT] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for live terminal bg test
 [2026-06-14 10:19:49 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for live terminal bg test
 [2026-06-14 10:20:08 PDT] post-program openocd reset-run for live terminal bg test
+[2026-06-14 10:24:43 PDT] inspect runtime sources for IOB/COB/INS/SAFETY terminal wiring
+[2026-06-14 10:26:25 PDT] user approved multi-field live terminal wiring on top of lcd-good live BG step
+[2026-06-14 10:28:14 PDT] pre-program openocd reset-run for live terminal multi-field wiring
+[2026-06-14 10:28:17 PDT] make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for live terminal multi-field wiring
+[2026-06-14 10:28:17 PDT] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for live terminal multi-field wiring
+[2026-06-14 10:28:45 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for live terminal multi-field wiring
+[2026-06-14 10:28:48 PDT] post-program openocd reset-run for live terminal multi-field wiring
+[2026-06-14 10:29:18 PDT] fix forward declaration and rerun live terminal multi-field build/flash cycle
+[2026-06-14 10:36:00 PDT] host validation passed for live terminal multi-field wiring (`make -f host.mk test` and `make -f host.mk regression`)
+[2026-06-14 10:37:00 PDT] first OpenOCD pre-reset for live terminal multi-field wiring hit transient `KitProg3` resource-busy; immediate retry succeeded with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+[2026-06-14 10:38:00 PDT] physical lcd result: data is live on the multi-field CRT terminal
+[2026-06-14 10:39:00 PDT] interrupted redundant rebuild/program attempt after physical confirmation to preserve the known-good live board state
+[2026-06-14 10:45:00 PDT] clean local build churn and promote live CRT terminal state as the next golden/failsafe restore point
+[2026-06-14 10:46:00 PDT] attempted fresh artifact rebuild for restore-point capture; interrupted after confirming source commit is the primary truth anchor for this milestone

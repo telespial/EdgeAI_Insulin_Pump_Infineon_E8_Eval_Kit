@@ -161,3 +161,13 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - white `Artificial Pancreas` header visible
   - green placeholder block visible at the approved final position
 - Intent: this supersedes the earlier June 14 artificial-pancreas title-only restore point and is now the required golden/failsafe insulin-pump source of truth.
+
+## Update 2026-06-14 Live CRT Terminal Restore Point
+- Status: active required restore truth for the physically verified live CRT terminal readout.
+- Commit: pending commit created from branch `aps-terminal-live-bg-test` after user-confirmed live data on LCD.
+- Physical result:
+  - LCD live
+  - GUI visible
+  - `BG`, `IOB`, `COB`, `INS`, and `SAFETY` are live on the CRT block
+  - `ACT` remains intentionally static until a live activity path is wired
+- Intent: this supersedes the placeholder-only CRT restore point as the new golden/failsafe source of truth.

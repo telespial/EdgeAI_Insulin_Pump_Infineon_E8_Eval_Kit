@@ -565,3 +565,5 @@ Next recommended step:
 - 2026-06-14: Reworked the placeholder into two static screen-level labels, flashed the final `y=311` layout, and received physical LCD confirmation that the placeholder display is live and visible on hardware.
 - 2026-06-14: Locked `2c8c6f1` as the new golden/failsafe restore point and documented the next display-only milestone sequence starting with BG-only placeholder replacement.
 - 2026-06-14: Ran the BG-only placeholder experiment; build/program/reset-run passed and the board physically confirmed `BG` now shows `112` with the LCD still alive.
+
+- 2026-06-14: Confirmed the CRT terminal now shows live `BG`, `IOB`, `COB`, `INS`, and `SAFETY` values on hardware while `ACT` remains static; host validation passed and the LCD stayed live.

@@ -235,4 +235,6 @@
 - [x] Intentionally promote the confirmed placeholder layout to the next golden/failsafe restore point after commit/tag/push review.
 - [x] Write the next APS display milestone plan and branch plan before touching firmware again.
 - [x] Run `BG`-only placeholder replacement as the next single-field display experiment from `2c8c6f1`.
-- [ ] Run `IOB`-only placeholder replacement as the next single-field display experiment.
+- [x] Replace the remaining terminal placeholders with live `IOB`, `COB`, `INS`, and `SAFETY` values on the proven CRT path.
+
+- [ ] Promote the live multi-field CRT terminal state to the next golden/failsafe restore point if the user wants to lock it in.

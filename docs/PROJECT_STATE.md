@@ -1036,3 +1036,21 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Clean build/program completed successfully with the documented OpenOCD reset-run before and after programming.
 - Physical LCD confirmation is now in: the CRT/terminal block is updating live.
 - This confirms the first safe live readout path inside the terminal area while keeping the rest of the terminal values static.
+
+## Update 2026-06-14 Live Terminal Multi-Field Wiring Pending
+- Continued on branch `aps-terminal-live-bg-test` after confirming the live `BG:` readout.
+- Wired additional live terminal fields without adding new LVGL objects:
+  - `IOB:` from `IobEngine_GetIobU()`
+  - `COB:` from `CobEngine_GetCobG()`
+  - `INS:` from the controller/safety-limited basal request
+  - `SAFETY:` from controller/safety reason flags
+- `ACT:` remains static `REST` for now because no accelerometer-backed activity input is wired into the active GUI path.
+- This is a higher-risk runtime text-mutation step; build/flash/physical LCD verification is pending and rollback targets remain `909af0d` and `471925b`.
+
+## Update 2026-06-14 Live Terminal Multi-Field Wiring Confirmed
+- This live multi-field CRT layout is now being promoted as the next golden/failsafe restore point before further APS runtime integration work.
+- Branch `aps-terminal-live-bg-test` now drives the CRT-style terminal with live `BG`, `IOB`, `COB`, `INS`, and `SAFETY` values while leaving `ACT` static.
+- Host validation passed with `make -f host.mk test` and `make -f host.mk regression` before the hardware check.
+- Physical LCD confirmation from the board is now in: the terminal data is live and the LCD remains healthy.
+- A transient `KitProg3` resource-busy error occurred on the first OpenOCD pre-reset attempt; the immediate retry succeeded with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
+- After physical confirmation, a redundant local rebuild/program retry was intentionally interrupted so the known-good board image would remain undisturbed.

@@ -387,3 +387,20 @@
 - Notes:
   - No new LVGL objects were added.
   - No Predictor V2/controller/safety runtime output is being added to the terminal yet.
+
+## Confirmed Flash Verification — Live Terminal Multi-Field Wiring
+- Branch: `aps-terminal-live-bg-test`
+- Visible state now confirmed on hardware:
+  - `BG:` live from dashboard sample path
+  - `IOB:` live from IOB engine
+  - `COB:` live from COB engine
+  - `ACT:` remains static because no live activity feed is wired yet
+  - `INS:` live from the controller request after safety limiting
+  - `SAFETY:` live from safety/controller flags
+- Host validation: `make -f host.mk test` and `make -f host.mk regression` passed
+- OpenOCD: pre-reset retry healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`) after one transient `KitProg3` resource-busy attempt
+- Physical LCD result: user confirmed `data is live!`
+- Notes:
+  - No new LVGL objects were added.
+  - Rollback targets remain `471925b` for live `BG:` only and `909af0d` for the fully static placeholder restore point.
+  - A redundant follow-up rebuild/program attempt was stopped after physical confirmation so the known-good board state stayed undisturbed.
