@@ -1027,3 +1027,12 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `INS  0.7`
   - `SAFE OK`
 - This is now the latest physically verified placeholder layout immediately before the live-value experiment step.
+
+## Update 2026-06-14 Live Terminal BG Test Confirmed
+- Created branch `aps-terminal-live-bg-test` from the promoted restore point `909af0d`.
+- Reformatted the green terminal labels to use `:` delimiters and renamed `SAFE` to `SAFETY`.
+- Wired only `BG` to the existing live dashboard sample path via `push_sample()`.
+- `IOB`, `COB`, `ACT`, `INS`, and `SAFETY` remain placeholder values for this step because they are not yet live in the active GUI path without adding APS runtime behavior.
+- Clean build/program completed successfully with the documented OpenOCD reset-run before and after programming.
+- Physical LCD confirmation is now in: the CRT/terminal block is updating live.
+- This confirms the first safe live readout path inside the terminal area while keeping the rest of the terminal values static.

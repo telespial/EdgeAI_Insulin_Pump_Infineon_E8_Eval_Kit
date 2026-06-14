@@ -369,3 +369,21 @@
   - `SAFE OK`
 - Runtime scope: display-only, no APS runtime math
 - Physical LCD result: live / GUI visible with the refreshed placeholder values
+
+## Confirmed Flash Verification — Live Terminal BG Test
+- Branch: `aps-terminal-live-bg-test`
+- Visible state after flash:
+  - `BG:` becomes live from the existing dashboard sample path
+  - `IOB: 0.9`
+  - `COB: 22`
+  - `ACT: REST`
+  - `INS: 0.7`
+  - `SAFETY: OK`
+- Build: passed
+- Program: passed
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible and CRT block is updating
+- Notes:
+  - No new LVGL objects were added.
+  - No Predictor V2/controller/safety runtime output is being added to the terminal yet.

@@ -155,3 +155,12 @@ Build: Jun 11 2026 21:43:59
 - OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
 - Physical LCD result: live / GUI visible with the refreshed placeholder values
 - Runtime scope: display-only placeholder, no APS runtime math
+
+## Live Terminal BG Test
+- Branch: `aps-terminal-live-bg-test`
+- Change: colon-formatted terminal labels with `SAFETY`, and `BG` driven live from `current_mgdl`
+- Other terminal fields remain placeholder values for this step
+- Build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible and CRT block is updating

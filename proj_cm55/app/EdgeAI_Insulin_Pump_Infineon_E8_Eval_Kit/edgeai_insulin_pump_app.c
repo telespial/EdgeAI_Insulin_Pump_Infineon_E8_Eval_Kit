@@ -32,6 +32,7 @@ typedef struct
     lv_obj_t *glucose_title_label;
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
+    lv_obj_t *aps_terminal_label;
     lv_obj_t *status_labels[BAR_GRAPH_COUNT];
     lv_obj_t *status_bars[BAR_GRAPH_COUNT];
     lv_timer_t *timer;
@@ -316,6 +317,27 @@ static void update_glucose_label(uint16_t current_mgdl)
     lv_label_set_text(gDashboard.glucose_label, buffer);
 }
 
+static void update_aps_terminal_label(uint16_t current_mgdl)
+{
+    char buffer[128];
+
+    if (gDashboard.aps_terminal_label == NULL)
+    {
+        return;
+    }
+
+    snprintf(buffer,
+             sizeof(buffer),
+             "BG: %3u\n"
+             "IOB: 0.9\n"
+             "COB: 22\n"
+             "ACT: REST\n"
+             "INS: 0.7\n"
+             "SAFETY: OK",
+             (unsigned int)current_mgdl);
+    lv_label_set_text(gDashboard.aps_terminal_label, buffer);
+}
+
 static void push_sample(uint16_t current_mgdl)
 {
     uint16_t predicted_mgdl = current_mgdl;
@@ -326,6 +348,7 @@ static void push_sample(uint16_t current_mgdl)
     (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
     accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
     update_glucose_label(current_mgdl);
+    update_aps_terminal_label(current_mgdl);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     if (gDashboard.prediction_accuracy_label != NULL)
     {
@@ -561,13 +584,14 @@ void edgeai_insulin_pump_app_start(void)
         label = lv_label_create(screen);
         if (label != NULL)
         {
+            gDashboard.aps_terminal_label = label;
             lv_label_set_text(label,
-                              "BG   118\n"
-                              "IOB  0.9\n"
-                              "COB   22\n"
-                              "ACT REST\n"
-                              "INS  0.7\n"
-                              "SAFE OK");
+                              "BG: 118\n"
+                              "IOB: 0.9\n"
+                              "COB: 22\n"
+                              "ACT: REST\n"
+                              "INS: 0.7\n"
+                              "SAFETY: OK");
             lv_obj_set_pos(label, 30, 311);
             lv_obj_set_style_text_color(label, lv_color_hex(0x72FF9A), 0);
             lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);

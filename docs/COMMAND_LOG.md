@@ -7281,6 +7281,9 @@ inspect current branch, status, and placeholder block before user-directed value
 update display-only placeholder values in source and sync pending verification docs
 [2026-06-14 10:08:38 PDT] build + flash + reset-run requested by user
 [2026-06-14 10:13:00 PDT] physical lcd result: live / GUI visible with refreshed placeholder values
+[2026-06-14 10:17:00 PDT] create branch for live terminal value test from golden commit 909af0d
+[2026-06-14 10:19:00 PDT] patch green terminal label for colon format and live BG update; keep other fields placeholder for this step
+[2026-06-14 10:28:00 PDT] physical lcd result: live / GUI visible and CRT block is updating
 [2026-06-14 10:08:58 PDT] pre-program openocd reset-run for placeholder refresh
 [2026-06-14 10:09:00 PDT] make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
 [2026-06-14 10:09:00 PDT] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
@@ -7288,3 +7291,9 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14 10:11:13 PDT] post-program openocd reset-run for placeholder refresh
 [2026-06-14 10:15:21 PDT] inspect branch/status before golden promotion and live-value test
 [2026-06-14 10:15:34 PDT] clean local .ninja_log churn before golden promotion
+[2026-06-14 10:17:14 PDT] create branch for live terminal value test from golden commit 909af0d
+[2026-06-14 10:18:08 PDT] pre-program openocd reset-run for live terminal bg test
+[2026-06-14 10:18:10 PDT] make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for live terminal bg test
+[2026-06-14 10:18:10 PDT] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for live terminal bg test
+[2026-06-14 10:19:49 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for live terminal bg test
+[2026-06-14 10:20:08 PDT] post-program openocd reset-run for live terminal bg test
