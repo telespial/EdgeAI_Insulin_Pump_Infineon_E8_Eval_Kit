@@ -7259,3 +7259,14 @@ sed -n 1,220p docs/RESTORE_POINTS.md
 rg -n "placeholder|APS Placeholder|milestone|branch plan|readout" docs ToDo.md CODEX_PROGRESS_LOG.md
 create docs/APS_DISPLAY_MILESTONE_PLAN.md and docs/APS_DISPLAY_BRANCH_PLAN.md
 git status --short
+
+## 2026-06-14 BG-only placeholder experiment
+git checkout -b aps-bg-placeholder-step
+make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+openocd pre-program reset-run for BG-only placeholder experiment
+make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+openocd post-program reset-run for BG-only placeholder experiment
+physical lcd result: LCD live / GUI visible and BG shows 112
+git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+git add proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c docs/APS_BG_PLACEHOLDER_STEP.md docs/PROJECT_STATE.md docs/BUILD_FLASH_VERIFICATION.md docs/BUILD_REPORT.md docs/COMMAND_LOG.md CODEX_PROGRESS_LOG.md ToDo.md

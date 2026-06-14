@@ -134,6 +134,15 @@ Build: Jun 11 2026 21:43:59
 - Runtime scope: display-only placeholder, no APS runtime math
 
 ## APS Placeholder Promotion
-- Approved restore-point commit: `c77941f`
+- Approved restore-point commit: `2c8c6f1`
 - The placeholder display is now the active golden/failsafe LCD restore truth for the insulin-pump layout.
 - Matching `.hex` and `proj_cm55.elf` artifacts were captured in `../failsafe/` for direct recovery use.
+
+## BG-Only Placeholder Step
+- Branch: `aps-bg-placeholder-step`
+- Change: only the visible `BG` placeholder value changed from `110` to `112`
+- Build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible and `BG` shows `112`
+- Outcome: first safe single-field placeholder replacement confirmed on hardware

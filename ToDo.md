@@ -234,4 +234,5 @@
 - [x] Record the physical LCD result for the static `Artificial Pancreas` placeholder display candidate.
 - [x] Intentionally promote the confirmed placeholder layout to the next golden/failsafe restore point after commit/tag/push review.
 - [x] Write the next APS display milestone plan and branch plan before touching firmware again.
-- [ ] Run `BG`-only placeholder replacement as the next single-field display experiment from `2c8c6f1`.
+- [x] Run `BG`-only placeholder replacement as the next single-field display experiment from `2c8c6f1`.
+- [ ] Run `IOB`-only placeholder replacement as the next single-field display experiment.

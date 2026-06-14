@@ -562,7 +562,7 @@ void edgeai_insulin_pump_app_start(void)
         if (label != NULL)
         {
             lv_label_set_text(label,
-                              "BG   110\n"
+                              "BG   112\n"
                               "IOB  1.2\n"
                               "COB   18\n"
                               "ACT HOLD\n"

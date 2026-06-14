@@ -564,3 +564,4 @@ Next recommended step:
 - 2026-06-14: Converted the existing Artificial Pancreas label into a single recolored multiline placeholder terminal to avoid adding another LVGL object before the next flash test.
 - 2026-06-14: Reworked the placeholder into two static screen-level labels, flashed the final `y=311` layout, and received physical LCD confirmation that the placeholder display is live and visible on hardware.
 - 2026-06-14: Locked `2c8c6f1` as the new golden/failsafe restore point and documented the next display-only milestone sequence starting with BG-only placeholder replacement.
+- 2026-06-14: Ran the BG-only placeholder experiment; build/program/reset-run passed and the board physically confirmed `BG` now shows `112` with the LCD still alive.

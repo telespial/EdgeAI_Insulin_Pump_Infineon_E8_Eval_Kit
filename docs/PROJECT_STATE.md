@@ -962,7 +962,7 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - `087abe1` remains an older historical recovery point, while `9fb4e7c` is the prior physically verified golden/failsafe truth point immediately beneath this new candidate.
 
 ## Update 2026-06-14 APS Placeholder Promoted
-- Promoted commit `b27a47e` to the new insulin-pump golden/failsafe restore point after physical LCD confirmation.
+- Promoted commit `2c8c6f1` to the new insulin-pump golden/failsafe restore point after physical LCD confirmation.
 - The approved LCD truth point is now the white `Artificial Pancreas` header plus green placeholder readout block.
 - Matching failsafe restore artifacts were captured under `../failsafe/` and the restore tags were moved to this commit.
 
@@ -971,3 +971,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The next approved firmware experiment is `BG`-only placeholder replacement with all other placeholder fields left unchanged.
 - Future display work must proceed one visible placeholder field at a time with a full build/flash/physical LCD confirmation after each step.
 - Predictor V2, controller, safety, and physiology runtime remain intentionally deferred until the display path is proven stable with deterministic values.
+
+## Update 2026-06-14 BG-Only Placeholder Experiment
+- Created branch `aps-bg-placeholder-step` for the first single-field display experiment.
+- Changed only the visible `BG` placeholder value from `110` to deterministic `112`.
+- Left `IOB`, `COB`, `ACT`, `INS`, and `SAFE` unchanged.
+- No new LVGL objects, timers, APS runtime math, Predictor V2 calls, controller calls, or safety calls were introduced.
+- Build/flash/physical LCD verification is now pending for this single-field step.
+
+## Update 2026-06-14 BG-Only Placeholder Confirmed
+- Physical LCD confirmation is now in: LCD live / GUI visible and `BG` shows `112`.
+- This is the first physically verified single-field placeholder replacement built on top of the `2c8c6f1` restore point.
+- The display path remains stable with only the `BG` line changed; all other placeholder values remain unchanged.
+- The next approved display-only experiment is `IOB`-only placeholder replacement.

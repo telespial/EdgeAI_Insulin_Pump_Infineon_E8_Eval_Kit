@@ -305,3 +305,18 @@
 - OpenOCD remained healthy before and after programming with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
 - Physical LCD result: live / GUI visible with the white `Artificial Pancreas` header and green placeholder readout block
 - Runtime scope: display-only placeholder, no APS runtime math
+
+## Pending Flash Verification — BG-Only Placeholder Experiment
+- Branch: `aps-bg-placeholder-step`
+- Source baseline: `2c8c6f1` restore point plus docs-only planning commit `472a22a`
+- Visible change: `BG   110` → `BG   112`
+- All other placeholder fields remain unchanged
+- Runtime scope: display-only, no APS runtime math
+
+## Confirmed Flash Verification — BG-Only Placeholder Experiment
+- Branch: `aps-bg-placeholder-step`
+- Visible change: `BG   110` → `BG   112`
+- Build/program/OpenOCD all passed
+- OpenOCD remained healthy before and after programming with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result: live / GUI visible and `BG` shows `112`
+- Runtime scope: display-only, no APS runtime math
