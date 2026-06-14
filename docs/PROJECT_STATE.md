@@ -218,6 +218,7 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - The glucose panel was rebuilt and flashed with the new `{value} MG/DL` top row, `GLUCOSE LEVEL` second row, and a narrower panel width.
 
 ## Update 2026-06-11 16:28
+
 - The embedded smoke-test build now prints the APS banner cleanly on UART after the `main.c` banner fix.
 - The smoke-step loop is now called directly from the CM55 startup path so the deterministic glucose sequence is not dependent on a delayed LVGL timer tick.
 - The boot-only `make program` path now confirms the full five-step smoke trace on UART, including the low-glucose safety response and completion line.
@@ -893,3 +894,24 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 ## Update 2026-06-13 16:05 PDT
 - Added `docs/WORKING_DISPLAY_PATHS.md` to catalog every current dashboard display element, its parent subtree, update path, and observed LCD safety.
 - Confirmed the best next display experiment should stay within original numeric/percent-shaped paths instead of arbitrary APS strings.
+
+## Update 2026-06-14 Placement Test Pending
+- Testing a placement-only change for the screen-level `prediction_accuracy_label` so it visually sits beside `EdgeAI Prediction` without reparenting it back into the chart subtree.
+- Exact change: `lv_obj_set_pos(label, 700, 326)` in `edgeai_insulin_pump_app_start()`.
+- No text path, data source, timer, or LVGL object-creation behavior changed.
+- Physical LCD verification is still pending.
+
+## Update 2026-06-14 Score Label Size/Placement Test
+- Adjusted the screen-level prediction score label position further right/down to sit closer to the `EdgeAI Prediction` title.
+- Increased the score label font from `lv_font_montserrat_14` to `lv_font_montserrat_42` for an approximately 3x larger readout using an already-proven in-app font.
+- No new LVGL objects were added and no text-path logic changed; this is still a placement/style-only mutation on the existing score label.
+
+## Update 2026-06-14 Prediction Title/Score Alignment Tweak
+- Shifted the `EdgeAI Prediction` title left within the chart header area.
+- Shifted the large screen-level prediction score left and slightly upward to tighten the pairing with the title.
+- No new LVGL objects, no text-path logic changes, and no timer/render-path changes were introduced.
+
+## Update 2026-06-14 Prediction Title Two-Line Tweak
+- Changed the `EdgeAI Prediction` title to a two-line label at the same anchor point.
+- Shifted the large prediction score left by roughly one character width while keeping its current height.
+- No new LVGL objects or runtime logic changes were introduced.

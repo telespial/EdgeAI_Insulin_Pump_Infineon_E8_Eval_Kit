@@ -7088,3 +7088,61 @@ make[1]: Leaving directory '/home/user/projects/embedded/codemaster/projects/.tm
 2026-06-13T15:27:31-07:00 | git commit -m "document aps screen label readout failure" (pending)
 2026-06-13T15:31:10-07:00 | sed/rg inspect display paths for working display audit
 2026-06-13T15:32:12-07:00 | git add/commit docs for working display paths audit (pending)
+2026-06-13T15:36:54-07:00 | git status --short && git rev-parse --short HEAD && git branch --show-current
+2026-06-13T15:36:59-07:00 | git checkout -b numeric-only-aps-source-test
+2026-06-13T15:37:18-07:00 | patched numeric-only percent source test in edgeai_insulin_pump_app.c
+2026-06-13T15:37:25-07:00 | make clean
+2026-06-13T15:37:25-07:00 | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_NUMERIC_ONLY_APS_SOURCE_TEST=1 -j8
+2026-06-13T15:39:09-07:00 | python3 tools/check_known_issues.py --changed proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c || true
+2026-06-13T15:39:25-07:00 | pre-program OpenOCD reset-run
+2026-06-13T15:39:27-07:00 | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_NUMERIC_ONLY_APS_SOURCE_TEST=1
+2026-06-13T15:39:51-07:00 | post-program OpenOCD reset-run
+2026-06-13T15:43:31-07:00 | physical result: numeric-only percent source test failed (LCD blank/dead/frozen)
+2026-06-13T15:43:46-07:00 | git checkout 6f8ac6c -- proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+2026-06-13T15:43:46-07:00 | make clean
+2026-06-13T15:43:46-07:00 | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+2026-06-13T15:45:31-07:00 | pre-program OpenOCD reset-run (recovery baseline)
+2026-06-13T15:45:33-07:00 | make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+2026-06-13T15:46:02-07:00 | post-program OpenOCD reset-run (recovery baseline)
+2026-06-14T07:24:02-07:00 | pwd
+2026-06-14T07:24:49-07:00 | cat AGENTS.md
+2026-06-14T07:25:42-07:00 | moved screen-level prediction_accuracy_label position from 500,338 to 700,326 for graph-adjacent placement test
+2026-06-14T07:25:53-07:00 | make clean
+2026-06-14T07:25:54-07:00 | make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 07:27:32 PDT] cmd: inspect repo startup docs and runbook
+[2026-06-14 07:27:32 PDT] cmd: inspect current placement-test source diff
+[2026-06-14 07:27:54 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:27:56 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 07:30:10 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 07:30:16 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:30:36 PDT] cmd: openocd post-program lcd-safe reset-run
+[2026-06-14 07:32:35 PDT] cmd: inspect score label placement and available fonts for requested resize
+[2026-06-14 07:33:07 PDT] cmd: move prediction score label right/down and enlarge to lv_font_montserrat_42
+[2026-06-14 07:33:07 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:33:07 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 07:34:26 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 07:34:29 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:34:55 PDT] cmd: openocd post-program lcd-safe reset-run
+[2026-06-14 07:38:35 PDT] cmd: inspect prediction label placement before left/up nudge
+[2026-06-14 07:39:05 PDT] cmd: shift EdgeAI Prediction title left and large score left/up
+[2026-06-14 07:39:05 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:39:05 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 07:40:22 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 07:40:24 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:40:50 PDT] cmd: openocd post-program lcd-safe reset-run
+[2026-06-14 07:42:59 PDT] cmd: inspect current prediction title and score placement before two-line left-justified tweak
+[2026-06-14 07:43:27 PDT] cmd: split EdgeAI Prediction into two lines and shift score left
+[2026-06-14 07:43:27 PDT] cmd: make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:43:27 PDT] cmd: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 07:44:58 PDT] cmd: openocd pre-program lcd-safe reset-run
+[2026-06-14 07:45:00 PDT] cmd: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 07:45:33 PDT] cmd: openocd post-program lcd-safe reset-run
+
+[2026-06-14T07:46:57-07:00] COMMAND: verify repo state before golden restore-point update
+[2026-06-14T07:47:17-07:00] COMMAND: inspect failsafe artifacts, remotes, and tags before promoting current LCD-safe layout
+[2026-06-14T07:47:34-07:00] COMMAND: inspect current commit and built artifacts for golden/failsafe promotion
+[2026-06-14T07:48:05-07:00] COMMAND: copied current app_combined.hex and proj_cm55.elf to ../failsafe as 20260614 prediction-layout restore artifacts
+[2026-06-14T07:48:05-07:00] COMMAND: restored .ninja_log churn and removed stale untracked LVGL numeric-only test doc before golden/failsafe commit
+[2026-06-14T07:48:19-07:00] COMMAND: commit current LCD-safe prediction layout and retag golden/failsafe restore points
+[2026-06-14T07:48:34-07:00] COMMAND: verify clean tree and final restore tags after remote push
+[2026-06-14T07:49:17-07:00] COMMAND: removed duplicate PROJECT_STATE entry for 2026-06-14 prediction title two-line restore note

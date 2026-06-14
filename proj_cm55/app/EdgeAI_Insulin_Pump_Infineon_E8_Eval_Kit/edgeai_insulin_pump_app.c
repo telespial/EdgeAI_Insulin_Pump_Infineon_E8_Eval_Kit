@@ -522,8 +522,8 @@ void edgeai_insulin_pump_app_start(void)
         if (label != NULL)
         {
             gDashboard.prediction_label = label;
-            lv_label_set_text(label, "EdgeAI Prediction");
-            lv_obj_align(label, LV_ALIGN_TOP_LEFT, 18, -10);
+            lv_label_set_text(label, "EdgeAI\nPrediction");
+            lv_obj_align(label, LV_ALIGN_TOP_LEFT, 2, -10);
             style_prediction_label(label);
         }
 
@@ -532,9 +532,9 @@ void edgeai_insulin_pump_app_start(void)
         {
             gDashboard.prediction_accuracy_label = label;
             lv_label_set_text(label, "0%");
-            lv_obj_set_pos(label, 500, 338);
+            lv_obj_set_pos(label, 668, 336);
             lv_obj_set_style_text_color(label, lv_color_hex(0x79D8FF), 0);
-            lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_42, 0);
             lv_obj_set_style_shadow_color(label, lv_color_hex(0xFF4A6A), 0);
             lv_obj_set_style_shadow_opa(label, LV_OPA_COVER, 0);
             lv_obj_set_style_shadow_width(label, 8, 0);

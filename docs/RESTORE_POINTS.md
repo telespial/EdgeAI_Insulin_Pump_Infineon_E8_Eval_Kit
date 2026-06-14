@@ -99,6 +99,30 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_app_combined.hex`
   - `../failsafe/e8_insulin_pump_20260611_145339_bar_tighten_proj_cm55.elf`
 
+## Latest Verified Restore Artifact (2026-06-14, prediction title/score placement)
+- Board: `PSE846GPS2DBZC4A` (Rev `B0`)
+- Physical result:
+  - LCD live
+  - GUI visible
+  - `EdgeAI` / `Prediction` title split into two left-justified lines
+  - large prediction score repositioned left for the current approved layout
+- Build:
+  - `make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Flash:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260614_080746_prediction_layout_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260614_080746_prediction_layout_proj_cm55.elf`
+
+## Golden Restore Tag (2026-06-14)
+- Tag: `golden-e8-insulin-pump`
+- Meaning: Current approved insulin-pump LCD layout with the two-line `EdgeAI Prediction` title and the repositioned large prediction score.
+
+## Failsafe Restore Tag (2026-06-14)
+- Tag: `failsafe-e8-insulin-pump`
+- Meaning: Emergency recovery point for the same physically verified LCD-safe insulin-pump layout.
+
 ## Restore Procedure
 1. Fetch tags:
    ```bash
