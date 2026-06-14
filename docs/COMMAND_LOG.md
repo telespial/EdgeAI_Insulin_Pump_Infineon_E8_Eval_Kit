@@ -7270,3 +7270,21 @@ openocd post-program reset-run for BG-only placeholder experiment
 physical lcd result: LCD live / GUI visible and BG shows 112
 git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
 git add proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c docs/APS_BG_PLACEHOLDER_STEP.md docs/PROJECT_STATE.md docs/BUILD_FLASH_VERIFICATION.md docs/BUILD_REPORT.md docs/COMMAND_LOG.md CODEX_PROGRESS_LOG.md ToDo.md
+
+## 2026-06-14 IOB-only placeholder experiment
+git branch --show-current
+make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+interrupted IOB-only rebuild before flash at user request; no new image programmed
+inspect current placeholder block before multi-field placeholder update
+inspect current branch, status, and placeholder block before user-directed value refresh
+update display-only placeholder values in source and sync pending verification docs
+[2026-06-14 10:08:38 PDT] build + flash + reset-run requested by user
+[2026-06-14 10:13:00 PDT] physical lcd result: live / GUI visible with refreshed placeholder values
+[2026-06-14 10:08:58 PDT] pre-program openocd reset-run for placeholder refresh
+[2026-06-14 10:09:00 PDT] make clean TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 10:09:00 PDT] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-14 10:10:45 PDT] make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-14 10:11:13 PDT] post-program openocd reset-run for placeholder refresh
+[2026-06-14 10:15:21 PDT] inspect branch/status before golden promotion and live-value test
+[2026-06-14 10:15:34 PDT] clean local .ninja_log churn before golden promotion

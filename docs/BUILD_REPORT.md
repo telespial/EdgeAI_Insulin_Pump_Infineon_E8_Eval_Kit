@@ -146,3 +146,12 @@ Build: Jun 11 2026 21:43:59
 - OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
 - Physical LCD result: live / GUI visible and `BG` shows `112`
 - Outcome: first safe single-field placeholder replacement confirmed on hardware
+
+## Placeholder Value Refresh
+- Branch: `aps-bg-placeholder-step`
+- Change: display-only placeholder block now reads `BG 118`, `IOB 0.9`, `COB 22`, `ACT REST`, `INS 0.7`, `SAFE OK`
+- Build: passed
+- Program: passed
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible with the refreshed placeholder values
+- Runtime scope: display-only placeholder, no APS runtime math

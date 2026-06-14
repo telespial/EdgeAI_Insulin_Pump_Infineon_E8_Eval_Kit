@@ -984,3 +984,46 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - This is the first physically verified single-field placeholder replacement built on top of the `2c8c6f1` restore point.
 - The display path remains stable with only the `BG` line changed; all other placeholder values remain unchanged.
 - The next approved display-only experiment is `IOB`-only placeholder replacement.
+
+## Update 2026-06-14 IOB-Only Placeholder Experiment
+- Continued on branch `aps-bg-placeholder-step` for the second single-field display experiment.
+- Changed only the visible `IOB` placeholder value from `1.2` to deterministic `1.3`.
+- Left `BG`, `COB`, `ACT`, `INS`, and `SAFE` unchanged from the last physically verified state.
+- No new LVGL objects, timers, APS runtime math, Predictor V2 calls, controller calls, or safety calls were introduced.
+- Build/flash/physical LCD verification is now pending for this single-field step.
+
+## Update 2026-06-14 Multi-Field Placeholder Shortcut
+- At user request, stopped the in-flight `IOB`-only experiment before flash so the board remained on the last confirmed `BG`-only image.
+- Kept `BG   112` and `IOB  1.2`.
+- Updated the remaining placeholder values together for a faster visible checkpoint:
+  - `COB   24`
+  - `ACT WALK`
+  - `INS  0.9`
+  - `SAFE LOW`
+- This is a user-directed shortcut outside the earlier one-field-at-a-time plan; build/flash/physical LCD verification is now pending.
+
+## Update 2026-06-14 Placeholder Value Refresh
+- Refreshed the display-only placeholder values again in source, still without changing LVGL structure or adding APS runtime behavior.
+- Pending visible state for the next build/flash:
+  - `BG   118`
+  - `IOB  0.9`
+  - `COB   22`
+  - `ACT REST`
+  - `INS  0.7`
+  - `SAFE OK`
+- This is source-only right now; build/flash/physical LCD verification is still pending.
+
+## Update 2026-06-14 Placeholder Value Refresh Confirmed
+- Clean-built and programmed the refreshed placeholder image with the documented LCD-safe OpenOCD reset-run before and after programming.
+- Build completed successfully with `CONFIG_DISPLAY=W4P3INCH_DISP`.
+- Program/verify completed successfully on `PSE846GPS2DBZC4A`.
+- Both OpenOCD reset-run passes reported healthy `CYBOOT_SUCCESS`.
+- Physical LCD confirmation is now in: the GUI is live and the refreshed placeholder values are visible on hardware.
+- Current flashed visible state is:
+  - `BG   118`
+  - `IOB  0.9`
+  - `COB   22`
+  - `ACT REST`
+  - `INS  0.7`
+  - `SAFE OK`
+- This is now the latest physically verified placeholder layout immediately before the live-value experiment step.

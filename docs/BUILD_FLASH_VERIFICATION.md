@@ -320,3 +320,52 @@
 - OpenOCD remained healthy before and after programming with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
 - Physical LCD result: live / GUI visible and `BG` shows `112`
 - Runtime scope: display-only, no APS runtime math
+
+## Pending Flash Verification — IOB-Only Placeholder Experiment
+- Branch: `aps-bg-placeholder-step`
+- Visible change: `IOB  1.2` → `IOB  1.3`
+- All other placeholder fields remain unchanged from the last physically verified state
+- Runtime scope: display-only, no APS runtime math
+
+## Pending Flash Verification — Multi-Field Placeholder Shortcut
+- Branch: `aps-bg-placeholder-step`
+- Visible state before flash:
+  - `BG   112`
+  - `IOB  1.2`
+  - `COB   24`
+  - `ACT WALK`
+  - `INS  0.9`
+  - `SAFE LOW`
+- Notes:
+  - The earlier `IOB`-only rebuild was interrupted before flash.
+  - This multi-field update is a user-directed shortcut.
+- Runtime scope: display-only, no APS runtime math
+
+## Pending Flash Verification — Placeholder Value Refresh
+- Branch: `aps-bg-placeholder-step`
+- Visible state before flash:
+  - `BG   118`
+  - `IOB  0.9`
+  - `COB   22`
+  - `ACT REST`
+  - `INS  0.7`
+  - `SAFE OK`
+- Notes:
+  - No new image has been built or flashed from this refresh yet.
+  - Runtime scope remains display-only with no APS runtime math.
+
+## Confirmed Flash Verification — Placeholder Value Refresh
+- Branch: `aps-bg-placeholder-step`
+- Build: passed
+- Program: passed
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Flashed visible state should now be:
+  - `BG   118`
+  - `IOB  0.9`
+  - `COB   22`
+  - `ACT REST`
+  - `INS  0.7`
+  - `SAFE OK`
+- Runtime scope: display-only, no APS runtime math
+- Physical LCD result: live / GUI visible with the refreshed placeholder values

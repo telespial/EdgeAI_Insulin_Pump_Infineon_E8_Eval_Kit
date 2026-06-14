@@ -562,12 +562,12 @@ void edgeai_insulin_pump_app_start(void)
         if (label != NULL)
         {
             lv_label_set_text(label,
-                              "BG   112\n"
-                              "IOB  1.2\n"
-                              "COB   18\n"
-                              "ACT HOLD\n"
-                              "INS  0.8\n"
-                              "SAFE NORM");
+                              "BG   118\n"
+                              "IOB  0.9\n"
+                              "COB   22\n"
+                              "ACT REST\n"
+                              "INS  0.7\n"
+                              "SAFE OK");
             lv_obj_set_pos(label, 30, 311);
             lv_obj_set_style_text_color(label, lv_color_hex(0x72FF9A), 0);
             lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
