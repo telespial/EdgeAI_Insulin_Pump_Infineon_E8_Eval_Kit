@@ -19,6 +19,21 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-15: Investigated the suspected `VirtualPatientV2` breakfast freeze without reflashing hardware first.
+- 2026-06-15: Confirmed a runtime split in source:
+  - `ApsDemoState_Step()` used `VirtualPatientV1`
+  - UI/CRT code separately stepped and displayed `VirtualPatientV2Background`
+- 2026-06-15: Unified `ApsDemoState` onto `VirtualPatientV2` and removed the active UI bypass that rendered separate V2 state outside `aps_demo_state_t`.
+- 2026-06-15: Host breakfast trace passed across steps `0..12`; step `4` correctly activates the meal event and continues updating afterward.
+- 2026-06-15: Post-fix validation passed:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- 2026-06-15: The unified `VirtualPatientV2` single-source image has now been programmed with the documented LCD-safe OpenOCD pre/post reset-run flow.
+- 2026-06-15: Physical result confirmed after flash:
+  - LCD live / GUI visible
+  - CRT updates continue past breakfast
+  - the first breakfast event no longer causes the earlier freeze symptom
 - 2026-06-14: Current physically verified golden/failsafe hardware truth point is `c87802a` on branch `aps-glucose-unified-display`.
 - 2026-06-15: Started branch `vp2-background-on-v1-visible` from `83b5d7f` to add `VirtualPatientV2` into the `c87802a`-style runtime without changing the visible dashboard source.
 - 2026-06-15: Visible dashboard / LCD / CRT / chart remain on the proven `VirtualPatientV1` path through `ApsDemoState_Step()`.
@@ -1496,3 +1511,27 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `VirtualPatientV2` is reaching its terminal success code (`299`) on each visible update
   - the prior freeze is no longer reproducing on this debug-code image
   - the next debug step should show a more informative advancing `V2` phase / step index rather than only the final success code
+
+## Update 2026-06-15 VirtualPatientV2 expose image
+- Branch: `vp2-background-on-v1-visible`
+- Source base:
+  - golden/failsafe hardware checkpoint `571fb89`
+  - plus uncommitted V2 expose instrumentation for glucose/state visibility
+- Goal:
+  - stop showing only terminal debug code `299`
+  - expose advancing `VirtualPatientV2` state on already-proven display paths
+  - determine whether the freeze clusters around a specific patient phase / cycle step
+- Code-path result:
+  - center `MG/DL` now reads background `V2` glucose from `VirtualPatientV2Background_GetState()`
+  - CRT terminal prefers background `V2` state and exposes `GLUCOSE`, `STEP`, `CARBS`, `INS ONBD`, `TARGET`, and `DEBUG`
+  - visible chart / dashboard / CRT baseline structure remains otherwise unchanged
+- Host validation:
+  - `rm -rf host_build && make -f host.mk test` passed
+  - `rm -rf host_build && make -f host.mk regression` passed
+- Embedded build / flash validation:
+  - `make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- Physical LCD result:
+  - pending user confirmation

@@ -7,7 +7,11 @@
 typedef struct
 {
     uint32_t epoch_s;
+    uint32_t step_index;
+    uint16_t cycle_step;
     uint16_t bg_mgdl;
+    uint16_t target_bg_mgdl;
+    uint16_t debug_code;
     float meal_cob_g;
     float insulin_iob_u;
     float insulin_sensitivity;

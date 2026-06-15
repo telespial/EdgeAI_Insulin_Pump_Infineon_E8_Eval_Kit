@@ -35,3 +35,8 @@
 - No real insulin actuation
 - The board LCD remains the physical source of truth after flashing
 - Continuous CRT updates are now sourced from the looping `VirtualPatientV2` pipeline instead of a finite demo sequence.
+
+## Update 2026-06-15 — Source Of Truth
+- CRT should display from `aps_demo_state_t`
+- the prior background-V2 display override path was removed from the active dashboard flow
+- controller/safety and visible CRT text should now reflect the same patient source

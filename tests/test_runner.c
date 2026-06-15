@@ -924,6 +924,139 @@ static void test_virtual_patient_v2_continuous(void)
     require_true("virtual patient dawn window", saw_dawn_window);
 }
 
+static void test_virtual_patient_v2_breakfast_step(void)
+{
+    uint32_t step_index;
+    float delivered_insulin_u_hr = 0.8f;
+    bool breakfast_seen = false;
+    bool cob_after_breakfast = false;
+    virtual_patient_v2_state_t state;
+
+    memset(&state, 0, sizeof(state));
+    VirtualPatientV2_Init();
+
+    for (step_index = 0u; step_index <= 12u; ++step_index)
+    {
+        uint32_t now_s = step_index * 300u;
+        bool ok = VirtualPatientV2_Step(now_s, delivered_insulin_u_hr, &state);
+
+        printf("VP2 TRACE step=%lu cycle=%u dbg=%u bg=%u target=%u cob=%.2f iob=%.2f basal=%.2f meal=%u bolus=%u act=%.2f dawn=%.2f ok=%u\n",
+               (unsigned long)state.step_index,
+               (unsigned int)state.cycle_step,
+               (unsigned int)state.debug_code,
+               (unsigned int)state.bg_mgdl,
+               (unsigned int)state.target_bg_mgdl,
+               (double)state.meal_cob_g,
+               (double)state.insulin_iob_u,
+               (double)state.basal_u_hr,
+               state.meal_event ? 1u : 0u,
+               state.bolus_event ? 1u : 0u,
+               (double)state.activity_factor,
+               (double)state.dawn_factor,
+               ok ? 1u : 0u);
+
+        require_true("v2 breakfast step returns true", ok);
+        require_true("v2 breakfast debug reaches completion", state.debug_code >= 250u);
+        require_true("v2 breakfast bg bounded", state.bg_mgdl >= 60u && state.bg_mgdl <= 250u);
+        require_true("v2 breakfast target bounded", state.target_bg_mgdl >= 60u && state.target_bg_mgdl <= 250u);
+        require_true("v2 breakfast iob bounded", state.insulin_iob_u >= 0.0f && state.insulin_iob_u <= 5.0f);
+        require_true("v2 breakfast cob bounded", state.meal_cob_g >= 0.0f && state.meal_cob_g <= 80.0f);
+
+        if (step_index == 4u)
+        {
+            require_true("v2 breakfast meal event at step 4", state.meal_event);
+            breakfast_seen = state.meal_event;
+        }
+        if (step_index >= 4u && state.meal_cob_g > 0.0f)
+        {
+            cob_after_breakfast = true;
+        }
+
+        delivered_insulin_u_hr = (state.bg_mgdl > 150u) ? 2.0f : 0.8f;
+    }
+
+    require_true("v2 breakfast event seen", breakfast_seen);
+    require_true("v2 breakfast cob rises", cob_after_breakfast);
+}
+
+static void test_virtual_patient_v2_no_freeze_12_steps(void)
+{
+    uint32_t step_index;
+    float delivered_insulin_u_hr = 0.8f;
+    uint16_t last_debug_code = 0u;
+    bool saw_cob_change = false;
+    bool saw_iob_change = false;
+    bool saw_bg_change = false;
+    virtual_patient_v2_state_t state;
+    virtual_patient_v2_state_t previous_state;
+
+    memset(&state, 0, sizeof(state));
+    memset(&previous_state, 0, sizeof(previous_state));
+    VirtualPatientV2_Init();
+
+    for (step_index = 0u; step_index <= 12u; ++step_index)
+    {
+        uint32_t now_s = step_index * 300u;
+
+        require_true("v2 no freeze step", VirtualPatientV2_Step(now_s, delivered_insulin_u_hr, &state));
+        require_true("v2 no freeze completion code", state.debug_code >= 250u);
+        if (step_index > 0u)
+        {
+            if (state.bg_mgdl != previous_state.bg_mgdl)
+            {
+                saw_bg_change = true;
+            }
+            if (fabsf(state.meal_cob_g - previous_state.meal_cob_g) > 0.01f)
+            {
+                saw_cob_change = true;
+            }
+            if (fabsf(state.insulin_iob_u - previous_state.insulin_iob_u) > 0.01f)
+            {
+                saw_iob_change = true;
+            }
+        }
+        last_debug_code = state.debug_code;
+        previous_state = state;
+        delivered_insulin_u_hr = (state.bg_mgdl > 150u) ? 2.0f : 0.8f;
+    }
+
+    require_true("v2 no freeze final completion code", last_debug_code >= 250u);
+    require_true("v2 no freeze bg changes", saw_bg_change);
+    require_true("v2 no freeze cob changes", saw_cob_change);
+    require_true("v2 no freeze iob changes", saw_iob_change);
+}
+
+static void test_virtual_patient_v2_60_min_trace(void)
+{
+    uint32_t step_index;
+    float delivered_insulin_u_hr = 0.8f;
+    bool saw_breakfast = false;
+    bool saw_post_breakfast_progress = false;
+    virtual_patient_v2_state_t state;
+
+    memset(&state, 0, sizeof(state));
+    VirtualPatientV2_Init();
+
+    for (step_index = 0u; step_index <= 12u; ++step_index)
+    {
+        uint32_t now_s = step_index * 300u;
+
+        require_true("v2 60min trace step", VirtualPatientV2_Step(now_s, delivered_insulin_u_hr, &state));
+        if (state.meal_event)
+        {
+            saw_breakfast = true;
+        }
+        if (saw_breakfast && step_index > 4u && (state.meal_cob_g > 0.0f || state.insulin_iob_u > 0.0f))
+        {
+            saw_post_breakfast_progress = true;
+        }
+        delivered_insulin_u_hr = (state.bg_mgdl > 150u) ? 2.0f : 0.8f;
+    }
+
+    require_true("v2 60min breakfast seen", saw_breakfast);
+    require_true("v2 60min continues after breakfast", saw_post_breakfast_progress);
+}
+
 static void require_demo_state_match(const char *name, const aps_demo_state_t *expected, const aps_demo_state_t *actual)
 {
     require_true(name, expected->bg_mgdl == actual->bg_mgdl);
@@ -934,46 +1067,39 @@ static void require_demo_state_match(const char *name, const aps_demo_state_t *e
     require_true(name, expected->safety_flags == actual->safety_flags);
 }
 
-static void test_virtual_patient_v2_background_parallel_with_v1(void)
+static void test_virtual_patient_v2_background_wrapper(void)
 {
-    aps_demo_state_t baseline0;
-    aps_demo_state_t baseline1;
-    aps_demo_state_t baseline6;
-    aps_demo_state_t parallel0;
-    aps_demo_state_t parallel1;
-    aps_demo_state_t parallel6;
     virtual_patient_v2_state_t background_state;
+    float delivered_insulin_u_hr = 0.8f;
+    uint16_t previous_bg = 0u;
+    bool saw_change = false;
 
-    memset(&baseline0, 0, sizeof(baseline0));
-    memset(&baseline1, 0, sizeof(baseline1));
-    memset(&baseline6, 0, sizeof(baseline6));
-    memset(&parallel0, 0, sizeof(parallel0));
-    memset(&parallel1, 0, sizeof(parallel1));
-    memset(&parallel6, 0, sizeof(parallel6));
     memset(&background_state, 0, sizeof(background_state));
 
-    require_true("v1 baseline init", ApsDemoState_Init());
-    require_true("v1 baseline step0", ApsDemoState_Step(0u, &baseline0));
-    require_true("v1 baseline step1", ApsDemoState_Step(300u, &baseline1));
-    require_true("v1 baseline step6", ApsDemoState_Step(1800u, &baseline6));
-
-    require_true("v1 parallel init", ApsDemoState_Init());
     require_true("v2 background init", VirtualPatientV2Background_Init());
+    require_true("v2 background step0", VirtualPatientV2Background_Step(0u, delivered_insulin_u_hr));
+    require_true("v2 background get state0", VirtualPatientV2Background_GetState(&background_state));
+    previous_bg = background_state.bg_mgdl;
+    delivered_insulin_u_hr = background_state.basal_u_hr;
+    require_true("v2 background step1", VirtualPatientV2Background_Step(300u, delivered_insulin_u_hr));
+    require_true("v2 background get state1", VirtualPatientV2Background_GetState(&background_state));
+    if (background_state.bg_mgdl != previous_bg)
+    {
+        saw_change = true;
+    }
 
-    require_true("v1 parallel step0", ApsDemoState_Step(0u, &parallel0));
-    require_true("v2 background step0", VirtualPatientV2Background_Step(0u, parallel0.insulin_u_hr));
-    require_true("v1 parallel step1", ApsDemoState_Step(300u, &parallel1));
-    require_true("v2 background step1", VirtualPatientV2Background_Step(300u, parallel1.insulin_u_hr));
-    require_true("v1 parallel step6", ApsDemoState_Step(1800u, &parallel6));
-    require_true("v2 background step6", VirtualPatientV2Background_Step(1800u, parallel6.insulin_u_hr));
+    previous_bg = background_state.bg_mgdl;
+    delivered_insulin_u_hr = background_state.basal_u_hr;
+    require_true("v2 background step6", VirtualPatientV2Background_Step(1800u, delivered_insulin_u_hr));
     require_true("v2 background get state", VirtualPatientV2Background_GetState(&background_state));
-
-    require_demo_state_match("v1 visible state preserved step0", &baseline0, &parallel0);
-    require_demo_state_match("v1 visible state preserved step1", &baseline1, &parallel1);
-    require_demo_state_match("v1 visible state preserved step6", &baseline6, &parallel6);
+    if (background_state.bg_mgdl != previous_bg)
+    {
+        saw_change = true;
+    }
     require_true("v2 background bg bounded", background_state.bg_mgdl >= 60u && background_state.bg_mgdl <= 250u);
     require_true("v2 background iob bounded", background_state.insulin_iob_u >= 0.0f && background_state.insulin_iob_u <= 5.0f);
     require_true("v2 background cob bounded", background_state.meal_cob_g >= 0.0f && background_state.meal_cob_g <= 80.0f);
+    require_true("v2 background changes", saw_change);
 }
 
 int main(void)
@@ -1007,8 +1133,11 @@ int main(void)
     test_bad_data_rejected_safely();
     test_physiology_feature_population();
     test_aps_demo_state_pipeline();
+    test_virtual_patient_v2_breakfast_step();
+    test_virtual_patient_v2_no_freeze_12_steps();
+    test_virtual_patient_v2_60_min_trace();
     test_virtual_patient_v2_continuous();
-    test_virtual_patient_v2_background_parallel_with_v1();
+    test_virtual_patient_v2_background_wrapper();
 
     if (g_failures != 0)
     {

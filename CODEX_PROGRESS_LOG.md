@@ -1,5 +1,29 @@
 # Codex Progress Log
 
+## 2026-06-15 — VirtualPatientV2 breakfast freeze investigation
+
+Changed:
+- Confirmed the visible APS path and visible V2/CRT path had split into separate patient runtimes.
+- Migrated `ApsDemoState` onto `VirtualPatientV2`.
+- Removed the active UI rendering bypass that displayed `VirtualPatientV2Background` state directly.
+- Added breakfast-step tracing and new V2 regression coverage around steps `0..12`.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+
+Known gaps:
+- This fix has not been flashed to hardware yet.
+- Physical LCD truth still belongs to the last separately verified runtime image.
+
+Next recommended step:
+- Flash this unified-V2 image with the LCD-safe procedure and verify the CRT continues updating past breakfast for more than 60 seconds.
+
+Result:
+- The unified `VirtualPatientV2` image was flashed successfully.
+- Physical hardware confirmation shows the LCD stayed live and the CRT continued updating past the breakfast window.
+
 ## 2026-06-15 — Background VirtualPatientV2 on V1-visible runtime
 
 Changed:
@@ -638,3 +662,5 @@ Next recommended step:
 - 2026-06-14: Removed the uncommitted hot-path LVGL `printf` debug diff from `proj_cm55/main.c` and `edgeai_insulin_pump_app.c`, rebuilt and reflashed the clean image, and recovered the LCD. The user then confirmed the screen came up but visibly froze again after around seven steps, which means the UART debug was an LCD-bring-up hazard but not the root cause of the later freeze.
 
 - 2026-06-15: Flashed the `VirtualPatientV2` debug-code image on `vp2-background-on-v1-visible`; hardware stayed live and the center `MG/DL` readout showed steady `299`, proving `V2` reaches its terminal success code without reproducing the earlier freeze during this check.
+- 2026-06-15: Built and flashed a follow-up `VirtualPatientV2` expose image that replaces the final-only `299` center readout with background `V2` glucose and exposes `STEP/CARBS/INS ONBD/TARGET/DEBUG` on the CRT terminal. OpenOCD pre/post reset-run remained healthy; physical LCD confirmation is now pending.
+- 2026-06-15: Built and flashed a one-change chart-refresh isolation image (`APP_V2_DISABLE_CHART_REFRESH=1`) that keeps background `V2` expose values live while disabling only the chart update/refresh block. OpenOCD pre/post reset-run remained healthy; physical LCD confirmation is now pending.

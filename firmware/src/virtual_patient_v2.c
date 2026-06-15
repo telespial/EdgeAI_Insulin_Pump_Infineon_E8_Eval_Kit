@@ -40,6 +40,7 @@ typedef struct
     uint32_t last_step_index;
     uint16_t debug_code;
     uint16_t current_bg_mgdl;
+    uint16_t current_target_bg_mgdl;
     float glucose_velocity_mgdl;
     float last_delivered_insulin_u_hr;
     bool last_meal_event;
@@ -374,6 +375,7 @@ static void advance_patient_step(uint32_t now_s, uint32_t step_index)
     }
 
     target_bg = clamp_f32(target_bg, 75.0f, 215.0f);
+    g_runtime.current_target_bg_mgdl = clamp_u16((int32_t)(target_bg + 0.5f), 60u, 250u);
     set_debug_code(210u);
     g_runtime.glucose_velocity_mgdl =
         clamp_f32((0.66f * g_runtime.glucose_velocity_mgdl) +
@@ -396,6 +398,7 @@ void VirtualPatientV2_Init(void)
     g_runtime.initialized = true;
     g_runtime.debug_code = 100u;
     g_runtime.current_bg_mgdl = 110u;
+    g_runtime.current_target_bg_mgdl = 110u;
     g_runtime.glucose_velocity_mgdl = 0.0f;
     g_runtime.last_delivered_insulin_u_hr = 0.8f;
     set_debug_code(101u);
@@ -460,7 +463,11 @@ bool VirtualPatientV2_Step(uint32_t now_s,
 
     set_debug_code(250u);
     state->epoch_s = now_s;
+    state->step_index = target_step_index;
+    state->cycle_step = (uint16_t)cycle_step;
     state->bg_mgdl = g_runtime.current_bg_mgdl;
+    state->target_bg_mgdl = g_runtime.current_target_bg_mgdl;
+    state->debug_code = g_runtime.debug_code;
     state->meal_cob_g = g_runtime.meal_cob_g;
     state->insulin_iob_u = g_runtime.insulin_iob_u;
     state->insulin_sensitivity = insulin_sensitivity;

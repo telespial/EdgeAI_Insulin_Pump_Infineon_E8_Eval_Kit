@@ -224,3 +224,19 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - center `MG/DL` value shows steady `299`
   - user reported that this image is not freezing
 - Intent: this supersedes `c87802a` as the newest physically verified golden/failsafe restore point for the active `VirtualPatientV2` freeze investigation.
+
+## Update 2026-06-15 Unified VirtualPatientV2 Breakfast-Pass Golden Restore Point
+- Status: active **golden** restore truth for the unified `VirtualPatientV2` single-source runtime.
+- Branch: `vp2-background-on-v1-visible`
+- Commit: current branch HEAD after the unified-V2 breakfast-pass hardware verification commit.
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260615_074037_vp2_unified_breakfast_ok_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260615_074037_vp2_unified_breakfast_ok_proj_cm55.elf`
+- Physical result:
+  - LCD live
+  - GUI visible
+  - CRT updates past breakfast
+  - the earlier freeze symptom no longer occurs at the first breakfast event
+- Intent:
+  - this is the new **golden** restore point for continued `VirtualPatientV2` work
+  - the prior failsafe restore point remains unchanged on purpose

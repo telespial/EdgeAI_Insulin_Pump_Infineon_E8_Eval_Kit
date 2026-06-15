@@ -620,3 +620,46 @@ Scope:
 - Notes:
   - this confirms hot-path debug instrumentation was unsafe for LCD bring-up
   - this does not clear the underlying visible-freeze issue on the clean runtime image
+
+## Pending Physical Confirmation — VirtualPatientV2 expose image
+- Branch: `vp2-background-on-v1-visible`
+- Source baseline: golden/failsafe `571fb89` plus uncommitted V2 expose instrumentation
+- Source change:
+  - center `MG/DL` value now reads background `VirtualPatientV2` glucose instead of final debug code
+  - CRT terminal now prefers background `VirtualPatientV2` state and exposes:
+    - `GLUCOSE`
+    - `STEP`
+    - `CARBS`
+    - `INS ONBD`
+    - `TARGET`
+    - `DEBUG`
+- Host validation:
+  - `rm -rf host_build && make -f host.mk test` passed
+  - `rm -rf host_build && make -f host.mk regression` passed
+- Embedded validation:
+  - `make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- Physical LCD result: pending
+- Purpose:
+  - expose advancing `V2` state on already-proven display paths to see whether the freeze clusters around a specific patient phase or step
+
+## Update 2026-06-15 — V2 Breakfast Freeze Host Fix
+- Branch: `vp2-background-on-v1-visible`
+- Source change:
+  - migrated `ApsDemoState` from `VirtualPatientV1` to `VirtualPatientV2`
+  - removed the active CRT/center-glucose display bypass that rendered separate `VirtualPatientV2Background` state
+- Root cause found in source:
+  - visible APS/controller/safety state and visible CRT state were previously sourced from different patient runtimes
+- Host validation:
+  - `make -f host.mk test` passed
+  - `make -f host.mk regression` passed
+  - breakfast trace for steps `0..12` passed
+- Embedded validation:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+- Flash / hardware validation:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - physical result: LCD live / GUI visible and CRT updates past breakfast

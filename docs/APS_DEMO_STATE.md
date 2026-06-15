@@ -53,3 +53,10 @@
 - No hardware insulin command
 - CRT fallback text is error-only; normal display data is sourced from `aps_demo_state_t`
 - `ApsDemoState_Step()` now feeds controller-requested basal back into the next `VirtualPatientV2` step.
+
+## Update 2026-06-15 — Breakfast Freeze Investigation
+- Confirmed previous split bug:
+  - `ApsDemoState_Step()` had been sourcing `VirtualPatientV1`
+  - UI/CRT code separately sourced `VirtualPatientV2Background`
+- `ApsDemoState` has now been unified onto `VirtualPatientV2`
+- Active CRT rendering is intended to consume `aps_demo_state_t` only

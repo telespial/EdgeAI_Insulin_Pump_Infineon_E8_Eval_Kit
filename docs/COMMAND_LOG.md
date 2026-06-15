@@ -7867,3 +7867,42 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T06:19:30-07:00] CMD: git add runtime/debug-code sources and docs && git commit -m "add vp2 debug-code hardware checkpoint"
 [2026-06-15T06:19:30-07:00] RESULT: Created the non-freezing VirtualPatientV2 debug-code hardware checkpoint commit.
 [2026-06-15T06:19:50-07:00] CMD: promote the current VirtualPatientV2 debug-code checkpoint as golden/failsafe restore point and push branch/tags
+[2026-06-15T09:10:00-07:00] CMD: read docs/START_HERE.md, docs/PROJECT_STATE.md, docs/OPS_RUNBOOK.md, repo AGENTS.md, and inspect current branch/status before V2 expose flash
+[2026-06-15T09:10:00-07:00] CMD: inspect pending VirtualPatientV2 expose source changes in firmware/include/virtual_patient_v2.h firmware/src/virtual_patient_v2.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+[2026-06-15T09:10:00-07:00] CMD: continue clean embedded build session for V2 expose image
+[2026-06-15T09:10:00-07:00] RESULT: clean embedded build passed for the V2 expose image after host test/regression had already passed
+[2026-06-15T09:13:00-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing V2 expose image
+[2026-06-15T09:14:00-07:00] CMD: export MTB env && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-15T09:14:00-07:00] RESULT: programming passed; wrote app_combined.hex and verify passed on PSE846GPS2DBZC4A for the V2 expose image
+[2026-06-15T09:15:00-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing V2 expose image
+[2026-06-15T09:15:00-07:00] RESULT: pre/post OpenOCD reset-run checks were healthy with PSE846GPS2DBZC4A and CYBOOT_SUCCESS after flashing the V2 expose image; physical LCD confirmation pending
+[2026-06-15T09:35:00-07:00] CMD: add one-change-only chart-refresh isolation guard in edgeai_insulin_pump_app.c using APP_V2_DISABLE_CHART_REFRESH=1
+[2026-06-15T09:35:00-07:00] CMD: export MTB env && make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_V2_DISABLE_CHART_REFRESH=1 -j8
+[2026-06-15T09:35:00-07:00] RESULT: clean embedded build passed for the chart-refresh isolation image
+[2026-06-15T09:44:00-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing chart-refresh isolation image
+[2026-06-15T09:45:00-07:00] CMD: export MTB env && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_V2_DISABLE_CHART_REFRESH=1
+[2026-06-15T09:45:00-07:00] RESULT: programming passed; wrote app_combined.hex and verify passed on PSE846GPS2DBZC4A for the chart-refresh isolation image
+[2026-06-15T09:46:00-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing chart-refresh isolation image
+[2026-06-15T09:46:00-07:00] RESULT: pre/post OpenOCD reset-run checks were healthy with PSE846GPS2DBZC4A and CYBOOT_SUCCESS after flashing the chart-refresh isolation image; physical LCD confirmation pending
+[2026-06-15T06:41:37-07:00] CMD: git branch --show-current && git rev-parse --short HEAD && tail docs/COMMAND_LOG.md / BUILD_FLASH_VERIFICATION.md
+[2026-06-15T06:41:37-07:00] CMD: OpenOCD LCD-safe pre-reset-run for expose-image recovery on branch vp2-background-on-v1-visible
+[2026-06-15T06:41:37-07:00] CMD: export MTB env && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-15T06:41:53-07:00] RESULT: expose-image recovery programming passed; wrote app_combined.hex and verify passed on PSE846GPS2DBZC4A
+[2026-06-15T06:41:53-07:00] CMD: OpenOCD LCD-safe post-reset-run for expose-image recovery on branch vp2-background-on-v1-visible
+[2026-06-15T06:44:15-07:00] CMD: package VirtualPatientV2 + Virtual Human code bundle into deliverables/virtual_patient_v2_virtual_human_bundle_20260615_064407.zip
+[2026-06-15T06:44:15-07:00] RESULT: created VirtualPatientV2 + Virtual Human code bundle zip and verified contents
+[2026-06-15T06:52:42-07:00] CMD: inspect aps_demo_state.c virtual_patient_v2.c virtual_patient_v2_background.c and edgeai_insulin_pump_app.c for V1/V2 runtime split and breakfast-step path
+[2026-06-15T06:52:51-07:00] CMD: inspect targeted V1/V2 call sites and test harness for breakfast freeze reproduction
+[2026-06-15T06:54:48-07:00] CMD: run host tests after unifying ApsDemoState onto VirtualPatientV2 and adding breakfast trace coverage
+[2026-06-15T06:55:20-07:00] CMD: rerun host tests after simplifying V2 background wrapper coverage to reflect shared singleton runtime
+[2026-06-15T06:55:36-07:00] CMD: run host regression after V2 unification and breakfast freeze fix
+[2026-06-15T06:55:36-07:00] CMD: run embedded build after V2 unification and UI source-of-truth cleanup
+[2026-06-15T06:57:48-07:00] RESULT: unified ApsDemoState onto VirtualPatientV2; host breakfast trace, host test, host regression, and embedded build all passed; no flash performed in this step
+[2026-06-15T07:26:14-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing unified VirtualPatientV2 single-source image
+[2026-06-15T07:26:24-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for unified VirtualPatientV2 single-source image
+[2026-06-15T07:26:44-07:00] RESULT: programming unified VirtualPatientV2 image in progress after healthy pre-reset and device acquisition
+[2026-06-15T07:26:53-07:00] RESULT: programming passed; wrote app_combined.hex and verify passed on PSE846GPS2DBZC4A for unified VirtualPatientV2 single-source image
+[2026-06-15T07:26:53-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing unified VirtualPatientV2 single-source image
+[2026-06-15T07:40:19-07:00] CMD: inspect working tree and restore-point docs before promoting unified V2 hardware result to golden-only
+[2026-06-15T07:40:37-07:00] CMD: clean build churn before committing unified V2 hardware verification as golden-only restore point
+[2026-06-15T07:41:09-07:00] CMD: git add unified VirtualPatientV2 source/docs updates and commit as golden-only restore point

@@ -74,3 +74,13 @@
 
 ## Next Step
 - Flash `VirtualPatientV2` with the known LCD-safe procedure and confirm CRT values remain alive beyond the earlier finite demo window.
+
+## Update 2026-06-15 — Breakfast Trace
+- `VP2_BREAKFAST_STEP = 4`
+- host tracing across steps `0..12` confirmed:
+  - step `4` succeeds
+  - `meal_event == true`
+  - `COB > 0`
+  - `debug_code >= 250`
+  - subsequent steps continue normally
+- This means the first breakfast event does not fail inside `VirtualPatientV2` host logic.

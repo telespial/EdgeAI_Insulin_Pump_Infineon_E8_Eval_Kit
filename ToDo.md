@@ -1,5 +1,18 @@
 # ToDo
 
+## Current Active Milestone — V2 Single-Source Hardware Verification
+- [x] Confirm whether a `VirtualPatientV1` / `VirtualPatientV2Background` split existed
+- [x] Reproduce the breakfast event on host
+- [x] Add breakfast-step and 60-minute V2 regression coverage
+- [x] Unify `ApsDemoState` onto `VirtualPatientV2`
+- [x] Remove active UI bypass of background-V2 CRT state
+- [x] Re-run host tests
+- [x] Re-run host regression
+- [x] Re-run embedded build
+- [x] Flash the unified-V2 image with LCD-safe reset/program/reset
+- [x] Physically verify CRT updates past breakfast and beyond 60 seconds
+- [x] Confirm whether the observed hardware freeze is resolved or still present
+
 ## Current Active Milestone — Virtual Patient V2
 - [x] Start from the physically verified unified APS baseline `c87802a`
 - [x] Add `VirtualPatientV2` header/source
@@ -568,5 +581,6 @@ Report:
 - [x] Replace center `MG/DL` value with `VirtualPatientV2` debug code on hardware
 - [x] Confirm the debug image reaches terminal success code `299` on hardware
 - [x] Capture a new physically verified golden/failsafe restore point for the debug image
-- [ ] Replace final-only `299` display with an advancing `V2` phase / step indicator
+- [x] Replace final-only `299` display with exposed background `V2` glucose plus `STEP/CARBS/INS ONBD/TARGET/DEBUG` fields
 - [ ] Determine whether `V2` is repeatedly completing the same step or advancing through scenario state
+- [ ] Capture physical LCD result for the V2 expose image
