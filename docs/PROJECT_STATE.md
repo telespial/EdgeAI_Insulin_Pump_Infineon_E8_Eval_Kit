@@ -1425,3 +1425,21 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - current terminal evidence is therefore inconclusive for this watcher image
 - Physical LCD result:
   - pending user confirmation for this watcher build
+
+## Update 2026-06-15 Exact restore-point reflash
+- Restore target:
+  - exact commit `c87802a` (`fix aps runtime freeze and lock restore point`)
+  - detached worktree used at `/tmp/e84-c87802a` to avoid disturbing branch `virtual-patient-v2`
+- Build/program result:
+  - OpenOCD pre-reset-run healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD post-reset-run healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result:
+  - LCD live / GUI visible
+  - data display running on restored `c87802a`
+- Restore-point status:
+  - `c87802a` remains the current last-known working LCD and data-display truth point
+  - golden tag: `e84-golden-c87802a-unified-aps-freeze-fix-2026-06-14`
+  - failsafe tag: `e84-failsafe-c87802a-unified-aps-freeze-fix-2026-06-14`

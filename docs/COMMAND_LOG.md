@@ -7816,3 +7816,24 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T22:33:39-07:00] CMD: git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
 [2026-06-14T22:33:39-07:00] CMD: git add docs/state files && git commit -m 'document freeze debug findings'
 [2026-06-14T22:33:50-07:00] CMD: git status --short && git rev-parse --short HEAD
+
+[2026-06-15T05:23:05-07:00] CMD: git branch --show-current && git rev-parse --short HEAD && git status --short && rg -n 'OpenOCD|make build|make program|PSE84_SMIF' docs/OPS_RUNBOOK.md | head -40
+
+[2026-06-15T05:23:06-07:00] CMD: git show -s --format='%h %ci %s' c87802a
+
+[2026-06-15T05:23:22-07:00] CMD: git worktree remove -f /tmp/firmware_kit_epc2_c87802a_restore || true; git worktree add --detach /tmp/firmware_kit_epc2_c87802a_restore c87802a; git -C /tmp/firmware_kit_epc2_c87802a_restore rev-parse --short HEAD
+
+[2026-06-15T05:30:54-07:00] CMD: git worktree add --detach /tmp/e84-c87802a c87802a
+[2026-06-15T05:30:54-07:00] CMD: OpenOCD LCD-safe pre-reset-run from /tmp/e84-c87802a
+[2026-06-15T05:30:54-07:00] CMD: export CY_TOOLS_PATHS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox/tools_3.7
+[2026-06-15T05:30:54-07:00] CMD: export CY_COMPILER_GCC_ARM_DIR=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/mtb-gcc-arm-eabi/14.2.1/gcc
+[2026-06-15T05:30:54-07:00] CMD: export CY_TOOL_edgeprotecttools_EXE_ABS=/home/user/toolchains/infineon/ModusToolbox_local/opt/Tools/ModusToolbox-Edge-Protect-Security-Suite-1.6.1/tools/edgeprotecttools/bin/edgeprotecttools
+[2026-06-15T05:30:54-07:00] CMD: make clean TOOLCHAIN=GCC_ARM
+[2026-06-15T05:30:54-07:00] CMD: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-15T05:30:54-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-15T05:30:54-07:00] CMD: OpenOCD LCD-safe post-reset-run from /tmp/e84-c87802a
+[2026-06-15T05:30:54-07:00] RESULT: Exact restore point c87802a rebuilt and flashed successfully; both OpenOCD reset-run checks were healthy with PSE846GPS2DBZC4A and CYBOOT_SUCCESS. Physical LCD confirmation pending.
+[2026-06-15T05:36:00-07:00] RESULT: User confirmed restored c87802a image is LCD live / GUI visible and data display running.
+[2026-06-15T05:36:20-07:00] CMD: git add docs/PROJECT_STATE.md docs/COMMAND_LOG.md && git commit -m "confirm c87802a as working lcd restore point"
+[2026-06-15T05:36:20-07:00] CMD: git push origin virtual-patient-v2
+[2026-06-15T05:36:20-07:00] CMD: git push origin e84-golden-c87802a-unified-aps-freeze-fix-2026-06-14 e84-failsafe-c87802a-unified-aps-freeze-fix-2026-06-14
