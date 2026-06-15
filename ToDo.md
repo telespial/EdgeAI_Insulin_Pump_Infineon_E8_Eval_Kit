@@ -3,21 +3,19 @@
 ## Current Active Milestone — Virtual Patient V2
 - [x] Start from the physically verified unified APS baseline `c87802a`
 - [x] Add `VirtualPatientV2` header/source
-- [x] Replace `VirtualPatientV1` in `ApsDemoState_Step()`
-- [x] Add deterministic meal / snack / exercise / dawn phases
-- [x] Feed controller-requested basal back into the patient
-- [x] Extend host tests for continuous bounded behavior
+- [x] Keep visible LCD/CRT/chart driven by `VirtualPatientV1`
+- [x] Add background-only `VirtualPatientV2` runtime wrapper
+- [x] Initialize background `VirtualPatientV2` at boot
+- [x] Step background `VirtualPatientV2` on the safe dashboard cadence
+- [x] Refactor `VirtualPatientV2` to avoid shared singleton IOB/COB engine state
+- [x] Prove visible `VirtualPatientV1` state is unchanged while background `VirtualPatientV2` runs
 - [x] Run host tests
 - [x] Run host regression
 - [x] Verify clean embedded build
-- [ ] Flash `VirtualPatientV2` with LCD-safe reset-run procedure
+- [ ] Flash background-`VirtualPatientV2` branch with LCD-safe reset-run procedure
 - [ ] Confirm physical LCD remains live
-- [ ] Confirm CRT values stay active beyond 60 seconds on hardware
-- [ ] Confirm graph / center card / CRT remain coherently sourced after V2 promotion
-- [x] Add temporary UART checkpoints around APS stepping and render stages
-- [x] Add temporary UART checkpoints around the CM55 LVGL task loop
-- [ ] Confirm which visible widgets stop changing while UART shows the LVGL loop and APS timer are still alive
-- [ ] Isolate the specific display-update path causing the apparent visible freeze
+- [ ] Confirm visible CRT / chart / center glucose still behave exactly like `c87802a`
+- [ ] Decide whether to expose background `VirtualPatientV2` state later or keep it strictly backend-only
 
 ## Milestone 0 — Repo Review
 - [x] Review existing handoff docs
@@ -540,6 +538,9 @@ Add to ToDo:
 - [ ] 60 minute validation
 - [ ] APS integration
 - [ ] CRT verification
+- [x] Background-only V2 runtime added alongside visible V1 path
+- [x] Host proof that V1 visible state is unchanged while V2 runs in parallel
+- [ ] LCD-safe hardware proof for background-only V2 branch
 
 ### Final Report
 
@@ -561,3 +562,11 @@ Report:
 - [x] Confirm whether the visible freeze still reproduces on the clean image
 - [ ] Isolate the remaining post-bring-up visible freeze without using hot-path UART prints
 - [ ] Use low-rate breadcrumbs or nonblocking capture outside the LVGL hot path
+
+
+### VirtualPatientV2 Debug-Code Follow-up
+- [x] Replace center `MG/DL` value with `VirtualPatientV2` debug code on hardware
+- [x] Confirm the debug image reaches terminal success code `299` on hardware
+- [x] Capture a new physically verified golden/failsafe restore point for the debug image
+- [ ] Replace final-only `299` display with an advancing `V2` phase / step indicator
+- [ ] Determine whether `V2` is repeatedly completing the same step or advancing through scenario state

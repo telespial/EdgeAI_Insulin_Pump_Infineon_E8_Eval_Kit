@@ -8,7 +8,7 @@
 #include "iob_engine.h"
 #include "predictor_v2.h"
 #include "safety_supervisor.h"
-#include "virtual_patient_v2.h"
+#include "virtual_patient_v1.h"
 
 enum
 {
@@ -103,7 +103,7 @@ static void format_tenths(char *buffer, size_t buffer_size, float value)
 
 bool ApsDemoState_Init(void)
 {
-    VirtualPatientV2_Init();
+    VirtualPatientV1_Init();
     PredictorV2_Reset();
     PredictorV2_SetEnabled(true);
     OpenApsController_Reset();
@@ -118,7 +118,7 @@ bool ApsDemoState_Init(void)
 bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
 {
     uint32_t step_index;
-    virtual_patient_v2_state_t patient_state = {0};
+    virtual_patient_state_t patient_state = {0};
     predictor_v2_input_t input = {0};
     predictor_v2_output_t prediction = {0};
     aps_controller_output_t command = {0};
@@ -137,7 +137,7 @@ bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
     }
 
     step_index = step_index_from_now(now_s);
-    if (!VirtualPatientV2_Step(now_s, g_runtime.last_delivered_insulin_u_hr, &patient_state))
+    if (!VirtualPatientV1_Step(now_s, g_runtime.last_delivered_insulin_u_hr, &patient_state))
     {
         return false;
     }

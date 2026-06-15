@@ -211,3 +211,16 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - center `MG/DL` card now follows the same APS glucose source as the CRT and chart
   - runtime continues beyond the earlier five-point freeze window
 - Intent: this supersedes the prior `Virtual Human + Short CRT Labels` restore point and becomes the required golden/failsafe source of truth for the unified APS runtime milestone.
+
+## Update 2026-06-15 VirtualPatientV2 Debug-Code Restore Point
+- Status: active required restore truth for the non-freezing `VirtualPatientV2` debug-code investigation image.
+- Commit: the current promoted commit on branch `vp2-background-on-v1-visible`.
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260615_061742_vp2_debug_code_299_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260615_061742_vp2_debug_code_299_proj_cm55.elf`
+- Physical result:
+  - LCD live
+  - GUI visible
+  - center `MG/DL` value shows steady `299`
+  - user reported that this image is not freezing
+- Intent: this supersedes `c87802a` as the newest physically verified golden/failsafe restore point for the active `VirtualPatientV2` freeze investigation.

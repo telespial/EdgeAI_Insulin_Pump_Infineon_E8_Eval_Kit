@@ -11,6 +11,7 @@
 #include "safety_supervisor.h"
 #include "simulation_runner.h"
 #include "virtual_patient_v2.h"
+#include "virtual_patient_v2_background.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -923,6 +924,58 @@ static void test_virtual_patient_v2_continuous(void)
     require_true("virtual patient dawn window", saw_dawn_window);
 }
 
+static void require_demo_state_match(const char *name, const aps_demo_state_t *expected, const aps_demo_state_t *actual)
+{
+    require_true(name, expected->bg_mgdl == actual->bg_mgdl);
+    require_true(name, fabsf(expected->iob_u - actual->iob_u) < 0.01f);
+    require_true(name, fabsf(expected->cob_g - actual->cob_g) < 0.01f);
+    require_true(name, expected->action == actual->action);
+    require_true(name, fabsf(expected->insulin_u_hr - actual->insulin_u_hr) < 0.01f);
+    require_true(name, expected->safety_flags == actual->safety_flags);
+}
+
+static void test_virtual_patient_v2_background_parallel_with_v1(void)
+{
+    aps_demo_state_t baseline0;
+    aps_demo_state_t baseline1;
+    aps_demo_state_t baseline6;
+    aps_demo_state_t parallel0;
+    aps_demo_state_t parallel1;
+    aps_demo_state_t parallel6;
+    virtual_patient_v2_state_t background_state;
+
+    memset(&baseline0, 0, sizeof(baseline0));
+    memset(&baseline1, 0, sizeof(baseline1));
+    memset(&baseline6, 0, sizeof(baseline6));
+    memset(&parallel0, 0, sizeof(parallel0));
+    memset(&parallel1, 0, sizeof(parallel1));
+    memset(&parallel6, 0, sizeof(parallel6));
+    memset(&background_state, 0, sizeof(background_state));
+
+    require_true("v1 baseline init", ApsDemoState_Init());
+    require_true("v1 baseline step0", ApsDemoState_Step(0u, &baseline0));
+    require_true("v1 baseline step1", ApsDemoState_Step(300u, &baseline1));
+    require_true("v1 baseline step6", ApsDemoState_Step(1800u, &baseline6));
+
+    require_true("v1 parallel init", ApsDemoState_Init());
+    require_true("v2 background init", VirtualPatientV2Background_Init());
+
+    require_true("v1 parallel step0", ApsDemoState_Step(0u, &parallel0));
+    require_true("v2 background step0", VirtualPatientV2Background_Step(0u, parallel0.insulin_u_hr));
+    require_true("v1 parallel step1", ApsDemoState_Step(300u, &parallel1));
+    require_true("v2 background step1", VirtualPatientV2Background_Step(300u, parallel1.insulin_u_hr));
+    require_true("v1 parallel step6", ApsDemoState_Step(1800u, &parallel6));
+    require_true("v2 background step6", VirtualPatientV2Background_Step(1800u, parallel6.insulin_u_hr));
+    require_true("v2 background get state", VirtualPatientV2Background_GetState(&background_state));
+
+    require_demo_state_match("v1 visible state preserved step0", &baseline0, &parallel0);
+    require_demo_state_match("v1 visible state preserved step1", &baseline1, &parallel1);
+    require_demo_state_match("v1 visible state preserved step6", &baseline6, &parallel6);
+    require_true("v2 background bg bounded", background_state.bg_mgdl >= 60u && background_state.bg_mgdl <= 250u);
+    require_true("v2 background iob bounded", background_state.insulin_iob_u >= 0.0f && background_state.insulin_iob_u <= 5.0f);
+    require_true("v2 background cob bounded", background_state.meal_cob_g >= 0.0f && background_state.meal_cob_g <= 80.0f);
+}
+
 int main(void)
 {
     ApsPhysiology_Reset();
@@ -955,6 +1008,7 @@ int main(void)
     test_physiology_feature_population();
     test_aps_demo_state_pipeline();
     test_virtual_patient_v2_continuous();
+    test_virtual_patient_v2_background_parallel_with_v1();
 
     if (g_failures != 0)
     {

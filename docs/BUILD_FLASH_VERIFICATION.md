@@ -1,4 +1,51 @@
+## Update 2026-06-15 — VirtualPatientV2 debug-code image confirmed on hardware
+
+Status:
+- `HOST TESTED`
+- `EMBEDDED BUILT`
+- `FLASHED`
+- `RUNNING ON HARDWARE`
+
+Evidence:
+- branch: `vp2-background-on-v1-visible`
+- source HEAD flashed: `83b5d7f`
+- `rm -rf host_build && make -f host.mk test` passed
+- `rm -rf host_build && make -f host.mk regression` passed
+- `make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+- OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- physical LCD result: live / GUI visible / center `MG/DL` shows steady `299`
+
+Interpretation:
+- `299` is the final `VirtualPatientV2_Step()` success code, which means the background `V2` runtime is reaching the end of its step function on hardware
+- this image did not reproduce the earlier visible freeze during the user check
+- visible LCD / CRT / chart remain on the proven `V1` APS display path while the center glucose number is temporarily repurposed as the `V2` debug indicator
+
 # Build/Flash Verification Evidence Report
+
+## Update 2026-06-15 — Background VirtualPatientV2 on V1-visible runtime
+
+Status:
+- `HOST TESTED`
+- `EMBEDDED BUILT`
+- not flashed in this milestone
+
+Evidence:
+- `rm -rf host_build && make -f host.mk test` passed
+- `rm -rf host_build && make -f host.mk regression` passed
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+
+Scope:
+- visible LCD / CRT / chart remain driven by `VirtualPatientV1` through `ApsDemoState_Step()`
+- `VirtualPatientV2` is initialized at app start and stepped in the background only
+- `VirtualPatientV2` was made self-contained so it no longer shares singleton `IobEngine` / `CobEngine` state with the visible V1 path
+- the new host test proves visible V1 states still match baseline when background V2 is running in parallel
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+- OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- physical LCD confirmation pending
+- until that confirmation arrives, the last separately verified restore point remains `c87802a`
 
 ## Update 2026-06-14 — Virtual Patient V2 Build Validation
 

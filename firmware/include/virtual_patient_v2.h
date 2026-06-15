@@ -22,5 +22,6 @@ void VirtualPatientV2_Init(void);
 bool VirtualPatientV2_Step(uint32_t now_s,
                            float delivered_insulin_u_hr,
                            virtual_patient_v2_state_t *state);
+uint16_t VirtualPatientV2_GetDebugCode(void);
 
 #endif

@@ -19,6 +19,7 @@ add_library(e84_aps_framework
     firmware/src/safety_supervisor.c
     firmware/src/virtual_patient_v1.c
     firmware/src/virtual_patient_v2.c
+    firmware/src/virtual_patient_v2_background.c
     sim/audit_trace.c
     sim/replay_loader.c
     sim/scenario_runner.c

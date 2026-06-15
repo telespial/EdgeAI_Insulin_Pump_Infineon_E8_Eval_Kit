@@ -1,5 +1,26 @@
 # Codex Progress Log
 
+## 2026-06-15 — Background VirtualPatientV2 on V1-visible runtime
+
+Changed:
+- Added a background-only `VirtualPatientV2` runtime wrapper and initialized it during app startup.
+- Kept the visible LCD / CRT / chart on the proven `VirtualPatientV1` path in `ApsDemoState_Step()`.
+- Refactored `VirtualPatientV2` to use its own internal meal and insulin state so it can run alongside V1 without colliding with shared singleton `IobEngine` / `CobEngine` state.
+- Stepped background V2 from the existing safe dashboard cadence and fed it the delivered insulin rate from the visible APS state.
+- Added a host regression test that proves the visible V1 state is unchanged while background V2 runs in parallel.
+
+Tests:
+- `rm -rf host_build && make -f host.mk test`
+- `rm -rf host_build && make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+
+Known gaps:
+- This branch has not been flashed yet, so hardware truth still belongs to restore point `c87802a`.
+- Background V2 currently runs as a patient engine only; predictor/controller/safety are not yet instantiated in parallel because they still depend on shared global runtime state.
+
+Next recommended step:
+- If we want runtime proof on hardware, do a clean LCD-safe flash of this branch and confirm the board still behaves exactly like `c87802a` while V2 continues stepping invisibly in the background.
+
 ## 2026-06-14 — Virtual Patient V2
 
 Changed:
@@ -615,3 +636,5 @@ Next recommended step:
 - 2026-06-14: For the Virtual Patient V2 freeze investigation, flashed a debug image with APS checkpoints plus CM55 LVGL loop checkpoints. UART proved the APS timer is still firing every ~5 seconds and the LVGL task is still cycling every ~93 ms even while the user-observed screen appears frozen at the first `110 mg/dL` frame.
 
 - 2026-06-14: Removed the uncommitted hot-path LVGL `printf` debug diff from `proj_cm55/main.c` and `edgeai_insulin_pump_app.c`, rebuilt and reflashed the clean image, and recovered the LCD. The user then confirmed the screen came up but visibly froze again after around seven steps, which means the UART debug was an LCD-bring-up hazard but not the root cause of the later freeze.
+
+- 2026-06-15: Flashed the `VirtualPatientV2` debug-code image on `vp2-background-on-v1-visible`; hardware stayed live and the center `MG/DL` readout showed steady `299`, proving `V2` reaches its terminal success code without reproducing the earlier freeze during this check.

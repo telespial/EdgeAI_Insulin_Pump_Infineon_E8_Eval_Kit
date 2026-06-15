@@ -7,6 +7,7 @@
 #include "aps_demo_state.h"
 #include "controller_openaps.h"
 #include "predictor_v2.h"
+#include "virtual_patient_v2_background.h"
 #include "lvgl.h"
 #include "pump_background_image_rgb565.h"
 
@@ -314,6 +315,18 @@ static void update_glucose_label(uint16_t current_mgdl)
     lv_label_set_text(gDashboard.glucose_label, buffer);
 }
 
+static uint16_t v2_debug_display_value(uint16_t fallback_value)
+{
+    uint16_t debug_code = VirtualPatientV2Background_GetDebugCode();
+
+    if (debug_code == 0u)
+    {
+        return fallback_value;
+    }
+
+    return debug_code;
+}
+
 static uint16_t aps_graph_prediction_mgdl(const aps_demo_state_t *state)
 {
     uint16_t predicted_mgdl;
@@ -408,7 +421,7 @@ static void render_dashboard_state(const aps_demo_state_t *state, bool append_ch
     predicted_mgdl = aps_graph_prediction_mgdl(state);
     confidence_pct = aps_confidence_pct(state);
     accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
-    update_glucose_label(current_mgdl);
+    update_glucose_label(v2_debug_display_value(current_mgdl));
     update_aps_terminal_label(state);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     update_wifi_bar(gDashboard.sample_index);
@@ -436,6 +449,11 @@ static void render_dashboard_state(const aps_demo_state_t *state, bool append_ch
 
 static void push_sample(const aps_demo_state_t *state)
 {
+    if (state != NULL)
+    {
+        (void)VirtualPatientV2Background_Step(gDashboard.sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u,
+                                              state->insulin_u_hr);
+    }
     render_dashboard_state(state, true);
     gDashboard.sample_index++;
 }
@@ -464,6 +482,7 @@ static void seed_chart(void)
         }
     }
 
+    (void)VirtualPatientV2Background_Step(0u, state.insulin_u_hr);
     render_dashboard_state(&state, false);
     gDashboard.sample_index = 1u;
 }
@@ -758,6 +777,7 @@ void edgeai_insulin_pump_app_start(void)
     }
 
     (void)ApsDemoState_Init();
+    (void)VirtualPatientV2Background_Init();
     gDashboard.sample_index = 0u;
     seed_chart();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);

@@ -7837,3 +7837,33 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T05:36:20-07:00] CMD: git add docs/PROJECT_STATE.md docs/COMMAND_LOG.md && git commit -m "confirm c87802a as working lcd restore point"
 [2026-06-15T05:36:20-07:00] CMD: git push origin virtual-patient-v2
 [2026-06-15T05:36:20-07:00] CMD: git push origin e84-golden-c87802a-unified-aps-freeze-fix-2026-06-14 e84-failsafe-c87802a-unified-aps-freeze-fix-2026-06-14
+[2026-06-15T05:44:46-07:00] CMD: inspect V1/V2 source files
+[2026-06-15T05:44:46-07:00] CMD: git status --short && git branch --show-current && git rev-parse --short HEAD
+[2026-06-15T05:44:47-07:00] CMD: inspect aps demo state integration
+[2026-06-15T05:48:13-07:00] CMD: find .. -name AGENTS.md -print
+[2026-06-15T05:49:26-07:00] CMD: inspect IOB/COB engine singleton design
+[2026-06-15T05:49:52-07:00] CMD: inspect host tests for V1/V2/demo coverage
+[2026-06-15T05:50:04-07:00] CMD: git checkout -b vp2-background-on-v1-visible
+[2026-06-15T05:54:49-07:00] CMD: export MTB env && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-15T05:54:49-07:00] CMD: rm -rf host_build && make -f host.mk regression
+[2026-06-15T05:54:50-07:00] CMD: rm -rf host_build && make -f host.mk test
+[2026-06-15T06:03:27-07:00] RESULT: Background-only VirtualPatientV2 integration passed host test, host regression, and embedded build validation on branch vp2-background-on-v1-visible.
+[2026-06-15T06:04:10-07:00] CMD: rm -rf host_build out && git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+[2026-06-15T06:05:12-07:00] CMD: update PROJECT_STATE, BUILD_FLASH_VERIFICATION, CODEX_PROGRESS_LOG, and ToDo for background-only VirtualPatientV2 milestone
+[2026-06-15T06:13:53-07:00] CMD: read START_HERE and OPS_RUNBOOK, confirm branch/head before LCD-safe flash of vp2-background-on-v1-visible
+[2026-06-15T06:14:25-07:00] CMD: OpenOCD LCD-safe pre-reset-run on branch vp2-background-on-v1-visible
+[2026-06-15T06:14:43-07:00] CMD: export MTB env && make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-15T06:16:39-07:00] RESULT: clean embedded build passed for background-only VirtualPatientV2 flash candidate
+[2026-06-15T06:16:53-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+[2026-06-15T06:17:13-07:00] RESULT: programming passed; wrote app_combined.hex and verify passed on PSE846GPS2DBZC4A
+[2026-06-15T06:17:22-07:00] CMD: OpenOCD LCD-safe post-reset-run on branch vp2-background-on-v1-visible
+[2026-06-15T06:17:29-07:00] RESULT: pre/post OpenOCD reset-run checks were healthy with PSE846GPS2DBZC4A and CYBOOT_SUCCESS; physical LCD confirmation pending
+[2026-06-15T05:54:49-07:00] CMD: export MTB env && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+[2026-06-15T05:54:49-07:00] CMD: rm -rf host_build && make -f host.mk regression
+[2026-06-15T05:54:50-07:00] CMD: rm -rf host_build && make -f host.mk test
+[2026-06-15T06:17:42-07:00] CMD: copy flashed VirtualPatientV2 debug-code artifacts to ../failsafe/e8_insulin_pump_20260615_061742_vp2_debug_code_299_*
+[2026-06-15T06:18:00-07:00] CMD: update PROJECT_STATE, BUILD_FLASH_VERIFICATION, RESTORE_POINTS, CODEX_PROGRESS_LOG, and ToDo for the VirtualPatientV2 debug-code hardware result
+[2026-06-15T06:18:20-07:00] RESULT: User confirmed LCD live / GUI visible with center MG/DL showing steady 299 and no freeze during this check; promoting this image as the newest golden/failsafe restore point.
+[2026-06-15T06:19:30-07:00] CMD: git add runtime/debug-code sources and docs && git commit -m "add vp2 debug-code hardware checkpoint"
+[2026-06-15T06:19:30-07:00] RESULT: Created the non-freezing VirtualPatientV2 debug-code hardware checkpoint commit.
+[2026-06-15T06:19:50-07:00] CMD: promote the current VirtualPatientV2 debug-code checkpoint as golden/failsafe restore point and push branch/tags

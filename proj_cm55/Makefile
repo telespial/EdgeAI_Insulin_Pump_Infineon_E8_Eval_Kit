@@ -91,6 +91,7 @@ SOURCES+=../firmware/src/predictor_v2_generated.c
 SOURCES+=../firmware/src/safety_supervisor.c
 SOURCES+=../firmware/src/virtual_patient_v1.c
 SOURCES+=../firmware/src/virtual_patient_v2.c
+SOURCES+=../firmware/src/virtual_patient_v2_background.c
 
 # Like SOURCES, but for include directories. Value should be paths to
 # directories (without a leading -I).
