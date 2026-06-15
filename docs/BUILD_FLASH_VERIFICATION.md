@@ -13,6 +13,28 @@
 - A clean rebuild is required after toggling `APP_APS_EMBEDDED_PROBE`.
 - UART boot alone is not enough to claim LCD success.
 
+## Update 2026-06-14 — APS glucose unification candidate
+- Source branch: `aps-glucose-unified-display`
+- Source base / restore truth point: `aed98c2`
+- Purpose: remove replay-array display wiring so the visible glucose paths now follow APS demo / virtual-patient state continuously.
+- Visible paths rewired in `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`:
+  - CRT `GLUCOSE:` line
+  - center `MG/DL` glucose value
+  - chart glucose series
+- Removed from the visible dashboard path:
+  - `cgm_replay_subject001.h`
+  - `CgmModel_*`
+  - local replay-array/model helper functions
+- Build result:
+  - `make clean TOOLCHAIN=GCC_ARM` ✅
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` ✅
+- Flash result:
+  - not yet run for this candidate
+- Physical LCD result:
+  - pending
+- Status:
+  - build-verified candidate only; not yet a new hardware-confirmed golden point
+
 ## Update 2026-06-12 17:00 PDT
 - Flashed merged `main` commit `39f6361` with the Candidate V1 tables included.
 - Pre-reset OpenOCD again detected `PSE846GPS2DBZC4A` and reported `CYBOOT_SUCCESS`.

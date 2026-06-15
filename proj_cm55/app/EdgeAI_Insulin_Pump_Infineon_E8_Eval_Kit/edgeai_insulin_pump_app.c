@@ -6,8 +6,6 @@
 
 #include "aps_demo_state.h"
 #include "controller_openaps.h"
-#include "cgm_model_runtime.h"
-#include "cgm_replay_subject001.h"
 #include "predictor_v2.h"
 #include "lvgl.h"
 #include "pump_background_image_rgb565.h"
@@ -123,13 +121,7 @@ void ApsEmbeddedProbe_RunOnce(void)
 }
 #endif
 
-static uint16_t replay_glucose_at(uint32_t index)
-{
-    return kCgmReplaySubject001Mgdl[index % CGM_REPLAY_SUBJECT001_LEN];
-}
-
 static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum);
-static int16_t estimate_trend_x100(uint32_t index);
 
 static lv_color_t glucose_status_color(uint16_t glucose_mgdl)
 {
@@ -171,71 +163,6 @@ static void style_prediction_label(lv_obj_t *label)
     lv_obj_set_style_shadow_width(label, 8, 0);
     lv_obj_set_style_shadow_ofs_x(label, 0, 0);
     lv_obj_set_style_shadow_ofs_y(label, 0, 0);
-}
-
-static int16_t estimate_trend_x100(uint32_t index)
-{
-    int32_t current;
-    int32_t delta;
-    int32_t accum = 0;
-    uint32_t count = 0u;
-    uint32_t lag;
-
-    if (index == 0u)
-    {
-        return 0;
-    }
-
-    current = (int32_t)replay_glucose_at(index);
-    for (lag = 1u; lag <= 3u; ++lag)
-    {
-        if (index < lag)
-        {
-            break;
-        }
-
-        delta = current - (int32_t)replay_glucose_at(index - lag);
-        accum += (delta * 100) / ((int32_t)lag * (int32_t)CGM_REPLAY_SAMPLE_MINUTES);
-        count++;
-    }
-
-    if (count == 0u)
-    {
-        return 0;
-    }
-
-    return (int16_t)clamp_i32(accum / (int32_t)count, -2500, 2500);
-}
-
-static bool predict_glucose_from_model(uint32_t sample_index,
-                                       uint16_t current_mgdl,
-                                       uint16_t *predicted_15m_mgdl,
-                                       uint8_t *confidence_pct)
-{
-    cgm_model_features_t features;
-    uint16_t pred_30m_mgdl;
-    uint8_t model_confidence;
-
-    if ((predicted_15m_mgdl == NULL) || (confidence_pct == NULL))
-    {
-        return false;
-    }
-
-    features.glucose_mgdl = current_mgdl;
-    features.trend_mgdl_min_x100 = estimate_trend_x100(sample_index);
-    features.sqi_pct = 92u;
-    features.sensor_flags = 0u;
-    features.epoch_ds = sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 600u;
-
-    if (CgmModel_Predict(&features, predicted_15m_mgdl, &pred_30m_mgdl, &model_confidence))
-    {
-        *confidence_pct = model_confidence;
-        return true;
-    }
-
-    *predicted_15m_mgdl = replay_glucose_at(sample_index + 4u);
-    *confidence_pct = 70u;
-    return false;
 }
 
 static int32_t clamp_i32(int32_t value, int32_t minimum, int32_t maximum)
@@ -387,20 +314,69 @@ static void update_glucose_label(uint16_t current_mgdl)
     lv_label_set_text(gDashboard.glucose_label, buffer);
 }
 
-static void update_aps_terminal_label(uint32_t sample_index, uint16_t current_mgdl)
+static uint16_t aps_graph_prediction_mgdl(const aps_demo_state_t *state)
 {
-    aps_demo_state_t state;
+    uint16_t predicted_mgdl;
+
+    if (state == NULL)
+    {
+        return 110u;
+    }
+
+    predicted_mgdl = state->bg_mgdl;
+
+    if (state->action == APS_ACTION_INCREASE_BASAL)
+    {
+        int32_t lowered = (int32_t)state->bg_mgdl - 8;
+        predicted_mgdl = (uint16_t)clamp_i32(lowered, 55, 390);
+    }
+    else if (state->action == APS_ACTION_REDUCE_BASAL)
+    {
+        int32_t raised = (int32_t)state->bg_mgdl + 6;
+        predicted_mgdl = (uint16_t)clamp_i32(raised, 55, 390);
+    }
+    else if (state->action == APS_ACTION_SUSPEND_BASAL)
+    {
+        int32_t raised = (int32_t)state->bg_mgdl + 10;
+        predicted_mgdl = (uint16_t)clamp_i32(raised, 55, 390);
+    }
+
+    return predicted_mgdl;
+}
+
+static uint8_t aps_confidence_pct(const aps_demo_state_t *state)
+{
+    if (state == NULL)
+    {
+        return 0u;
+    }
+
+    if ((state->safety_flags & APS_SAFETY_REASON_BAD_SQI) != 0u)
+    {
+        return 70u;
+    }
+
+    if ((state->safety_flags & (APS_SAFETY_REASON_STALE_CGM |
+                                APS_SAFETY_REASON_RAPID_FALL |
+                                APS_SAFETY_REASON_PREDICTED_LOW_15M |
+                                APS_SAFETY_REASON_PREDICTED_LOW_30M)) != 0u)
+    {
+        return 82u;
+    }
+
+    return 95u;
+}
+
+static void update_aps_terminal_label(const aps_demo_state_t *state)
+{
     char buffer[128];
-    uint32_t now_s;
 
     if (gDashboard.aps_terminal_label == NULL)
     {
         return;
     }
 
-    (void)current_mgdl;
-    now_s = sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
-    if (!ApsDemoState_Step(now_s, &state))
+    if ((state == NULL) || !ApsDemoState_FormatTerminal(state, buffer, sizeof(buffer)))
     {
         lv_label_set_text(gDashboard.aps_terminal_label,
                           "GLUCOSE: ERR\n"
@@ -412,25 +388,28 @@ static void update_aps_terminal_label(uint32_t sample_index, uint16_t current_mg
         return;
     }
 
-    if (!ApsDemoState_FormatTerminal(&state, buffer, sizeof(buffer)))
+    lv_label_set_text(gDashboard.aps_terminal_label, buffer);
+}
+
+static void push_sample(const aps_demo_state_t *state)
+{
+    uint16_t current_mgdl;
+    uint16_t predicted_mgdl;
+    uint8_t confidence_pct;
+    int32_t accuracy_pct;
+    char header_buffer[64];
+
+    if (state == NULL)
     {
         return;
     }
 
-    lv_label_set_text(gDashboard.aps_terminal_label, buffer);
-}
-
-static void push_sample(uint16_t current_mgdl)
-{
-    uint16_t predicted_mgdl = current_mgdl;
-    uint8_t confidence_pct = 0u;
-    int32_t accuracy_pct;
-    char header_buffer[64];
-
-    (void)predict_glucose_from_model(gDashboard.sample_index, current_mgdl, &predicted_mgdl, &confidence_pct);
+    current_mgdl = state->bg_mgdl;
+    predicted_mgdl = aps_graph_prediction_mgdl(state);
+    confidence_pct = aps_confidence_pct(state);
     accuracy_pct = calculate_prediction_accuracy_percent(current_mgdl, predicted_mgdl);
     update_glucose_label(current_mgdl);
-    update_aps_terminal_label(gDashboard.sample_index, current_mgdl);
+    update_aps_terminal_label(state);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     update_wifi_bar(gDashboard.sample_index);
     update_battery_bar(gDashboard.sample_index);
@@ -456,26 +435,35 @@ static void push_sample(uint16_t current_mgdl)
 
 static void seed_chart(void)
 {
+    aps_demo_state_t state;
     uint32_t i;
-    uint32_t seed_count = CGM_GRAPH_POINTS;
 
-    if (seed_count > CGM_REPLAY_SUBJECT001_LEN)
+    for (i = 0u; i < CGM_GRAPH_POINTS; ++i)
     {
-        seed_count = CGM_REPLAY_SUBJECT001_LEN;
-    }
+        uint32_t now_s = i * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
 
-    for (i = 0u; i < seed_count; ++i)
-    {
-        push_sample(replay_glucose_at(i));
+        if (!ApsDemoState_Step(now_s, &state))
+        {
+            break;
+        }
+
+        push_sample(&state);
     }
 }
 
 static void dashboard_timer_cb(lv_timer_t *timer)
 {
-    uint32_t index = gDashboard.sample_index % CGM_REPLAY_SUBJECT001_LEN;
+    aps_demo_state_t state;
+    uint32_t now_s;
 
     (void)timer;
-    push_sample(replay_glucose_at(index));
+    now_s = gDashboard.sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
+    if (!ApsDemoState_Step(now_s, &state))
+    {
+        return;
+    }
+
+    push_sample(&state);
 }
 
 void edgeai_insulin_pump_app_start(void)
@@ -555,7 +543,7 @@ void edgeai_insulin_pump_app_start(void)
         }
 
         gDashboard.glucose_shadow_label = NULL;
-        update_glucose_label(replay_glucose_at(0u));
+        update_glucose_label(110u);
     }
 
     for (uint32_t index = 0u; index < BAR_GRAPH_COUNT; ++index)
@@ -749,8 +737,6 @@ void edgeai_insulin_pump_app_start(void)
         }
     }
 
-    CgmModel_Reset();
-    CgmModel_SetEnabled(true);
     (void)ApsDemoState_Init();
     gDashboard.sample_index = 0u;
     seed_chart();

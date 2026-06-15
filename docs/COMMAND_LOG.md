@@ -7567,3 +7567,16 @@ update display-only placeholder values in source and sync pending verification d
 2026-06-14: git add docs/BUILD_FLASH_VERIFICATION.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
 2026-06-14: git commit -m "save live battery restore candidate"
 2026-06-14: git push origin aps-demo-state-wiring
+- 2026-06-14: Created clean branch aps-glucose-unified-display from recovered LCD-live commit aed98c2 before rewiring center glucose/graph to the APS state source.
+- 2026-06-14: Rewired center glucose card, chart feed, and CRT glucose path to share ApsDemoState/VirtualPatient values instead of cgm_replay_subject001 imported replay samples.
+- 2026-06-14: git tag -f e84-golden-aed98c2-recovered-2026-06-14 aed98c2
+- 2026-06-14: git tag -f e84-failsafe-aed98c2-recovered-2026-06-14 aed98c2
+- 2026-06-14: git push origin aps-glucose-unified-display
+- 2026-06-14: git push origin -f e84-golden-aed98c2-recovered-2026-06-14 e84-failsafe-aed98c2-recovered-2026-06-14
+- 2026-06-14: Read required project docs: docs/START_HERE.md, docs/PROJECT_STATE.md, docs/OPS_RUNBOOK.md
+- 2026-06-14: git diff -- proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+- 2026-06-14: rg -n "cgm_replay_subject001|CgmModel_|replay_glucose_at|predict_glucose_from_model|estimate_trend_x100" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+- 2026-06-14: sed -n '1,260p' firmware/src/aps_demo_state.c
+- 2026-06-14: sed -n '1,260p' firmware/src/virtual_patient_v1.c
+- 2026-06-14: make clean TOOLCHAIN=GCC_ARM
+- 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8

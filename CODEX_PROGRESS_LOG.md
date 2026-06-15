@@ -1,5 +1,24 @@
 # Codex Progress Log
 
+## 2026-06-14 — APS glucose unification pass
+
+Changed:
+- Promoted recovered LCD-live commit `aed98c2` to the current golden/failsafe restore truth point and pushed matching remote tags.
+- Created branch `aps-glucose-unified-display` from that recovered baseline for safe follow-on work.
+- Removed replay-array / `CgmModel_*` display-time glucose wiring from `edgeai_insulin_pump_app.c`.
+- Rewired the visible glucose paths so CRT glucose, center glucose, and chart glucose now come from `ApsDemoState_Step()` / `VirtualPatientV1`.
+
+Tests:
+- `make clean TOOLCHAIN=GCC_ARM`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+
+Known gaps:
+- This candidate has not yet been flashed or physically LCD-verified.
+- The chart prediction/confidence visuals are still lightweight APS-derived surrogates rather than the old replay/model helper outputs.
+
+Next recommended step:
+- Flash the `aps-glucose-unified-display` candidate with the LCD-safe OpenOCD reset-run procedure and confirm the board stays live while the APS glucose path updates continuously.
+
 ## 2026-06-11 — Tracking files initialized
 
 Changed:

@@ -1,5 +1,17 @@
 # ToDo
 
+## Current Active Milestone — Unified APS Glucose Display
+- [x] Lock recovered LCD-live commit `aed98c2` as golden/failsafe restore truth point
+- [x] Create clean follow-on branch from recovered baseline
+- [x] Remove replay-array display wiring from the visible glucose path
+- [x] Route CRT glucose from APS demo / virtual patient state
+- [x] Route center `MG/DL` glucose from APS demo / virtual patient state
+- [x] Route chart glucose feed from APS demo / virtual patient state
+- [x] Verify clean embedded build
+- [ ] Flash unified-glucose candidate with LCD-safe reset-run procedure
+- [ ] Confirm physical LCD remains live
+- [ ] Confirm CRT / graph / center card all follow APS glucose continuously on hardware
+
 ## Milestone 0 — Repo Review
 - [x] Review existing handoff docs
 - [x] Review current firmware skeleton

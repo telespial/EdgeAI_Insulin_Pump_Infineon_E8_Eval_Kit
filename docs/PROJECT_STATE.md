@@ -19,6 +19,24 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-14: Recovered LCD-live commit `aed98c2` has been promoted as the current golden/failsafe restore truth point and pushed remotely on:
+  - branch `aps-glucose-unified-display`
+  - tag `e84-golden-aed98c2-recovered-2026-06-14`
+  - tag `e84-failsafe-aed98c2-recovered-2026-06-14`
+- 2026-06-14: Started the APS glucose unification pass from the recovered LCD-live baseline so the visible glucose paths no longer depend on imported replay-array display data.
+- 2026-06-14: Source changes now route these three visible glucose paths from the APS demo/virtual-patient state pipeline:
+  - CRT `GLUCOSE:` readout
+  - center `MG/DL` value under `VIRTUAL HUMAN`
+  - chart glucose feed
+- 2026-06-14: Removed the dashboard app's direct display-time dependence on:
+  - `cgm_replay_subject001.h`
+  - `CgmModel_*` prediction helper path
+  - replay-array helper functions inside `edgeai_insulin_pump_app.c`
+- 2026-06-14: The dashboard timer cadence remains unchanged and continuous (`CGM_REPLAY_STEP_MS = 5000 ms`), but each step now uses `ApsDemoState_Step()` / `VirtualPatientV1` as the visible glucose source.
+- 2026-06-14: Clean build verification passed for the unified-glucose candidate with:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- 2026-06-14: This unified-glucose source state is build-verified and ready for a careful LCD-safe flash, but it is not yet a new physical golden point until the board is reprogrammed and the LCD is confirmed live.
 - 2026-06-14: The live battery update candidate has now been programmed with the documented LCD-safe OpenOCD pre/post reset-run flow from the static-battery golden restore point.
 - 2026-06-14: Flash/program verification passed for the live battery candidate:
   - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
