@@ -7620,3 +7620,45 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T20:18:35-07:00] amend restore point hash into docs
 
 [2026-06-14T20:19:01-07:00] amend command log and push golden/failsafe restore point
+
+[2026-06-14T20:46:32-07:00] start virtual patient v2 phase inspect
+
+[2026-06-14T20:46:41-07:00] inspect virtual patient test/build references
+
+[2026-06-14T20:46:50-07:00] create virtual patient v2 branch
+
+[2026-06-14T20:50:19-07:00] run host test for virtual patient v2
+
+[2026-06-14T20:50:19-07:00] inspect status after v2 patch
+
+[2026-06-14T20:50:40-07:00] rerun host test after aps demo timing update
+
+[2026-06-14T20:50:40-07:00] rerun host regression after aps demo timing update
+
+[2026-06-14T20:51:16-07:00] run virtual patient v2 one-hour probe
+
+[2026-06-14T20:51:16-07:00] embedded build for virtual patient v2
+
+[2026-06-14T20:53:23-07:00] CMD: sed -n "1,200p" docs/START_HERE.md
+[2026-06-14T20:53:23-07:00] CMD: sed -n "1,220p" docs/PROJECT_STATE.md
+[2026-06-14T20:53:23-07:00] CMD: sed -n "1,220p" docs/OPS_RUNBOOK.md
+
+[2026-06-14T20:53:32-07:00] CMD: git status --short && git branch --show-current && git rev-parse --short HEAD && git diff --stat && rg -n "VirtualPatientV2|virtual_patient_v2|test_virtual_patient_v2_continuous|aps demo cob becomes active" firmware include tests CMakeLists.txt proj_cm55/Makefile
+
+[2026-06-14T20:53:46-07:00] CMD: sed -n "1,260p" firmware/include/virtual_patient_v2.h; sed -n "1,320p" firmware/src/virtual_patient_v2.c; sed -n "1,260p" firmware/src/aps_demo_state.c; sed -n "820,980p" tests/test_runner.c
+
+[2026-06-14T20:53:46-07:00] CMD: make -f host.mk test && make -f host.mk regression
+
+[2026-06-14T20:54:00-07:00] CMD: rg --files docs | sort
+
+[2026-06-14T20:54:09-07:00] CMD: ls -1 CODEX_PROGRESS_LOG.md ToDo.md docs/BUILD_REPORT.md docs/APS_DEMO_STATE.md docs/APS_CRT_REAL_STATE_WIRING.md 2>/dev/null
+
+[2026-06-14T20:54:34-07:00] CMD: ls -lh build/app_combined.hex proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf 2>/dev/null
+
+[2026-06-14T20:54:35-07:00] CMD: gcc /tmp/vp2_probe.c ... && /tmp/vp2_probe
+
+[2026-06-14T20:56:02-07:00] CMD: sed -n "1,80p" docs/BUILD_FLASH_VERIFICATION.md; sed -n "1,80p" docs/PROJECT_STATE.md; sed -n "1,80p" docs/BUILD_REPORT.md
+
+[2026-06-14T20:57:17-07:00] CMD: git status --short && git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log && rm -rf host_build out && git status --short
+
+[2026-06-14T20:57:42-07:00] CMD: git add CMakeLists.txt proj_cm55/Makefile firmware/include/virtual_patient_v2.h firmware/src/virtual_patient_v2.c firmware/src/aps_demo_state.c tests/test_runner.c docs/APS_DEMO_STATE.md docs/APS_CRT_REAL_STATE_WIRING.md docs/VIRTUAL_PATIENT_V2.md docs/BUILD_REPORT.md docs/BUILD_FLASH_VERIFICATION.md docs/PROJECT_STATE.md docs/COMMAND_LOG.md CODEX_PROGRESS_LOG.md ToDo.md && git commit -m "add virtual patient v2 physiology loop" && git push origin virtual-patient-v2

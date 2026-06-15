@@ -4,7 +4,7 @@
 - Replace CRT placeholder values with APS demo-state values while preserving the proven LCD-safe CRT layout.
 
 ## Source Mapping
-- `BG` -> `VirtualPatientV1` output propagated through `aps_demo_state_t.bg_mgdl`
+- `BG` -> `VirtualPatientV2` output propagated through `aps_demo_state_t.bg_mgdl`
 - `IOB` -> `IobEngine` state exposed through `aps_demo_state_t.iob_u`
 - `COB` -> `CobEngine` state exposed through `aps_demo_state_t.cob_g`
 - `ACT` -> controller action mapping in `aps_demo_state_t.action_text`
@@ -34,4 +34,4 @@
 - No direct hardcoded medical placeholder values in the display formatter
 - No real insulin actuation
 - The board LCD remains the physical source of truth after flashing
-- Continuous CRT updates are now sourced from the looping virtual-patient pipeline instead of a finite demo sequence.
+- Continuous CRT updates are now sourced from the looping `VirtualPatientV2` pipeline instead of a finite demo sequence.

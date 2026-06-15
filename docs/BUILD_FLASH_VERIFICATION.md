@@ -1,5 +1,25 @@
 # Build/Flash Verification Evidence Report
 
+## Update 2026-06-14 — Virtual Patient V2 Build Validation
+
+Status:
+- `HOST TESTED`
+- `EMBEDDED BUILT`
+- not flashed in this milestone
+
+Evidence:
+- `make -f host.mk test` passed
+- `make -f host.mk regression` passed
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+- artifacts present:
+  - `build/app_combined.hex`
+  - `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf`
+
+Scope:
+- `VirtualPatientV2` replaces `VirtualPatientV1` as the active APS demo-state physiology source
+- no new hardware flash/program claim is made in this milestone
+- physical LCD truth remains tied to the last separately verified restore point
+
 ## Scope
 - Verify what is built, flashed, running on E84 hardware, or host-only.
 - No APS logic, GUI/LCD behavior, predictor behavior, or controller/safety behavior was changed for this report.

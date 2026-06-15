@@ -19,6 +19,29 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-14: Current physically verified golden/failsafe hardware truth point is `c87802a` on branch `aps-glucose-unified-display`.
+- 2026-06-14: Started `VirtualPatientV2` on branch `virtual-patient-v2` from the physically validated unified APS baseline `c87802a`.
+- 2026-06-14: `VirtualPatientV2` now replaces `VirtualPatientV1` as the physiology source for `ApsDemoState_Step()`.
+- 2026-06-14: `VirtualPatientV2` adds a deterministic looping patient model with:
+  - breakfast meal event (`60g`)
+  - snack event (`18g`)
+  - exercise sensitivity window
+  - dawn rise window
+  - bounded continuous BG/IOB/COB behavior
+- 2026-06-14: APS demo-state runtime mapping is now:
+  - `BG` from `VirtualPatientV2`
+  - `IOB` from `IobEngine`
+  - `COB` from `CobEngine`
+  - `ACT` from controller action mapping
+  - `INS` from controller requested basal after safety
+  - `SAFETY` from safety flags mapping
+- 2026-06-14: Host validation passed for `VirtualPatientV2`:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+- 2026-06-14: Embedded build validation passed for `VirtualPatientV2`:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - artifacts present: `build/app_combined.hex`, `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf`
+- 2026-06-14: No new flash was performed in the `VirtualPatientV2` milestone; physical LCD truth still belongs to the last separately verified restore point until this build is intentionally programmed.
 - 2026-06-14: Recovered LCD-live commit `aed98c2` has been promoted as the current golden/failsafe restore truth point and pushed remotely on:
   - branch `aps-glucose-unified-display`
   - tag `e84-golden-aed98c2-recovered-2026-06-14`

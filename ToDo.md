@@ -1,16 +1,19 @@
 # ToDo
 
-## Current Active Milestone — Unified APS Glucose Display
-- [x] Lock recovered LCD-live commit `aed98c2` as golden/failsafe restore truth point
-- [x] Create clean follow-on branch from recovered baseline
-- [x] Remove replay-array display wiring from the visible glucose path
-- [x] Route CRT glucose from APS demo / virtual patient state
-- [x] Route center `MG/DL` glucose from APS demo / virtual patient state
-- [x] Route chart glucose feed from APS demo / virtual patient state
+## Current Active Milestone — Virtual Patient V2
+- [x] Start from the physically verified unified APS baseline `c87802a`
+- [x] Add `VirtualPatientV2` header/source
+- [x] Replace `VirtualPatientV1` in `ApsDemoState_Step()`
+- [x] Add deterministic meal / snack / exercise / dawn phases
+- [x] Feed controller-requested basal back into the patient
+- [x] Extend host tests for continuous bounded behavior
+- [x] Run host tests
+- [x] Run host regression
 - [x] Verify clean embedded build
-- [ ] Flash unified-glucose candidate with LCD-safe reset-run procedure
+- [ ] Flash `VirtualPatientV2` with LCD-safe reset-run procedure
 - [ ] Confirm physical LCD remains live
-- [ ] Confirm CRT / graph / center card all follow APS glucose continuously on hardware
+- [ ] Confirm CRT values stay active beyond 60 seconds on hardware
+- [ ] Confirm graph / center card / CRT remain coherently sourced after V2 promotion
 
 ## Milestone 0 — Repo Review
 - [x] Review existing handoff docs

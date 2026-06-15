@@ -10,7 +10,7 @@
 #include "scenario_runner.h"
 #include "safety_supervisor.h"
 #include "simulation_runner.h"
-#include "virtual_patient_v1.h"
+#include "virtual_patient_v2.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -815,12 +815,14 @@ static void test_aps_demo_state_pipeline(void)
     aps_demo_state_t state0;
     aps_demo_state_t state1;
     aps_demo_state_t state2;
+    aps_demo_state_t state6;
     aps_demo_state_t state12;
     char buffer[160];
 
     memset(&state0, 0, sizeof(state0));
     memset(&state1, 0, sizeof(state1));
     memset(&state2, 0, sizeof(state2));
+    memset(&state6, 0, sizeof(state6));
     memset(&state12, 0, sizeof(state12));
     memset(buffer, 0, sizeof(buffer));
 
@@ -828,10 +830,11 @@ static void test_aps_demo_state_pipeline(void)
     require_true("aps demo step 0", ApsDemoState_Step(0u, &state0));
     require_true("aps demo step 1", ApsDemoState_Step(300u, &state1));
     require_true("aps demo step 2", ApsDemoState_Step(600u, &state2));
+    require_true("aps demo step 6", ApsDemoState_Step(1800u, &state6));
     require_true("aps demo step 12", ApsDemoState_Step(3600u, &state12));
     require_true("aps demo bg changes", state0.bg_mgdl != state1.bg_mgdl);
     require_true("aps demo iob changes", state1.iob_u != state2.iob_u);
-    require_true("aps demo cob becomes active", state2.cob_g > 0.0f);
+    require_true("aps demo cob becomes active", state6.cob_g > 0.0f);
     require_true("aps demo action text", state2.action_text != NULL && strlen(state2.action_text) > 0u);
     require_true("aps demo insulin generated", state2.insulin_u_hr >= 0.0f);
     require_true("aps demo safety text", state2.safe_text != NULL && strlen(state2.safe_text) > 0u);
@@ -844,7 +847,7 @@ static void test_aps_demo_state_pipeline(void)
     require_true("aps demo format safety sourced", strstr(buffer, "SAFETY: ") != NULL);
 }
 
-static void test_virtual_patient_v1_continuous(void)
+static void test_virtual_patient_v2_continuous(void)
 {
     uint32_t step_index;
     float delivered_insulin_u_hr = 0.8f;
@@ -855,21 +858,25 @@ static void test_virtual_patient_v1_continuous(void)
     bool saw_cob_change = false;
     bool saw_values_after_30s = false;
     bool saw_exercise_window = false;
-    virtual_patient_state_t state;
+    bool saw_meal_event = false;
+    bool saw_dawn_window = false;
+    virtual_patient_v2_state_t state;
 
     memset(&state, 0, sizeof(state));
-    VirtualPatientV1_Init();
+    VirtualPatientV2_Init();
 
-    for (step_index = 0u; step_index < 24u; ++step_index)
+    for (step_index = 0u; step_index < 72u; ++step_index)
     {
         uint32_t now_s = step_index * 300u;
 
-        require_true("virtual patient step", VirtualPatientV1_Step(now_s, delivered_insulin_u_hr, &state));
+        require_true("virtual patient step", VirtualPatientV2_Step(now_s, delivered_insulin_u_hr, &state));
         require_true("virtual patient bg bounded", state.bg_mgdl >= 60u && state.bg_mgdl <= 250u);
         require_true("virtual patient iob bounded", state.insulin_iob_u >= 0.0f && state.insulin_iob_u <= 5.0f);
         require_true("virtual patient cob bounded", state.meal_cob_g >= 0.0f && state.meal_cob_g <= 80.0f);
         require_true("virtual patient insulin bounded", state.basal_u_hr >= 0.0f && state.basal_u_hr <= 3.0f);
         require_true("virtual patient activity bounded", state.activity_factor >= 0.5f && state.activity_factor <= 1.0f);
+        require_true("virtual patient sensitivity bounded", state.insulin_sensitivity >= 0.7f && state.insulin_sensitivity <= 1.5f);
+        require_true("virtual patient dawn bounded", state.dawn_factor >= 1.0f && state.dawn_factor <= 1.25f);
         require_true("virtual patient no nan iob", state.insulin_iob_u == state.insulin_iob_u);
         require_true("virtual patient no nan cob", state.meal_cob_g == state.meal_cob_g);
 
@@ -889,9 +896,17 @@ static void test_virtual_patient_v1_continuous(void)
         {
             saw_values_after_30s = true;
         }
+        if (state.meal_event)
+        {
+            saw_meal_event = true;
+        }
         if (state.activity_factor < 1.0f)
         {
             saw_exercise_window = true;
+        }
+        if (state.dawn_factor > 1.0f)
+        {
+            saw_dawn_window = true;
         }
 
         previous_iob = state.insulin_iob_u;
@@ -903,7 +918,9 @@ static void test_virtual_patient_v1_continuous(void)
     require_true("virtual patient iob changes", saw_iob_change);
     require_true("virtual patient cob changes", saw_cob_change);
     require_true("virtual patient values after 30s", saw_values_after_30s);
+    require_true("virtual patient meal event", saw_meal_event);
     require_true("virtual patient exercise window", saw_exercise_window);
+    require_true("virtual patient dawn window", saw_dawn_window);
 }
 
 int main(void)
@@ -937,7 +954,7 @@ int main(void)
     test_bad_data_rejected_safely();
     test_physiology_feature_population();
     test_aps_demo_state_pipeline();
-    test_virtual_patient_v1_continuous();
+    test_virtual_patient_v2_continuous();
 
     if (g_failures != 0)
     {

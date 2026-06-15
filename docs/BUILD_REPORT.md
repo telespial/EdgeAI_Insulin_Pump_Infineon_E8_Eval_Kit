@@ -2,6 +2,49 @@
 
 > Detailed evidence report: `docs/BUILD_FLASH_VERIFICATION.md`
 
+## Update 2026-06-14 — Virtual Patient V2
+
+## Branch
+- `virtual-patient-v2`
+
+## Base Commit
+- `c87802a`
+
+## Commands
+```bash
+make -f host.mk test
+make -f host.mk regression
+make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+```
+
+## Result
+- Host tests: success
+- Host regression: success
+- Embedded build: success
+- Flash/program: not run in this milestone
+- Scope: host + build validation only
+
+## V2 Summary
+- Added `VirtualPatientV2` as the looping physiology source for `ApsDemoState_Step()`
+- Replaced `VirtualPatientV1` in the active APS demo-state pipeline
+- Added breakfast, snack, exercise, and dawn phases
+- Fed controller-requested basal back into the next patient step
+
+## One-Hour Host Probe
+- `bg=[107,167]`
+- `iob_max=0.17U`
+- `cob_max=60.00g`
+- `basal_max=2.00U/hr`
+- breakfast meal observed
+
+## Embedded Artifacts
+- `build/app_combined.hex` (`5.1M`)
+- `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf` (`6.2M`)
+
+## Current Truth
+- No new LCD claim is made here
+- The last physically verified hardware truth remains `c87802a` on branch `aps-glucose-unified-display`
+
 ## Branch
 - `embedded-bringup-smoke-test`
 

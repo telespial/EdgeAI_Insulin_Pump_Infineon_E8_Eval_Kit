@@ -1,5 +1,25 @@
 # Codex Progress Log
 
+## 2026-06-14 — Virtual Patient V2
+
+Changed:
+- Added `VirtualPatientV2` as a deterministic looping physiology source with meal, snack, exercise, and dawn phases.
+- Rewired `ApsDemoState_Step()` to use `VirtualPatientV2` output instead of `VirtualPatientV1`.
+- Fed controller-requested basal back into the next patient step so APS state remains continuously sourced by the patient/controller loop.
+- Extended host tests to verify bounded continuous behavior, meal coverage, exercise coverage, dawn coverage, and continued values beyond the earlier finite demo window.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+
+Known gaps:
+- This milestone has not been flashed yet, so no new LCD claim is made here.
+- The patient is still deterministic and research/demo only.
+
+Next recommended step:
+- Flash the `virtual-patient-v2` build with the LCD-safe procedure and confirm CRT values remain alive well beyond the earlier finite-state runtime window.
+
 ## 2026-06-14 — APS glucose unification pass
 
 Changed:
