@@ -37,6 +37,12 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `make clean TOOLCHAIN=GCC_ARM`
   - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
 - 2026-06-14: This unified-glucose source state is build-verified and ready for a careful LCD-safe flash, but it is not yet a new physical golden point until the board is reprogrammed and the LCD is confirmed live.
+- 2026-06-14: The unified-glucose candidate has now been programmed with the LCD-safe OpenOCD pre/post reset-run flow.
+- 2026-06-14: Flash/program verification passed for the unified-glucose candidate:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- 2026-06-14: Physical LCD confirmation is now pending for the unified-glucose candidate after hardware programming.
 - 2026-06-14: The live battery update candidate has now been programmed with the documented LCD-safe OpenOCD pre/post reset-run flow from the static-battery golden restore point.
 - 2026-06-14: Flash/program verification passed for the live battery candidate:
   - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
@@ -1251,3 +1257,34 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build/program passed with the documented LCD-safe OpenOCD reset-run before and after programming.
 - OpenOCD remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`.
 - This milestone is now the active golden/failsafe restore point for continued APS display work.
+
+## Update 2026-06-14 Unified APS Glucose + Freeze-Fix Runtime Confirmed
+- Branch: `aps-glucose-unified-display`
+- Current physically confirmed board behavior:
+  - LCD live
+  - GUI visible
+  - CRT values updating
+  - replay continues beyond the earlier five-point freeze window
+- Visible data-source state now differs from the older mixed-dashboard milestone:
+  - CRT `GLUCOSE:` is sourced from `aps_demo_state_t.bg_mgdl`
+  - center `MG/DL` card is sourced from the same APS demo-state / virtual-patient glucose path
+  - chart glucose feed is sourced from the same APS demo-state / virtual-patient glucose path
+- Runtime path in the current source:
+  - `VirtualPatientV1_Step()` generates looping patient state
+  - `ApsDemoState_Step()` builds APS input
+  - `PredictorV2_Update()` runs every dashboard step
+  - `OpenApsController_DetermineBasal()` runs after predictor
+  - `SafetySupervisor_Apply()` runs after controller
+  - CRT and chart formatting read from the resulting APS state
+- Freeze fix applied in the current source:
+  - chart seeding no longer burns through dozens of live APS steps at startup
+  - the timer path now logs a failed APS step instead of silently appearing frozen
+- Validation status:
+  - embedded build passed for the current source
+  - hardware flash/program had already been physically confirmed by the user as live and updating
+  - host tests required a wording update because the CRT labels now use `GLUCOSE:` / `INS RATE:` rather than the older short labels
+- Truth statement:
+  - Predictor V2 is active in the live APS pipeline
+  - controller and safety are active in the live APS pipeline
+  - the system is valid as a research/demo integration
+  - it is not yet medically validated

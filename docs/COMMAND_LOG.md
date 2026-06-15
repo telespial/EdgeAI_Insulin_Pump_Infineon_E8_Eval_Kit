@@ -7580,3 +7580,43 @@ update display-only placeholder values in source and sync pending verification d
 - 2026-06-14: sed -n '1,260p' firmware/src/virtual_patient_v1.c
 - 2026-06-14: make clean TOOLCHAIN=GCC_ARM
 - 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+- 2026-06-14: OpenOCD pre-program reset-run for aps-glucose-unified-display flash candidate.
+- 2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for aps-glucose-unified-display.
+- 2026-06-14: OpenOCD post-program reset-run for aps-glucose-unified-display flash candidate.
+- 2026-06-14: Patched APS dashboard seeding so startup no longer advances the live APS runtime by 32 samples before the timer starts.
+- 2026-06-14: Added UART breadcrumb in dashboard_timer_cb for APS step failures instead of silent freeze.
+- 2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 after APS timer/seed freeze fix.
+
+
+[2026-06-14T20:12:02-07:00] inspect git state
+[2026-06-14T20:12:02-07:00] read docs and state
+
+[2026-06-14T20:12:12-07:00] inspect aps data path
+
+[2026-06-14T20:15:37-07:00] clean tree and inspect status
+
+[2026-06-14T20:15:47-07:00] inspect doc tails for update
+
+[2026-06-14T20:16:04-07:00] host test before golden commit
+
+[2026-06-14T20:16:04-07:00] host regression before golden commit
+
+[2026-06-14T20:16:04-07:00] embedded build before golden commit
+
+[2026-06-14T20:16:43-07:00] inspect stale host assertions
+
+[2026-06-14T20:17:50-07:00] rerun host test after label assertion update
+
+[2026-06-14T20:17:50-07:00] rerun host regression after label assertion update
+
+[2026-06-14T20:17:56-07:00] rerun host regression cleanly after flaky parallel permission issue
+
+[2026-06-14T20:18:07-07:00] inspect status before golden commit
+
+[2026-06-14T20:18:18-07:00] remove generated host_build and out before commit
+
+[2026-06-14T20:18:24-07:00] inspect post-commit status
+
+[2026-06-14T20:18:35-07:00] amend restore point hash into docs
+
+[2026-06-14T20:19:01-07:00] amend command log and push golden/failsafe restore point

@@ -514,3 +514,24 @@
   - battery bar still at `32x84 @ (725,97)`
   - battery bar now updates from the existing backend helper again
 - Physical LCD result: pending
+
+## Confirmed Flash Verification — Unified APS Glucose + Freeze Fix
+- Branch: `aps-glucose-unified-display`
+- Source change:
+  - unified visible glucose paths onto the APS demo-state / virtual-patient pipeline
+  - fixed startup chart seeding so the live APS runtime does not begin dozens of steps ahead
+  - added an explicit UART breadcrumb if a timer APS step fails
+- Runtime path verified in source:
+  - `VirtualPatientV1_Step() -> ApsDemoState_Step() -> PredictorV2_Update() -> OpenApsController_DetermineBasal() -> SafetySupervisor_Apply()`
+- Embedded build: passed
+- Program/OpenOCD result:
+  - the current board image was physically confirmed by the user as live and updating after LCD-safe flash/program/reset-run
+  - debugger health signs remained `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result:
+  - live / GUI visible
+  - CRT values updating
+  - glucose/chart path continues beyond the earlier five-point freeze window
+- Notes:
+  - Predictor V2 is active in the live loop
+  - controller and safety are active in the live loop
+  - this is a research/demo integration milestone, not a medical validation claim

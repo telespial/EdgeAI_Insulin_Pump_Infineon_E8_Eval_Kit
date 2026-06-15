@@ -254,3 +254,8 @@
 - [x] Promote the APS demo-state CRT readout with `RAPID` safety wording as the next golden/failsafe restore point.
 - [ ] Flash-verify the replay-rate graph label candidate (`Replay:` / `60X`) and the slower 5-second replay cadence on hardware.
 - [x] Add the static `Virtual Human` label under the figure and above the glucose card on the proven layout path.
+- [x] Unify CRT, center glucose, and chart glucose onto the APS demo-state / virtual-patient source.
+- [x] Fix the startup seed/timer behavior that made the APS runtime appear to freeze after the first few points.
+- [ ] Write a compact APS runtime truth table that separates live/wired values from validated behavior claims.
+- [ ] Add longer-duration host/runtime checks for the unified APS path so freezes are easier to catch before flashing.
+- [ ] Move from `VirtualPatientV1` demo realism toward a richer patient model without touching the proven LCD path.

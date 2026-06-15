@@ -391,7 +391,7 @@ static void update_aps_terminal_label(const aps_demo_state_t *state)
     lv_label_set_text(gDashboard.aps_terminal_label, buffer);
 }
 
-static void push_sample(const aps_demo_state_t *state)
+static void render_dashboard_state(const aps_demo_state_t *state, bool append_chart_sample)
 {
     uint16_t current_mgdl;
     uint16_t predicted_mgdl;
@@ -421,34 +421,51 @@ static void push_sample(const aps_demo_state_t *state)
 
     if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
     {
-        lv_chart_set_next_value(gDashboard.chart, gDashboard.glucose_series, (int32_t)current_mgdl);
-        if (gDashboard.prediction_series != NULL)
+        if (append_chart_sample)
         {
-            lv_chart_set_next_value(gDashboard.chart, gDashboard.prediction_series, (int32_t)predicted_mgdl);
+            lv_chart_set_next_value(gDashboard.chart, gDashboard.glucose_series, (int32_t)current_mgdl);
+            if (gDashboard.prediction_series != NULL)
+            {
+                lv_chart_set_next_value(gDashboard.chart, gDashboard.prediction_series, (int32_t)predicted_mgdl);
+            }
         }
         update_chart_colors(current_mgdl);
         lv_chart_refresh(gDashboard.chart);
     }
+}
 
+static void push_sample(const aps_demo_state_t *state)
+{
+    render_dashboard_state(state, true);
     gDashboard.sample_index++;
 }
 
 static void seed_chart(void)
 {
     aps_demo_state_t state;
-    uint32_t i;
 
-    for (i = 0u; i < CGM_GRAPH_POINTS; ++i)
+    if (!ApsDemoState_Step(0u, &state))
     {
-        uint32_t now_s = i * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
-
-        if (!ApsDemoState_Step(now_s, &state))
-        {
-            break;
-        }
-
-        push_sample(&state);
+        return;
     }
+
+    if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
+    {
+        uint16_t predicted_mgdl = aps_graph_prediction_mgdl(&state);
+
+        lv_chart_set_all_value(gDashboard.chart,
+                               gDashboard.glucose_series,
+                               (int32_t)state.bg_mgdl);
+        if (gDashboard.prediction_series != NULL)
+        {
+            lv_chart_set_all_value(gDashboard.chart,
+                                   gDashboard.prediction_series,
+                                   (int32_t)predicted_mgdl);
+        }
+    }
+
+    render_dashboard_state(&state, false);
+    gDashboard.sample_index = 1u;
 }
 
 static void dashboard_timer_cb(lv_timer_t *timer)
@@ -460,6 +477,9 @@ static void dashboard_timer_cb(lv_timer_t *timer)
     now_s = gDashboard.sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
     if (!ApsDemoState_Step(now_s, &state))
     {
+        printf("APS timer step failed: idx=%lu now_s=%lu\n",
+               (unsigned long)gDashboard.sample_index,
+               (unsigned long)now_s);
         return;
     }
 

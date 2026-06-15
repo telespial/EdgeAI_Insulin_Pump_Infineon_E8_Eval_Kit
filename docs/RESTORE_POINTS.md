@@ -200,3 +200,14 @@ Known-good checkpoints for fast recovery when development changes break boot, di
   - `Virtual Human` visible above the glucose card
   - CRT labels render as `GLUCOSE`, `INS ONBD`, `CARBS`, `ACTION`, `INS RATE`, `SAFETY`
 - Intent: this supersedes the prior `RAPID`-wording-only APS demo-state restore point and is now the required golden/failsafe source of truth.
+
+## Update 2026-06-14 Unified APS Glucose + Freeze-Fix Restore Point
+- Status: active required restore truth for the physically verified unified APS-glucose runtime.
+- Commit: `b516e1e`
+- Physical result:
+  - LCD live
+  - GUI visible
+  - CRT values updating
+  - center `MG/DL` card now follows the same APS glucose source as the CRT and chart
+  - runtime continues beyond the earlier five-point freeze window
+- Intent: this supersedes the prior `Virtual Human + Short CRT Labels` restore point and becomes the required golden/failsafe source of truth for the unified APS runtime milestone.

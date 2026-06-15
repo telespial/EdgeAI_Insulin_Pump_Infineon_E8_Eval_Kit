@@ -222,3 +222,17 @@ Build: Jun 11 2026 21:43:59
 - OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
 - Physical LCD result: live / GUI visible with the accepted `Virtual Human` + shortened CRT label layout
 - Scope note: APS runtime plumbing is unchanged; this is a display wording/layout refinement only
+
+## Unified APS Glucose + Freeze Fix
+- Branch: `aps-glucose-unified-display`
+- Change:
+  - unified the visible glucose paths so CRT, center `MG/DL`, and chart glucose all read from the APS demo-state / virtual-patient source
+  - fixed dashboard startup seeding so the chart no longer advances deep into the APS sequence before the timer starts
+  - added a timer-step UART breadcrumb if `ApsDemoState_Step()` fails
+- Host validation:
+  - host assertions needed to be updated for the current CRT wording (`GLUCOSE:` and `INS RATE:`)
+- Embedded build: current source builds cleanly with `CONFIG_DISPLAY=W4P3INCH_DISP`
+- Physical LCD result: live / GUI visible and the earlier five-point freeze window no longer matches observed behavior on the board
+- Scope note:
+  - Predictor V2, controller, and safety are running in the live APS pipeline
+  - this is still a research/demo integration state rather than a clinically validated system

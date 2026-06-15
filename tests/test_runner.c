@@ -839,8 +839,8 @@ static void test_aps_demo_state_pipeline(void)
     require_true("aps demo continues iob", state12.iob_u >= 0.0f && state12.iob_u <= 5.0f);
     require_true("aps demo continues cob", state12.cob_g >= 0.0f && state12.cob_g <= 80.0f);
     require_true("aps demo format terminal", ApsDemoState_FormatTerminal(&state2, buffer, sizeof(buffer)));
-    require_true("aps demo format bg sourced", strstr(buffer, "BG: ") != NULL);
-    require_true("aps demo format insulin sourced", strstr(buffer, "INS: ") != NULL);
+    require_true("aps demo format bg sourced", strstr(buffer, "GLUCOSE: ") != NULL);
+    require_true("aps demo format insulin sourced", strstr(buffer, "INS RATE: ") != NULL);
     require_true("aps demo format safety sourced", strstr(buffer, "SAFETY: ") != NULL);
 }
 
