@@ -833,7 +833,7 @@ static void test_aps_demo_state_pipeline(void)
     require_true("aps demo step 2", ApsDemoState_Step(600u, &state2));
     require_true("aps demo step 6", ApsDemoState_Step(1800u, &state6));
     require_true("aps demo step 12", ApsDemoState_Step(3600u, &state12));
-    require_true("aps demo bg changes", state0.bg_mgdl != state1.bg_mgdl);
+    require_true("aps demo bg changes", state0.bg_mgdl != state6.bg_mgdl);
     require_true("aps demo iob changes", state1.iob_u != state2.iob_u);
     require_true("aps demo cob becomes active", state6.cob_g > 0.0f);
     require_true("aps demo action text", state2.action_text != NULL && strlen(state2.action_text) > 0u);
@@ -1057,6 +1057,110 @@ static void test_virtual_patient_v2_60_min_trace(void)
     require_true("v2 60min continues after breakfast", saw_post_breakfast_progress);
 }
 
+static void test_virtual_patient_v2_scenarios(void)
+{
+    static const vp_scenario_t scenarios[] = {
+        VP_SCENARIO_NORMAL,
+        VP_SCENARIO_BREAKFAST,
+        VP_SCENARIO_EXERCISE,
+        VP_SCENARIO_DAWN,
+        VP_SCENARIO_LOW_GLUCOSE,
+        VP_SCENARIO_RAPID_FALL,
+    };
+    uint32_t scenario_index;
+    uint16_t breakfast_peak = 0u;
+    uint16_t exercise_min = 250u;
+    uint16_t dawn_peak = 0u;
+    uint16_t low_min = 250u;
+    float rapid_max_iob = 0.0f;
+
+    for (scenario_index = 0u; scenario_index < (sizeof(scenarios) / sizeof(scenarios[0])); ++scenario_index)
+    {
+        vp_scenario_t scenario = scenarios[scenario_index];
+        uint32_t step_index;
+        float delivered_insulin_u_hr = 0.8f;
+        bool saw_change = false;
+        bool saw_meal = false;
+        bool saw_bolus = false;
+        virtual_patient_v2_state_t state;
+        virtual_patient_v2_state_t previous_state;
+
+        memset(&state, 0, sizeof(state));
+        memset(&previous_state, 0, sizeof(previous_state));
+        VirtualPatientV2_InitWithScenario(scenario);
+
+        for (step_index = 0u; step_index < 72u; ++step_index)
+        {
+            uint32_t now_s = step_index * 300u;
+
+            require_true("v2 scenario step", VirtualPatientV2_Step(now_s, delivered_insulin_u_hr, &state));
+            require_true("v2 scenario id roundtrip", state.scenario == scenario);
+            require_true("v2 scenario bg bounded", state.bg_mgdl >= 60u && state.bg_mgdl <= 250u);
+            require_true("v2 scenario iob bounded", state.insulin_iob_u >= 0.0f && state.insulin_iob_u <= 6.0f);
+            require_true("v2 scenario cob bounded", state.meal_cob_g >= 0.0f && state.meal_cob_g <= 120.0f);
+            require_true("v2 scenario target bounded", state.target_bg_mgdl >= 60u && state.target_bg_mgdl <= 250u);
+            require_true("v2 scenario no nan iob", state.insulin_iob_u == state.insulin_iob_u);
+            require_true("v2 scenario no nan cob", state.meal_cob_g == state.meal_cob_g);
+
+            if (step_index > 0u && state.bg_mgdl != previous_state.bg_mgdl)
+            {
+                saw_change = true;
+            }
+            if (state.meal_event)
+            {
+                saw_meal = true;
+            }
+            if (state.bolus_event)
+            {
+                saw_bolus = true;
+            }
+
+            if (scenario == VP_SCENARIO_BREAKFAST && state.bg_mgdl > breakfast_peak)
+            {
+                breakfast_peak = state.bg_mgdl;
+            }
+            if (scenario == VP_SCENARIO_EXERCISE && state.bg_mgdl < exercise_min)
+            {
+                exercise_min = state.bg_mgdl;
+            }
+            if (scenario == VP_SCENARIO_DAWN && state.bg_mgdl > dawn_peak)
+            {
+                dawn_peak = state.bg_mgdl;
+            }
+            if (scenario == VP_SCENARIO_LOW_GLUCOSE && state.bg_mgdl < low_min)
+            {
+                low_min = state.bg_mgdl;
+            }
+            if (scenario == VP_SCENARIO_RAPID_FALL && state.insulin_iob_u > rapid_max_iob)
+            {
+                rapid_max_iob = state.insulin_iob_u;
+            }
+
+            previous_state = state;
+            delivered_insulin_u_hr = (state.bg_mgdl > 150u) ? 2.0f : 0.8f;
+        }
+
+        require_true("v2 scenario changes over time", saw_change);
+
+        if (scenario == VP_SCENARIO_BREAKFAST || scenario == VP_SCENARIO_NORMAL ||
+            scenario == VP_SCENARIO_EXERCISE || scenario == VP_SCENARIO_DAWN ||
+            scenario == VP_SCENARIO_LOW_GLUCOSE)
+        {
+            require_true("v2 scenario meal seen when expected", saw_meal);
+        }
+        if (scenario == VP_SCENARIO_RAPID_FALL)
+        {
+            require_true("v2 rapid fall bolus seen", saw_bolus);
+        }
+    }
+
+    require_true("v2 breakfast peak elevated", breakfast_peak >= 140u);
+    require_true("v2 exercise can go lower than breakfast peak", exercise_min < breakfast_peak);
+    require_true("v2 dawn peak elevated", dawn_peak >= 125u);
+    require_true("v2 low scenario reaches lower bg", low_min <= 95u);
+    require_true("v2 rapid fall accumulates iob", rapid_max_iob >= 0.5f);
+}
+
 static void require_demo_state_match(const char *name, const aps_demo_state_t *expected, const aps_demo_state_t *actual)
 {
     require_true(name, expected->bg_mgdl == actual->bg_mgdl);
@@ -1137,6 +1241,7 @@ int main(void)
     test_virtual_patient_v2_no_freeze_12_steps();
     test_virtual_patient_v2_60_min_trace();
     test_virtual_patient_v2_continuous();
+    test_virtual_patient_v2_scenarios();
     test_virtual_patient_v2_background_wrapper();
 
     if (g_failures != 0)

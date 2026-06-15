@@ -22,6 +22,7 @@
 - `ApsDemoState_Step()` now consumes `VirtualPatientV2` output instead of a finite hand-typed BG sequence.
 - Step cadence remains `5 minutes` per state step.
 - `VirtualPatientV2` continuously generates bounded BG, COB, IOB, activity factor, dawn factor, insulin sensitivity, and basal context.
+- `VirtualPatientV2` now exposes deterministic scenario selection while keeping `BREAKFAST` as the default visible runtime.
 - SQI remains `95%`.
 - CGM age remains `0 s`.
 

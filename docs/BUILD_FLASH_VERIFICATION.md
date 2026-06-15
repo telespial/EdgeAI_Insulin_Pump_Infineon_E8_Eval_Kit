@@ -663,3 +663,17 @@ Scope:
   - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
   - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
   - physical result: LCD live / GUI visible and CRT updates past breakfast
+
+## Update 2026-06-15 — VirtualPatientV2 Scenario Engine
+- Branch: `vp2-background-on-v1-visible`
+- Source change:
+  - added deterministic scenario selection to `VirtualPatientV2`
+  - added support for `NORMAL`, `BREAKFAST`, `EXERCISE`, `DAWN`, `LOW_GLUCOSE`, and `RAPID_FALL`
+  - preserved `BREAKFAST` as the default no-flag visible runtime
+- Host validation:
+  - `make -f host.mk test` passed
+  - `make -f host.mk regression` passed
+- Embedded validation:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+- Flash / hardware validation:
+  - not run in this milestone

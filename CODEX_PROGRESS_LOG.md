@@ -664,3 +664,18 @@ Next recommended step:
 - 2026-06-15: Flashed the `VirtualPatientV2` debug-code image on `vp2-background-on-v1-visible`; hardware stayed live and the center `MG/DL` readout showed steady `299`, proving `V2` reaches its terminal success code without reproducing the earlier freeze during this check.
 - 2026-06-15: Built and flashed a follow-up `VirtualPatientV2` expose image that replaces the final-only `299` center readout with background `V2` glucose and exposes `STEP/CARBS/INS ONBD/TARGET/DEBUG` on the CRT terminal. OpenOCD pre/post reset-run remained healthy; physical LCD confirmation is now pending.
 - 2026-06-15: Built and flashed a one-change chart-refresh isolation image (`APP_V2_DISABLE_CHART_REFRESH=1`) that keeps background `V2` expose values live while disabling only the chart update/refresh block. OpenOCD pre/post reset-run remained healthy; physical LCD confirmation is now pending.
+
+## 2026-06-15 — VirtualPatientV2 scenario engine
+
+Changed:
+- Added deterministic scenario selection to `VirtualPatientV2` with six modes: `NORMAL`, `BREAKFAST`, `EXERCISE`, `DAWN`, `LOW_GLUCOSE`, and `RAPID_FALL`.
+- Preserved `BREAKFAST` as the default no-flag runtime so the current proven LCD behavior stays unchanged unless we intentionally build a scenario-specific image later.
+- Added host tests that run all six scenarios and verify bounded behavior plus distinct meal / bolus / glucose signatures.
+
+Tests:
+- `make -f host.mk test`
+- `make -f host.mk regression`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+
+Next recommended step:
+- Intentionally flash one non-default scenario, most likely `APP_VP_SCENARIO_RAPID=1` or `APP_VP_SCENARIO_EXERCISE=1`, and verify that the CRT values visibly diverge from the default breakfast behavior while the LCD remains stable.

@@ -37,6 +37,7 @@ typedef struct
 typedef struct
 {
     bool initialized;
+    vp_scenario_t scenario;
     uint32_t last_step_index;
     uint16_t debug_code;
     uint16_t current_bg_mgdl;
@@ -60,6 +61,23 @@ typedef struct
 } virtual_patient_v2_runtime_t;
 
 static virtual_patient_v2_runtime_t g_runtime;
+
+static vp_scenario_t default_scenario(void)
+{
+#if defined(APP_VP_SCENARIO_NORMAL) && (APP_VP_SCENARIO_NORMAL == 1)
+    return VP_SCENARIO_NORMAL;
+#elif defined(APP_VP_SCENARIO_EXERCISE) && (APP_VP_SCENARIO_EXERCISE == 1)
+    return VP_SCENARIO_EXERCISE;
+#elif defined(APP_VP_SCENARIO_DAWN) && (APP_VP_SCENARIO_DAWN == 1)
+    return VP_SCENARIO_DAWN;
+#elif defined(APP_VP_SCENARIO_LOW) && (APP_VP_SCENARIO_LOW == 1)
+    return VP_SCENARIO_LOW_GLUCOSE;
+#elif defined(APP_VP_SCENARIO_RAPID) && (APP_VP_SCENARIO_RAPID == 1)
+    return VP_SCENARIO_RAPID_FALL;
+#else
+    return VP_SCENARIO_BREAKFAST;
+#endif
+}
 
 static void set_debug_code(uint16_t code)
 {
@@ -131,9 +149,17 @@ static float dawn_factor_for_step(uint32_t cycle_step)
     return 1.0f;
 }
 
-static float activity_factor_for_step(uint32_t cycle_step)
+static float activity_factor_for_step(vp_scenario_t scenario, uint32_t cycle_step)
 {
-    if (cycle_step >= VP2_EXERCISE_START_STEP && cycle_step <= VP2_EXERCISE_END_STEP)
+    if (scenario == VP_SCENARIO_EXERCISE)
+    {
+        if (cycle_step >= 6u && cycle_step <= 18u)
+        {
+            float progress = (float)(cycle_step - 6u) / (float)((18u - 6u) + 1u);
+            return 0.74f - (0.12f * progress);
+        }
+    }
+    else if (cycle_step >= VP2_EXERCISE_START_STEP && cycle_step <= VP2_EXERCISE_END_STEP)
     {
         float progress = (float)(cycle_step - VP2_EXERCISE_START_STEP) /
                          (float)((VP2_EXERCISE_END_STEP - VP2_EXERCISE_START_STEP) + 1u);
@@ -150,6 +176,118 @@ static float insulin_sensitivity_for_factors(float activity_factor, float dawn_f
     sensitivity += (1.0f - activity_factor) * 0.95f;
     sensitivity -= (dawn_factor - 1.0f) * 0.55f;
     return clamp_f32(sensitivity, 0.75f, 1.45f);
+}
+
+static uint16_t baseline_bg_for_scenario(vp_scenario_t scenario)
+{
+    switch (scenario)
+    {
+        case VP_SCENARIO_NORMAL:
+            return 110u;
+        case VP_SCENARIO_BREAKFAST:
+            return 110u;
+        case VP_SCENARIO_EXERCISE:
+            return 118u;
+        case VP_SCENARIO_DAWN:
+            return 114u;
+        case VP_SCENARIO_LOW_GLUCOSE:
+            return 92u;
+        case VP_SCENARIO_RAPID_FALL:
+            return 126u;
+        default:
+            return 110u;
+    }
+}
+
+static uint16_t target_bg_for_scenario(vp_scenario_t scenario)
+{
+    switch (scenario)
+    {
+        case VP_SCENARIO_NORMAL:
+            return 108u;
+        case VP_SCENARIO_BREAKFAST:
+            return 110u;
+        case VP_SCENARIO_EXERCISE:
+            return 104u;
+        case VP_SCENARIO_DAWN:
+            return 116u;
+        case VP_SCENARIO_LOW_GLUCOSE:
+            return 94u;
+        case VP_SCENARIO_RAPID_FALL:
+            return 108u;
+        default:
+            return 108u;
+    }
+}
+
+static float basal_for_scenario(vp_scenario_t scenario)
+{
+    switch (scenario)
+    {
+        case VP_SCENARIO_EXERCISE:
+            return 0.7f;
+        case VP_SCENARIO_LOW_GLUCOSE:
+            return 0.55f;
+        case VP_SCENARIO_RAPID_FALL:
+            return 1.1f;
+        default:
+            return 0.8f;
+    }
+}
+
+static float dawn_factor_for_scenario_step(vp_scenario_t scenario, uint32_t cycle_step)
+{
+    if (scenario == VP_SCENARIO_DAWN)
+    {
+        if (cycle_step >= 2u && cycle_step <= 16u)
+        {
+            float progress = (float)(cycle_step - 2u) / (float)((16u - 2u) + 1u);
+            return 1.10f + (0.18f * progress);
+        }
+        return 1.02f;
+    }
+
+    return dawn_factor_for_step(cycle_step);
+}
+
+static float scenario_target_bias(vp_scenario_t scenario, uint32_t cycle_step)
+{
+    switch (scenario)
+    {
+        case VP_SCENARIO_NORMAL:
+            if (cycle_step >= 20u && cycle_step <= 28u)
+            {
+                return 6.0f;
+            }
+            return 0.0f;
+        case VP_SCENARIO_EXERCISE:
+            if (cycle_step >= 6u && cycle_step <= 18u)
+            {
+                return -10.0f;
+            }
+            return -2.0f;
+        case VP_SCENARIO_DAWN:
+            if (cycle_step >= 2u && cycle_step <= 16u)
+            {
+                return 18.0f;
+            }
+            return 6.0f;
+        case VP_SCENARIO_LOW_GLUCOSE:
+            if (cycle_step >= 6u && cycle_step <= 18u)
+            {
+                return -18.0f;
+            }
+            return -8.0f;
+        case VP_SCENARIO_RAPID_FALL:
+            if (cycle_step >= 3u && cycle_step <= 12u)
+            {
+                return -24.0f;
+            }
+            return -6.0f;
+        case VP_SCENARIO_BREAKFAST:
+        default:
+            return 0.0f;
+    }
 }
 
 static bool add_insulin_event(uint32_t timestamp_s, float units_u, uint16_t duration_min)
@@ -303,23 +441,80 @@ static void update_cob(uint32_t now_s)
 static bool apply_step_events(uint32_t now_s, uint32_t step_index, bool *meal_event, bool *bolus_event)
 {
     uint32_t cycle_step = step_index % VP2_CYCLE_STEPS;
+    vp_scenario_t scenario = g_runtime.scenario;
 
     *meal_event = false;
     *bolus_event = false;
     set_debug_code(160u);
 
-    if (cycle_step == VP2_BREAKFAST_STEP)
+    if (scenario == VP_SCENARIO_BREAKFAST && cycle_step == VP2_BREAKFAST_STEP)
     {
         set_debug_code(161u);
         *meal_event = add_meal_event(now_s, 60.0f, 240u);
         return *meal_event;
     }
 
-    if (cycle_step == VP2_SNACK_STEP)
+    if (scenario == VP_SCENARIO_BREAKFAST && cycle_step == VP2_SNACK_STEP)
     {
         set_debug_code(162u);
         *meal_event = add_meal_event(now_s, 18.0f, 90u);
         return *meal_event;
+    }
+
+    if (scenario == VP_SCENARIO_NORMAL)
+    {
+        if (cycle_step == 18u)
+        {
+            set_debug_code(163u);
+            *meal_event = add_meal_event(now_s, 12.0f, 75u);
+            return *meal_event;
+        }
+        if (cycle_step == 34u)
+        {
+            set_debug_code(164u);
+            *meal_event = add_meal_event(now_s, 10.0f, 60u);
+            return *meal_event;
+        }
+    }
+
+    if (scenario == VP_SCENARIO_EXERCISE)
+    {
+        if (cycle_step == 2u)
+        {
+            set_debug_code(165u);
+            *meal_event = add_meal_event(now_s, 20.0f, 90u);
+            return *meal_event;
+        }
+    }
+
+    if (scenario == VP_SCENARIO_DAWN)
+    {
+        if (cycle_step == 14u)
+        {
+            set_debug_code(166u);
+            *meal_event = add_meal_event(now_s, 24.0f, 120u);
+            return *meal_event;
+        }
+    }
+
+    if (scenario == VP_SCENARIO_LOW_GLUCOSE)
+    {
+        if (cycle_step == 22u)
+        {
+            set_debug_code(167u);
+            *meal_event = add_meal_event(now_s, 10.0f, 45u);
+            return *meal_event;
+        }
+    }
+
+    if (scenario == VP_SCENARIO_RAPID_FALL)
+    {
+        if (cycle_step == 1u)
+        {
+            set_debug_code(168u);
+            *bolus_event = add_insulin_event(now_s, 1.2f, 180u);
+            return *bolus_event;
+        }
     }
 
     set_debug_code(169u);
@@ -329,14 +524,15 @@ static bool apply_step_events(uint32_t now_s, uint32_t step_index, bool *meal_ev
 static void advance_patient_step(uint32_t now_s, uint32_t step_index)
 {
     uint32_t cycle_step = step_index % VP2_CYCLE_STEPS;
-    float dawn_factor = dawn_factor_for_step(cycle_step);
-    float activity_factor = activity_factor_for_step(cycle_step);
+    float dawn_factor = dawn_factor_for_scenario_step(g_runtime.scenario, cycle_step);
+    float activity_factor = activity_factor_for_step(g_runtime.scenario, cycle_step);
     float insulin_sensitivity = insulin_sensitivity_for_factors(activity_factor, dawn_factor);
     float basal_u_hr = clamp_f32(g_runtime.last_delivered_insulin_u_hr, 0.0f, 3.0f);
     float carb_drive;
     float insulin_drive;
     float dawn_drive;
     float target_bg;
+    float scenario_bias;
     bool meal_event;
     bool bolus_event;
 
@@ -363,8 +559,10 @@ static void advance_patient_step(uint32_t now_s, uint32_t step_index)
     carb_drive = 0.92f * g_runtime.meal_cob_g;
     insulin_drive = 19.5f * g_runtime.insulin_iob_u * insulin_sensitivity;
     dawn_drive = 18.0f * (dawn_factor - 1.0f);
+    scenario_bias = scenario_target_bias(g_runtime.scenario, cycle_step);
 
-    target_bg = 108.0f + carb_drive - insulin_drive + dawn_drive;
+    target_bg = (float)target_bg_for_scenario(g_runtime.scenario) +
+                carb_drive - insulin_drive + dawn_drive + scenario_bias;
     if (meal_event)
     {
         target_bg += 10.0f;
@@ -392,16 +590,25 @@ static void advance_patient_step(uint32_t now_s, uint32_t step_index)
     set_debug_code(230u);
 }
 
-void VirtualPatientV2_Init(void)
+void VirtualPatientV2_InitWithScenario(vp_scenario_t scenario)
 {
+    uint16_t baseline_bg;
+
     memset(&g_runtime, 0, sizeof(g_runtime));
     g_runtime.initialized = true;
+    g_runtime.scenario = scenario;
     g_runtime.debug_code = 100u;
-    g_runtime.current_bg_mgdl = 110u;
-    g_runtime.current_target_bg_mgdl = 110u;
+    baseline_bg = baseline_bg_for_scenario(scenario);
+    g_runtime.current_bg_mgdl = baseline_bg;
+    g_runtime.current_target_bg_mgdl = target_bg_for_scenario(scenario);
     g_runtime.glucose_velocity_mgdl = 0.0f;
-    g_runtime.last_delivered_insulin_u_hr = 0.8f;
+    g_runtime.last_delivered_insulin_u_hr = basal_for_scenario(scenario);
     set_debug_code(101u);
+}
+
+void VirtualPatientV2_Init(void)
+{
+    VirtualPatientV2_InitWithScenario(default_scenario());
 }
 
 bool VirtualPatientV2_Step(uint32_t now_s,
@@ -457,8 +664,8 @@ bool VirtualPatientV2_Step(uint32_t now_s,
 
     set_debug_code(240u);
     cycle_step = target_step_index % VP2_CYCLE_STEPS;
-    dawn_factor = dawn_factor_for_step(cycle_step);
-    activity_factor = activity_factor_for_step(cycle_step);
+    dawn_factor = dawn_factor_for_scenario_step(g_runtime.scenario, cycle_step);
+    activity_factor = activity_factor_for_step(g_runtime.scenario, cycle_step);
     insulin_sensitivity = insulin_sensitivity_for_factors(activity_factor, dawn_factor);
 
     set_debug_code(250u);
@@ -468,6 +675,7 @@ bool VirtualPatientV2_Step(uint32_t now_s,
     state->bg_mgdl = g_runtime.current_bg_mgdl;
     state->target_bg_mgdl = g_runtime.current_target_bg_mgdl;
     state->debug_code = g_runtime.debug_code;
+    state->scenario = g_runtime.scenario;
     state->meal_cob_g = g_runtime.meal_cob_g;
     state->insulin_iob_u = g_runtime.insulin_iob_u;
     state->insulin_sensitivity = insulin_sensitivity;
@@ -483,4 +691,9 @@ bool VirtualPatientV2_Step(uint32_t now_s,
 uint16_t VirtualPatientV2_GetDebugCode(void)
 {
     return g_runtime.debug_code;
+}
+
+vp_scenario_t VirtualPatientV2_GetScenario(void)
+{
+    return g_runtime.scenario;
 }

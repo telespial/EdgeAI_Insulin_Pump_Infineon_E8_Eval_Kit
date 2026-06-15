@@ -30,6 +30,21 @@
 - [ ] Confirm visible CRT / chart / center glucose still behave exactly like `c87802a`
 - [ ] Decide whether to expose background `VirtualPatientV2` state later or keep it strictly backend-only
 
+## Current Active Milestone — Virtual Patient V2 Scenario Engine
+- [x] Add deterministic scenario selection to `VirtualPatientV2`
+- [x] Add `NORMAL` scenario
+- [x] Add `BREAKFAST` scenario
+- [x] Add `EXERCISE` scenario
+- [x] Add `DAWN` scenario
+- [x] Add `LOW_GLUCOSE` scenario
+- [x] Add `RAPID_FALL` scenario
+- [x] Add host validation covering all scenarios
+- [x] Re-run host regression
+- [x] Verify clean embedded build
+- [ ] Flash a non-default scenario intentionally
+- [ ] Physically verify scenario-specific behavior on LCD/CRT
+- [ ] Add user-selectable scenario control later if desired
+
 ## Milestone 0 — Repo Review
 - [x] Review existing handoff docs
 - [x] Review current firmware skeleton

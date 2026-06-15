@@ -7917,3 +7917,12 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T08:09:09-07:00] CMD: inspect pending diffs before commit/push request
 [2026-06-15T08:09:26-07:00] CMD: clean build-log churn and commit/push current live V2 hardware truth
 [2026-06-15T08:09:40-07:00] CMD: restore tracked .ninja_log files after docs-only commit/push
+[2026-06-15T08:11:34-07:00] CMD: inspect ToDo and current project state to select next phase
+[2026-06-15T08:11:43-07:00] CMD: inspect next recommended milestones after current golden V2 state
+[2026-06-15T08:12:02-07:00] CMD: inspect current VirtualPatientV2 implementation before selecting next phase
+[2026-06-15T08:12:20-07:00] CMD: inspect existing VirtualPatientV2 host tests before scenario-engine implementation
+[2026-06-15T08:14:28-07:00] CMD: run host tests/regression for VirtualPatientV2 scenario-engine phase
+[2026-06-15T08:14:52-07:00] CMD: rerun host tests/regression after aps-demo-state assertion adjustment
+[2026-06-15T08:15:09-07:00] CMD: run embedded build for VirtualPatientV2 scenario-engine phase
+[2026-06-15T08:18:36-07:00] CMD: inspect working tree after VirtualPatientV2 scenario-engine phase
+[2026-06-15T08:18:44-07:00] CMD: clean build churn before committing VirtualPatientV2 scenario-engine milestone

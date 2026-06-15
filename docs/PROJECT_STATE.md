@@ -19,6 +19,21 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-15: Implemented the `VirtualPatientV2` scenario-engine phase without changing the proven LCD layout or visible default runtime behavior.
+- 2026-06-15: `VirtualPatientV2` now supports deterministic compile-time-selectable scenarios:
+  - `NORMAL`
+  - `BREAKFAST`
+  - `EXERCISE`
+  - `DAWN`
+  - `LOW_GLUCOSE`
+  - `RAPID_FALL`
+- 2026-06-15: The default visible runtime remains `BREAKFAST` unless an explicit `APP_VP_SCENARIO_*` flag is enabled, preserving the current display behavior on the known-good image.
+- 2026-06-15: Added host coverage proving all six scenarios stay bounded, change over time, and produce distinct meal / bolus / glucose signatures.
+- 2026-06-15: Scenario-engine validation passed:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- 2026-06-15: No flash was performed for the scenario-engine milestone; current physical LCD truth remains the last separately confirmed hardware image (`deeb67c` reflashed and user-confirmed live).
 - 2026-06-15: Investigated the suspected `VirtualPatientV2` breakfast freeze without reflashing hardware first.
 - 2026-06-15: Confirmed a runtime split in source:
   - `ApsDemoState_Step()` used `VirtualPatientV1`

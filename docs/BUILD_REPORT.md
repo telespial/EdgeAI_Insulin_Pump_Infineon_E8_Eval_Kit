@@ -353,3 +353,18 @@ Build: Jun 11 2026 21:43:59
   - `timeout 95s stdbuf -oL cat /dev/ttyACM0 | tee /tmp/e84_freeze_watch_uart.log`
   - captured `0` bytes on `/dev/ttyACM0`
 - Physical LCD result: pending
+
+## VirtualPatientV2 Scenario Engine
+- Branch: `vp2-background-on-v1-visible`
+- Change:
+  - added deterministic scenario selection to `VirtualPatientV2`
+  - added scenario support for `NORMAL`, `BREAKFAST`, `EXERCISE`, `DAWN`, `LOW_GLUCOSE`, and `RAPID_FALL`
+  - preserved `BREAKFAST` as the default visible runtime with no compile flags so the current LCD behavior stays stable
+  - added host coverage for six scenario runs with bounded BG / IOB / COB plus scenario-specific meal / bolus behavior
+- Host validation:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+- Embedded build:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Physical LCD result:
+  - no flash performed in this milestone
