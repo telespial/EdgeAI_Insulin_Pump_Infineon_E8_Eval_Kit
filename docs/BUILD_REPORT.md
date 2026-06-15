@@ -21,7 +21,10 @@ make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
 - Host tests: success
 - Host regression: success
 - Embedded build: success
-- Flash/program: not run in this milestone
+- Flash/program: success
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: pending
 - Scope: host + build validation only
 
 ## V2 Summary
@@ -279,3 +282,74 @@ Build: Jun 11 2026 21:43:59
 - Scope note:
   - Predictor V2, controller, and safety are running in the live APS pipeline
   - this is still a research/demo integration state rather than a clinically validated system
+
+## Virtual Patient V2 freeze-investigation debug image
+- Branch: `virtual-patient-v2`
+- Change:
+  - added temporary UART checkpoints in `dashboard_timer_cb()`, `render_dashboard_state()`, and the CM55 LVGL task loop around `lv_timer_handler()`
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- UART findings:
+  - the CM55 LVGL loop continued cycling at roughly `93 ms`
+  - the dashboard timer still fired at roughly `5000 ms`
+  - APS state updates progressed at least through `idx=3`
+- Physical LCD result:
+  - live / GUI visible
+  - user still reported visible data appearing frozen at the first `110 mg/dL` frame
+- Current interpretation:
+  - the APS / virtual-patient runtime is still alive
+  - the visible freeze is currently more consistent with a display/update-path issue than a patient-data exhaustion issue
+
+## Chart-refresh isolation experiment
+- Branch: `virtual-patient-v2`
+- Change:
+  - compile-gated `APP_LVGL_DISABLE_CHART_REFRESH=1` disables:
+    - `lv_chart_set_next_value(...)`
+    - `update_chart_colors(...)`
+    - `lv_chart_refresh(...)`
+  - all APS step UART checkpoints remain enabled
+  - center glucose and CRT terminal updates remain enabled
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CHART_REFRESH=1 -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CHART_REFRESH=1`
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: failed (`LCD blank / dead / frozen`)
+
+## Center-glucose isolation experiment
+- Branch: `virtual-patient-v2`
+- Change:
+  - compile-gated `APP_LVGL_DISABLE_CENTER_GLUCOSE=1` disables only `update_glucose_label(current_mgdl)`
+  - chart refresh remains enabled
+  - CRT terminal redraw remains enabled
+  - APS UART checkpoints remain enabled
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CENTER_GLUCOSE=1 -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CENTER_GLUCOSE=1`
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: failed (`LCD blank / dead / frozen`)
+
+## Debug printf recovery build
+- Branch: `virtual-patient-v2`
+- Change:
+  - removed the uncommitted LVGL hot-path UART `printf` instrumentation and temporary isolation gates from `proj_cm55/main.c` and `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result:
+  - live / GUI visible
+  - user later observed a visible freeze again after around seven steps
+- Interpretation:
+  - removing the debug `printf` code restored normal LCD bring-up
+  - the longer-running visible freeze still exists on the clean image and is not explained solely by the UART debug instrumentation
+
+## Low-rate freeze watcher debug image
+- Branch: `virtual-patient-v2`
+- Change:
+  - added low-rate dashboard progress counters and a separate CM55 debug task that prints once every `10s`
+  - no `printf` was added to `lv_timer_handler()` or per-frame redraw paths
+- Embedded build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre/post reset-run: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- UART capture attempt:
+  - `timeout 95s stdbuf -oL cat /dev/ttyACM0 | tee /tmp/e84_freeze_watch_uart.log`
+  - captured `0` bytes on `/dev/ttyACM0`
+- Physical LCD result: pending

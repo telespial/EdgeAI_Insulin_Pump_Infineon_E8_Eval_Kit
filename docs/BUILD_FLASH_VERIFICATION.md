@@ -17,7 +17,10 @@ Evidence:
 
 Scope:
 - `VirtualPatientV2` replaces `VirtualPatientV1` as the active APS demo-state physiology source
-- no new hardware flash/program claim is made in this milestone
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+- OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- physical LCD confirmation pending
 - physical LCD truth remains tied to the last separately verified restore point
 
 ## Scope
@@ -555,3 +558,18 @@ Scope:
   - Predictor V2 is active in the live loop
   - controller and safety are active in the live loop
   - this is a research/demo integration milestone, not a medical validation claim
+
+## Confirmed Flash Verification — Debug printf removal recovery
+- Branch: `virtual-patient-v2`
+- Source change:
+  - reverted uncommitted LVGL hot-path UART debug / isolation changes from `proj_cm55/main.c` and `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`
+- Build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result:
+  - LCD live / GUI visible
+  - user then observed a visible freeze again after around seven steps
+- Notes:
+  - this confirms hot-path debug instrumentation was unsafe for LCD bring-up
+  - this does not clear the underlying visible-freeze issue on the clean runtime image

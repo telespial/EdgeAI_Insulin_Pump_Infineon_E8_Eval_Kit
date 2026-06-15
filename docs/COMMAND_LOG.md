@@ -7666,3 +7666,151 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-14T20:57:58-07:00] CMD: git status --short && git rev-parse --short HEAD && git branch --show-current
 
 [2026-06-14T20:58:06-07:00] CMD: git add docs/COMMAND_LOG.md && git commit -m "log virtual patient v2 push" && git push origin virtual-patient-v2
+
+[2026-06-14T20:59:27-07:00] CMD: git branch --show-current && git rev-parse --short HEAD && git log --oneline -5 && git tag --list | tail -20
+
+[2026-06-14T20:59:39-07:00] CMD: make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+
+[2026-06-14T21:01:33-07:00] CMD: openocd reset-run preflash; make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP; openocd reset-run postflash
+
+[2026-06-14T21:02:23-07:00] CMD: update PROJECT_STATE/BUILD_REPORT/BUILD_FLASH_VERIFICATION for v2 flash
+
+[2026-06-14T21:05:06-07:00] CMD: rg -n "push_sample|dashboard_timer_cb|sample_index|ApsDemoState_Step|VirtualPatientV2|CGM_REPLAY_STEP_MS|lv_timer_create|update_aps_terminal_label|update_battery_bar|update_wifi_bar|chart" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c firmware/src/aps_demo_state.c firmware/src/virtual_patient_v2.c proj_cm55/main.c
+
+[2026-06-14T21:05:06-07:00] CMD: sed -n "1,360p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:05:13-07:00] CMD: sed -n "360,820p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:05:36-07:00] CMD: sed -n "1,260p" firmware/src/iob_engine.c; sed -n "1,260p" firmware/src/cob_engine.c; sed -n "1,240p" firmware/include/iob_engine.h; sed -n "1,240p" firmware/include/cob_engine.h
+
+[2026-06-14T21:05:36-07:00] CMD: rg -n "MAX_|EVENT|capacity|count|for \(|return false|AddBasal|AddMeal|Update\(" firmware/src/iob_engine.c firmware/src/cob_engine.c firmware/src/virtual_patient_v2.c firmware/src/aps_demo_state.c
+
+[2026-06-14T21:06:03-07:00] CMD: gcc /tmp/aps_demo_probe.c ... && /tmp/aps_demo_probe
+
+[2026-06-14T21:06:03-07:00] CMD: sed -n "1,260p" firmware/include/aps_demo_state.h
+
+[2026-06-14T21:06:33-07:00] CMD: ls /dev/ttyACM* /dev/ttyUSB* 2>/dev/null || true
+
+[2026-06-14T21:06:33-07:00] CMD: rg -n "retarget_io|printf\(|cy_retarget_io|UART|DEBUG_UART|stdio" proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/*.c proj_cm55/*.h
+
+[2026-06-14T21:07:12-07:00] CMD: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+
+[2026-06-14T21:07:33-07:00] CMD: openocd reset-run preflash; make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP; openocd reset-run postflash
+
+[2026-06-14T21:08:37-07:00] git status --short
+[2026-06-14T21:08:37-07:00] git branch --show-current
+[2026-06-14T21:08:37-07:00] git rev-parse --short HEAD
+[2026-06-14T21:08:37-07:00] rg -n "reset run|40aaf3f|pump_background_image.jpg|lv_font_montserrat_24|cgm_replay_subject001.h|open_prog_full.py|USB COMPOSITE DEMO" /home/user/.codex/memories/MEMORY.md
+
+[2026-06-14T21:08:47-07:00] timeout 45s stdbuf -oL cat /dev/ttyACM0
+
+[2026-06-14T21:09:24-07:00] rg -n "baud|retarget|stdio|printf|UART|usb_serial" proj_cm55 proj_cm33_ns proj_cm33_s firmware | head -n 200
+
+[2026-06-14T21:09:38-07:00] sed -n "1,220p" proj_cm55/retarget_io_init.c
+
+[2026-06-14T21:09:38-07:00] rg -n "CYBSP_DEBUG_UART_config|baud" -S bsp* bsps proj_cm55 | head -n 80
+
+[2026-06-14T21:09:43-07:00] sed -n "552,640p" bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/cycfg_peripherals.c
+
+[2026-06-14T21:09:48-07:00] rg -n "DEBUG_UART.*DIV|peri_div|SCB_UART_GetBaudRate|baudrate|baud rate" bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource proj_cm55 | head -n 120
+
+[2026-06-14T21:09:56-07:00] stty -F /dev/ttyACM0 115200 cs8 -cstopb -parenb -ixon -ixoff -crtscts raw -echo && timeout 35s stdbuf -oL cat /dev/ttyACM0
+
+[2026-06-14T21:10:38-07:00] ls -l /dev/ttyACM* 2>/dev/null || true
+
+[2026-06-14T21:10:43-07:00] rg -n "reset run|OPENOCD|PSE84_SMIF" docs/OPS_RUNBOOK.md | head -n 80
+
+[2026-06-14T21:10:56-07:00] sh -lc 'stty -F /dev/ttyACM0 115200 cs8 -cstopb -parenb -ixon -ixoff -crtscts raw -echo; timeout 20s cat /dev/ttyACM0 > /tmp/e84_uart_capture.log & CAP=$!; sleep 1; OPENOCD=/opt/Tools/ModusToolboxProgtools-1.7/openocd/bin/openocd; SCRIPTS=/opt/Tools/ModusToolboxProgtools-1.7/openocd/scripts; QSPIDIR=$PWD/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource; $OPENOCD -s "$SCRIPTS" -s "$QSPIDIR" -c "set QSPI_FLASHLOADER ../flm/infineon/pse8xxgp/PSE84_SMIF.FLM" -f interface/kitprog3.cfg -c "transport select swd" -f target/infineon/pse84xgxs2.cfg -c "init; flash banks; reset run; sleep 2000; shutdown"; wait $CAP || true; cat /tmp/e84_uart_capture.log'
+
+[2026-06-14T21:11:26-07:00] long UART capture with reset-run (70s)
+
+[2026-06-14T21:12:52-07:00] rg -n "lv_timer_handler|cyhal_system_delay|for \(|while \(|dashboard_timer_cb|lv_tick|Cy_SysPm|sleep" proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c | head -n 200
+
+[2026-06-14T21:12:52-07:00] sed -n "1,220p" proj_cm55/lv_port_disp.c
+
+[2026-06-14T21:12:59-07:00] sed -n "620,720p" proj_cm55/main.c
+
+[2026-06-14T21:13:05-07:00] sed -n "260,470p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:13:10-07:00] sed -n "180,280p" firmware/src/aps_demo_state.c
+
+[2026-06-14T21:13:22-07:00] rg -n "GFX_TASK_STACK_SIZE|vApplicationStackOverflowHook|malloc failed|configCHECK_FOR_STACK_OVERFLOW|uxTaskGetStackHighWaterMark|FreeRTOSConfig" proj_cm55 proj_cm33_ns proj_cm33_s freertos* . | head -n 200
+
+[2026-06-14T21:13:31-07:00] sed -n "1,260p" firmware/src/virtual_patient_v2.c
+
+[2026-06-14T21:13:41-07:00] rg -n "gDashboard\.timer|lv_timer_set_repeat_count|lv_timer_del|lv_timer_pause|lv_timer_resume|lv_timer_ready|lv_timer_reset|lv_timer_create" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:13:48-07:00] sed -n "1,180p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:13:52-07:00] sed -n "1,220p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:13:58-07:00] sed -n "180,270p" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+
+[2026-06-14T21:14:17-07:00] rg -n "configTICK_RATE_HZ|portTICK_PERIOD_MS" proj_cm55/FreeRTOSConfig.h proj_cm55/main.c
+
+[2026-06-14T21:14:45-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+
+[2026-06-14T21:15:04-07:00] pre-reset + make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP + post-reset
+
+[2026-06-14T21:15:34-07:00] UART capture after loop instrumentation (45s)
+
+[2026-06-14T21:16:20-07:00] tail -n 60 docs/BUILD_REPORT.md
+
+[2026-06-14T21:16:20-07:00] tail -n 80 docs/PROJECT_STATE.md
+
+[2026-06-14T21:16:20-07:00] tail -n 60 CODEX_PROGRESS_LOG.md
+
+[2026-06-14T21:16:56-07:00] head -n 80 ToDo.md
+
+[2026-06-14T21:17:45-07:00] tail -n 60 ToDo.md
+
+[2026-06-14T21:18:11-07:00] appended Virtual Patient V2 Scenario Engine phase to ToDo.md
+
+[2026-06-14T21:19:40-07:00] make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CHART_REFRESH=1 -j8
+
+[2026-06-14T21:21:34-07:00] pre-reset + make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CHART_REFRESH=1 + post-reset
+
+[2026-06-14T21:24:29-07:00] restore previous image: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 && pre/post reset-run && make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+- 2026-06-14: `git branch --show-current && git rev-parse --short HEAD && git status --short` → branch `virtual-patient-v2`, HEAD `81d059f`, debug/docs/build files modified.
+- 2026-06-14: `rg -n "render_dashboard_state|push_sample|glucose_label|glucose_shadow_label|APP_LVGL_DISABLE_CHART_REFRESH|APSDBG" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c` → located center glucose, chart refresh, and debug checkpoints for next isolation pass.
+- 2026-06-14: `sed -n '280,470p' proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c` → inspected render/update order for glucose, CRT, accuracy label, and chart refresh path.
+- 2026-06-14: `tail -n 80 docs/PROJECT_STATE.md` → verified existing freeze-investigation and chart-isolation notes before updating docs.
+- 2026-06-14: `make clean && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CENTER_GLUCOSE=1 -j8` → center-glucose isolation image built successfully.
+- 2026-06-14: `openocd ... 'init; flash banks; reset run; sleep 2000; shutdown'` (pre-program) → healthy acquire/reset, device `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`.
+- 2026-06-14: `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_LVGL_DISABLE_CENTER_GLUCOSE=1` → center-glucose isolation image programmed successfully.
+- 2026-06-14: `openocd ... 'init; flash banks; reset run; sleep 2000; shutdown'` (post-program) → healthy acquire/reset, device `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`.
+- 2026-06-14: `tail -n 60 docs/BUILD_REPORT.md` → confirmed freeze-investigation sections before recording chart-failure and center-glucose isolation status.
+- 2026-06-14: Physical result for center-glucose isolation image → `LCD blank / dead / frozen`.
+- 2026-06-14: `git checkout -- proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c proj_cm55/main.c && git diff --stat -- ...` → removed uncommitted LVGL hot-path `printf` instrumentation and temporary isolation gates from the two firmware files.
+2026-06-14T22:02:20-07:00 | Reverted uncommitted LVGL printf/isolation debug from proj_cm55/main.c and proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c; clean rebuilt default image; OpenOCD reset-run before/after; programmed app_combined.hex successfully; post-program OpenOCD healthy (PSE846GPS2DBZC4A, CYBOOT_SUCCESS).
+[2026-06-14T22:03:00-07:00] CMD: sed -n '1,120p' docs/START_HERE.md && sed -n '1,160p' docs/PROJECT_STATE.md && sed -n '1,200p' docs/OPS_RUNBOOK.md
+[2026-06-14T22:04:00-07:00] RESULT: Re-read required project entry docs before continuing recovery closeout.
+[2026-06-14T22:05:00-07:00] CMD: rg -n "LVGL_DEBUG_PRINTF_FAILURE|Unsafe|KNOWN_ISSUES|freeze|printf" docs CODEX_PROGRESS_LOG.md ToDo.md || true && git status --short
+[2026-06-14T22:06:00-07:00] RESULT: Confirmed dirty docs/build-log state and located existing freeze/debug references before writing recovery notes.
+[2026-06-14T22:07:00-07:00] USER RESULT: Physical LCD live / GUI visible after debug-code removal recovery; user then observed visible freeze again after around seven steps.
+[2026-06-14T22:08:00-07:00] CMD: python3 docs-update helper to append LVGL debug printf failure and recovery notes across PROJECT_STATE, BUILD_REPORT, BUILD_FLASH_VERIFICATION, KNOWN_ISSUES, UNSAFE_PATTERNS, CODEX_PROGRESS_LOG, and ToDo.
+[2026-06-14T22:09:00-07:00] RESULT: Documented that hot-path LVGL printf instrumentation is unsafe for LCD bring-up, but the later seven-step visible freeze still reproduces on the clean image.
+[2026-06-14T22:21:56-07:00] CMD: git branch --show-current && git rev-parse --short HEAD && git status --short
+[2026-06-14T22:21:56-07:00] CMD: rg -n "ApsDemoState_Step|dashboard_timer_cb|push_sample|render_dashboard_state|lv_timer_handler|VirtualPatientV2|APSDBG" proj_cm55/main.c proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c firmware/src/virtual_patient_v2.c
+[2026-06-14T22:21:56-07:00] CMD: sed -n 1,260p main/app snippets for freeze path inspection
+[2026-06-14T22:22:07-07:00] CMD: sed -n 1,260p aps_demo_state sources
+[2026-06-14T22:22:07-07:00] CMD: rg -n "sample_index|CGM_REPLAY_STEP_MS|now_s|seed_chart" app source inspection
+[2026-06-14T22:22:23-07:00] CMD: sed -n header inspect for app debug API
+[2026-06-14T22:22:23-07:00] CMD: sed -n app state struct region
+[2026-06-14T22:22:33-07:00] CMD: rg -n task create/app start in main.c
+[2026-06-14T22:22:33-07:00] CMD: sed -n main task region for debug task insertion
+[2026-06-14T22:23:20-07:00] CMD: sed -n targeted app function ranges for patch retry
+[2026-06-14T22:23:59-07:00] CMD: sed -n main prototype region for patch retry
+[2026-06-14T22:24:45-07:00] RESULT: Added low-rate debug snapshot + separate 10s debug task for freeze investigation without LVGL hot-path printf.
+[2026-06-14T22:24:56-07:00] CMD: rg -n low-rate debug additions sanity check
+[2026-06-14T22:24:56-07:00] CMD: build debug watcher image
+[2026-06-14T22:26:44-07:00] CMD: flash low-rate freeze watcher image with LCD-safe OpenOCD reset-run before/after
+[2026-06-14T22:27:22-07:00] CMD: capture UART for low-rate freeze watcher via /dev/ttyACM0
+[2026-06-14T22:29:07-07:00] CMD: ls ttyACM and inspect captured UART log
+[2026-06-14T22:29:07-07:00] CMD: inspect recent diff for low-rate watcher changes
+[2026-06-14T22:29:33-07:00] RESULT: Updated PROJECT_STATE and BUILD_REPORT for low-rate freeze watcher build/program and silent UART capture.
+[2026-06-14T22:29:58-07:00] CMD: revert low-rate freeze watcher source diff and recover prior source state
+[2026-06-14T22:29:58-07:00] RESULT: Reverted uncommitted low-rate freeze watcher changes from main/app sources.
+[2026-06-14T22:33:27-07:00] CMD: git status --short && git branch --show-current && git rev-parse --short HEAD
+[2026-06-14T22:33:27-07:00] CMD: git remote -v
+[2026-06-14T22:33:39-07:00] CMD: git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log

@@ -42,6 +42,12 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
   - artifacts present: `build/app_combined.hex`, `proj_cm55/build/APP_KIT_PSE84_EVAL_EPC2/Debug/proj_cm55.elf`
 - 2026-06-14: No new flash was performed in the `VirtualPatientV2` milestone; physical LCD truth still belongs to the last separately verified restore point until this build is intentionally programmed.
+- 2026-06-14: The `virtual-patient-v2` image has now been programmed with the documented LCD-safe OpenOCD pre/post reset-run flow.
+- 2026-06-14: Flash/program verification passed for `virtual-patient-v2`:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- 2026-06-14: Physical LCD confirmation is now pending for the `virtual-patient-v2` flash.
 - 2026-06-14: Recovered LCD-live commit `aed98c2` has been promoted as the current golden/failsafe restore truth point and pushed remotely on:
   - branch `aps-glucose-unified-display`
   - tag `e84-golden-aed98c2-recovered-2026-06-14`
@@ -1311,3 +1317,111 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - controller and safety are active in the live APS pipeline
   - the system is valid as a research/demo integration
   - it is not yet medically validated
+
+## Update 2026-06-14 Virtual Patient V2 freeze investigation
+- Branch: `virtual-patient-v2`
+- Current debug image status:
+  - embedded build passed
+  - program passed
+  - OpenOCD pre/post reset-run remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+  - physical LCD remains live / GUI visible
+- Added temporary UART checkpoints around:
+  - `dashboard_timer_cb()`
+  - `render_dashboard_state()`
+  - the CM55 LVGL task loop around `lv_timer_handler()`
+- Key findings from the live debug capture:
+  - the APS runtime itself is not running out of patient data after a few steps
+  - the CM55 LVGL task continues looping every ~`93 ms`
+  - the APS dashboard timer continues firing every ~`5000 ms`
+  - observed checkpoints reached at least through `idx=3` with:
+    - `APSDBG timer start`
+    - `APSDBG step ok`
+    - `APSDBG push end`
+  - this means the current issue is not a hard stop of `ApsDemoState_Step()` and not an immediate crash of the CM55 graphics task
+- Strongest current conclusion:
+  - the "freeze" is more likely a visible-display/update-path issue than the APS / virtual-patient state machine running out of data
+  - the timer loop and APS step loop are still alive in the debug image
+
+## Update 2026-06-14 Chart-refresh isolation experiment
+- Branch: `virtual-patient-v2`
+- Purpose:
+  - isolate the first visible update path by disabling only chart refresh / chart sample advancement
+  - keep APS stepping alive
+  - keep UART checkpoints alive
+  - leave center glucose and CRT terminal updates intact
+- Implementation:
+  - compile-gated `APP_LVGL_DISABLE_CHART_REFRESH=1` around:
+    - `lv_chart_set_next_value(...)`
+    - `update_chart_colors(...)`
+    - `lv_chart_refresh(...)`
+- Validation so far:
+  - isolated embedded build passed with `DEFINES+=APP_LVGL_DISABLE_CHART_REFRESH=1`
+  - isolated program passed with the documented LCD-safe OpenOCD reset-run before and after programming
+  - OpenOCD remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result:
+  - failed (`LCD blank / dead / frozen`)
+- Recovery:
+  - rebuilt and reprogrammed the previous non-isolated debug image
+  - OpenOCD remained healthy during recovery
+  - physical LCD returned live / GUI visible
+  - visible data still froze on the recovered debug image
+
+## Update 2026-06-14 Center-glucose isolation experiment
+- Branch: `virtual-patient-v2`
+- Purpose:
+  - isolate only the center glucose numeric redraw while keeping:
+    - APS stepping alive
+    - UART checkpoints alive
+    - chart refresh enabled
+    - CRT terminal redraw enabled
+    - status bars and indicator bars enabled
+- Implementation:
+  - compile-gated `APP_LVGL_DISABLE_CENTER_GLUCOSE=1` around `update_glucose_label(current_mgdl)` in `render_dashboard_state()`
+- Validation so far:
+  - isolated embedded build passed
+  - isolated program passed
+  - OpenOCD pre/post reset-run remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result:
+  - failed (`LCD blank / dead / frozen`)
+- Next action:
+  - restore the previous non-isolated debug image before any further display isolation
+
+## Update 2026-06-14 Debug-printf recovery result
+- Branch: `virtual-patient-v2`
+- Recovery action:
+  - reverted the uncommitted hot-path UART `printf` / isolation debug diff from:
+    - `proj_cm55/main.c`
+    - `proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c`
+  - rebuilt the default image clean with no debug isolation flags
+  - reprogrammed using the documented LCD-safe OpenOCD reset-run before and after programming
+- Build/program result:
+  - clean build passed
+  - program passed
+  - OpenOCD pre/post reset-run remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- Physical LCD result:
+  - LCD live / GUI visible
+  - user then observed the display freeze again after around seven steps
+- Strongest conclusion:
+  - hot-path `printf` instrumentation can prevent or perturb LCD bring-up and must not be used in the LVGL hot path
+  - the later visible freeze still reproduces on the clean image, so the debug `printf` code was not the underlying freeze root cause
+  - current best hypothesis remains a display/update-path issue rather than APS state exhaustion
+
+## Update 2026-06-14 Low-rate freeze watcher image
+- Branch: `virtual-patient-v2`
+- Purpose:
+  - replace the unsafe LVGL hot-path `printf` approach with a low-rate watcher
+  - keep APS stepping and display behavior intact
+  - sample dashboard progress counters without printing inside the render / LVGL hot path
+- Code change:
+  - added a dashboard debug snapshot in `edgeai_insulin_pump_app.c`
+  - added a separate low-priority CM55 debug task in `main.c`
+  - debug task prints one summary line every `10s` after an initial `12s` delay
+- Build/program result:
+  - clean build passed
+  - program passed
+  - OpenOCD pre/post reset-run remained healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+- UART capture result so far:
+  - `/dev/ttyACM0` produced no captured output during a `95s` watch window
+  - current terminal evidence is therefore inconclusive for this watcher image
+- Physical LCD result:
+  - pending user confirmation for this watcher build

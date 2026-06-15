@@ -14,6 +14,10 @@
 - [ ] Confirm physical LCD remains live
 - [ ] Confirm CRT values stay active beyond 60 seconds on hardware
 - [ ] Confirm graph / center card / CRT remain coherently sourced after V2 promotion
+- [x] Add temporary UART checkpoints around APS stepping and render stages
+- [x] Add temporary UART checkpoints around the CM55 LVGL task loop
+- [ ] Confirm which visible widgets stop changing while UART shows the LVGL loop and APS timer are still alive
+- [ ] Isolate the specific display-update path causing the apparent visible freeze
 
 ## Milestone 0 — Repo Review
 - [x] Review existing handoff docs
@@ -262,3 +266,298 @@
 - [ ] Write a compact APS runtime truth table that separates live/wired values from validated behavior claims.
 - [ ] Add longer-duration host/runtime checks for the unified APS path so freezes are easier to catch before flashing.
 - [ ] Move from `VirtualPatientV1` demo realism toward a richer patient model without touching the proven LCD path.
+
+## Phase after existing ones — Virtual Patient V2 Scenario Engine
+Proceed with Milestone: Virtual Patient V2 Scenario Engine.
+
+Goal:
+Move beyond a single deterministic startup state and create a realistic artificial-patient scenario engine that continuously generates meaningful APS behavior.
+
+This milestone is focused on the patient.
+
+Do not modify LCD layout.
+Do not add LVGL objects.
+Do not redesign the CRT.
+Do not change display paths.
+Do not touch WiFi/battery work.
+Do not command real insulin.
+Do not claim certified medical behavior.
+
+### Why
+
+Current CRT values come from the APS demo-state pipeline.
+
+However:
+
+```text
+BG
+IOB
+COB
+ACT
+INS
+SAFE
+```
+
+always begin from essentially the same initial conditions.
+
+This is useful for regression.
+
+It is not useful for demonstrating a living artificial patient.
+
+We need a scenario engine.
+
+### New Objective
+
+Create:
+
+```text
+Virtual Patient V2
+```
+
+that can run multiple patient scenarios.
+
+Each scenario must continuously generate:
+
+- BG
+- IOB
+- COB
+- ACT
+- INS
+- SAFE
+
+through the existing APS pipeline.
+
+No hardcoded display values.
+
+### Scenario Framework
+
+Create:
+
+```text
+firmware/include/virtual_patient_v2.h
+firmware/src/virtual_patient_v2.c
+docs/VIRTUAL_PATIENT_V2.md
+```
+
+Add:
+
+```c
+typedef enum
+{
+    VP_SCENARIO_NORMAL,
+    VP_SCENARIO_BREAKFAST,
+    VP_SCENARIO_EXERCISE,
+    VP_SCENARIO_DAWN,
+    VP_SCENARIO_LOW_GLUCOSE,
+    VP_SCENARIO_RAPID_FALL,
+} vp_scenario_t;
+```
+
+And:
+
+```c
+void VirtualPatientV2_Init(vp_scenario_t scenario);
+bool VirtualPatientV2_Step(uint32_t now_s,
+                           float insulin_u_hr,
+                           virtual_patient_state_t *state);
+```
+
+### Required Scenarios
+
+#### NORMAL
+
+```text
+BG ~110
+IOB moderate
+COB low
+ACT mostly HOLD
+SAFE NORM
+```
+
+#### BREAKFAST
+
+```text
+Meal introduced
+COB rises
+BG rises
+Controller reacts
+INS increases
+BG recovers
+```
+
+#### EXERCISE
+
+```text
+Sensitivity increases
+BG falls faster
+Controller reduces insulin
+SAFE may trigger
+```
+
+#### DAWN
+
+```text
+Early morning rise
+BG drifts upward
+Controller compensates
+```
+
+#### LOW_GLUCOSE
+
+```text
+BG trends low
+Controller reduces insulin
+Safety dominates
+```
+
+#### RAPID_FALL
+
+```text
+Steep downward BG trend
+SAFE RAPID
+Controller constrained
+```
+
+### Scenario Selection
+
+Initial implementation:
+
+Use compile-time selection:
+
+```text
+APP_VP_SCENARIO_NORMAL
+APP_VP_SCENARIO_BREAKFAST
+APP_VP_SCENARIO_EXERCISE
+APP_VP_SCENARIO_DAWN
+APP_VP_SCENARIO_LOW
+APP_VP_SCENARIO_RAPID
+```
+
+Later:
+
+- menu
+- replay setting
+- user selection
+
+can be added.
+
+### Scenario Cycling
+
+Optional:
+
+If simple and safe:
+
+```text
+Rotate scenario every boot.
+```
+
+Using a small boot counter.
+
+Example:
+
+```text
+Boot 1 -> NORMAL
+Boot 2 -> BREAKFAST
+Boot 3 -> EXERCISE
+Boot 4 -> DAWN
+Boot 5 -> LOW
+Boot 6 -> RAPID
+```
+
+Document whether implemented.
+
+### APS Integration
+
+Virtual Patient V2 becomes source of:
+
+```text
+BG
+COB
+IOB
+```
+
+Existing APS pipeline continues to produce:
+
+```text
+ACT
+INS
+SAFE
+```
+
+CRT display remains unchanged.
+
+### Host Validation
+
+Add tests:
+
+- 10 minute run
+- 30 minute run
+- 60 minute run
+
+Verify:
+
+- no NaN
+- no dead state
+- BG remains bounded
+- IOB remains bounded
+- COB remains bounded
+- scenarios produce visibly different behavior
+- controller output changes appropriately
+- safety output changes appropriately
+
+Run:
+
+```bash
+make -f host.mk test
+make -f host.mk regression
+```
+
+### Documentation
+
+Update:
+
+```text
+docs/VIRTUAL_PATIENT_V2.md
+docs/APS_DEMO_STATE.md
+docs/PROJECT_STATE.md
+docs/COMMAND_LOG.md
+CODEX_PROGRESS_LOG.md
+ToDo.md
+docs/RESTORE_POINTS.md
+```
+
+Add to ToDo:
+
+### Virtual Patient V2
+
+- [ ] Scenario engine
+- [ ] Normal scenario
+- [ ] Breakfast scenario
+- [ ] Exercise scenario
+- [ ] Dawn scenario
+- [ ] Low glucose scenario
+- [ ] Rapid fall scenario
+- [ ] 60 minute validation
+- [ ] APS integration
+- [ ] CRT verification
+
+### Final Report
+
+Report:
+
+- files added
+- scenarios implemented
+- scenario selection method
+- host validation results
+- BG/IOB/COB behavior summary
+- ACT/INS/SAFE behavior summary
+- whether CRT values now come from V2 scenarios
+- next recommended milestone
+
+### Debug / Freeze Investigation Notes
+
+- [x] Prove hot-path LVGL `printf` instrumentation is unsafe for LCD bring-up
+- [x] Recover the clean image after removing hot-path UART debug
+- [x] Confirm whether the visible freeze still reproduces on the clean image
+- [ ] Isolate the remaining post-bring-up visible freeze without using hot-path UART prints
+- [ ] Use low-rate breadcrumbs or nonblocking capture outside the LVGL hot path
