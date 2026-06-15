@@ -7567,3 +7567,5 @@ update display-only placeholder values in source and sync pending verification d
 2026-06-14: git add docs/BUILD_FLASH_VERIFICATION.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
 2026-06-14: git commit -m "save live battery restore candidate"
 2026-06-14: git push origin aps-demo-state-wiring
+2026-06-14: git tag -f e84-live-battery-restore-candidate-2026-06-14 aed98c2
+2026-06-14: git push origin e84-live-battery-restore-candidate-2026-06-14 --force
