@@ -7906,3 +7906,13 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T07:40:19-07:00] CMD: inspect working tree and restore-point docs before promoting unified V2 hardware result to golden-only
 [2026-06-15T07:40:37-07:00] CMD: clean build churn before committing unified V2 hardware verification as golden-only restore point
 [2026-06-15T07:41:09-07:00] CMD: git add unified VirtualPatientV2 source/docs updates and commit as golden-only restore point
+[2026-06-15T08:03:10-07:00] CMD: inspect branch/head/status before reflashing current golden VirtualPatientV2 image
+[2026-06-15T08:03:10-07:00] CMD: OpenOCD LCD-safe pre-reset-run before reflashing current golden VirtualPatientV2 image
+[2026-06-15T08:03:22-07:00] CMD: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 before reflashing current golden image
+[2026-06-15T08:04:55-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for current golden image
+[2026-06-15T08:05:26-07:00] RESULT: build/program passed for current golden image
+[2026-06-15T08:05:26-07:00] CMD: OpenOCD LCD-safe post-reset-run after reflashing current golden image
+[2026-06-15T08:08:49-07:00] CMD: inspect status before commit/push current V2 live LCD state
+[2026-06-15T08:08:59-07:00] CMD: read required project docs and repo AGENTS before commit/push
+[2026-06-15T08:09:09-07:00] CMD: inspect pending diffs before commit/push request
+[2026-06-15T08:09:26-07:00] CMD: clean build-log churn and commit/push current live V2 hardware truth

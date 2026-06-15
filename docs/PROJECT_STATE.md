@@ -34,6 +34,10 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - LCD live / GUI visible
   - CRT updates continue past breakfast
   - the first breakfast event no longer causes the earlier freeze symptom
+- 2026-06-15: Reflashed the current golden commit `deeb67c` using the LCD-safe OpenOCD pre/post reset-run flow and reconfirmed hardware truth:
+  - LCD live / GUI visible
+  - GUI remains active on the current `VirtualPatientV2` unified image
+  - this remains the active golden hardware checkpoint for continued work
 - 2026-06-14: Current physically verified golden/failsafe hardware truth point is `c87802a` on branch `aps-glucose-unified-display`.
 - 2026-06-15: Started branch `vp2-background-on-v1-visible` from `83b5d7f` to add `VirtualPatientV2` into the `c87802a`-style runtime without changing the visible dashboard source.
 - 2026-06-15: Visible dashboard / LCD / CRT / chart remain on the proven `VirtualPatientV1` path through `ApsDemoState_Step()`.
