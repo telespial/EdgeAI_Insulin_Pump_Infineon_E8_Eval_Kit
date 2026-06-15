@@ -21,6 +21,7 @@ enum
 typedef struct
 {
     uint32_t sample_index;
+    bool aps_runtime_armed;
     lv_obj_t *chart;
     lv_chart_series_t *glucose_series;
     lv_chart_series_t *prediction_series;
@@ -440,22 +441,26 @@ static void push_sample(const aps_demo_state_t *state)
     gDashboard.sample_index++;
 }
 
-static void seed_chart(void)
+static void seed_chart_placeholder(void)
 {
-    aps_demo_state_t state;
-
-    if (!ApsDemoState_Step(0u, &state))
+    static const aps_demo_state_t placeholder_state =
     {
-        return;
-    }
+        .bg_mgdl = 110u,
+        .iob_u = 0.8f,
+        .cob_g = 0.0f,
+        .action = APS_ACTION_NO_CHANGE,
+        .insulin_u_hr = 0.8f,
+        .safety_flags = 0u,
+        .action_text = "HOLD",
+        .safe_text = "NORM",
+    };
+    uint16_t predicted_mgdl = aps_graph_prediction_mgdl(&placeholder_state);
 
     if ((gDashboard.chart != NULL) && (gDashboard.glucose_series != NULL))
     {
-        uint16_t predicted_mgdl = aps_graph_prediction_mgdl(&state);
-
         lv_chart_set_all_value(gDashboard.chart,
                                gDashboard.glucose_series,
-                               (int32_t)state.bg_mgdl);
+                               (int32_t)placeholder_state.bg_mgdl);
         if (gDashboard.prediction_series != NULL)
         {
             lv_chart_set_all_value(gDashboard.chart,
@@ -464,8 +469,8 @@ static void seed_chart(void)
         }
     }
 
-    render_dashboard_state(&state, false);
-    gDashboard.sample_index = 1u;
+    render_dashboard_state(&placeholder_state, false);
+    gDashboard.sample_index = 0u;
 }
 
 static void dashboard_timer_cb(lv_timer_t *timer)
@@ -474,6 +479,12 @@ static void dashboard_timer_cb(lv_timer_t *timer)
     uint32_t now_s;
 
     (void)timer;
+    if (!gDashboard.aps_runtime_armed)
+    {
+        gDashboard.aps_runtime_armed = true;
+        return;
+    }
+
     now_s = gDashboard.sample_index * (uint32_t)CGM_REPLAY_SAMPLE_MINUTES * 60u;
     if (!ApsDemoState_Step(now_s, &state))
     {
@@ -757,8 +768,7 @@ void edgeai_insulin_pump_app_start(void)
         }
     }
 
-    (void)ApsDemoState_Init();
-    gDashboard.sample_index = 0u;
-    seed_chart();
+    gDashboard.aps_runtime_armed = false;
+    seed_chart_placeholder();
     gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);
 }

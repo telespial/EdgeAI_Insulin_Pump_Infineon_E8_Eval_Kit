@@ -64,16 +64,24 @@ static virtual_patient_v2_runtime_t g_runtime;
 
 static vp_scenario_t default_scenario(void)
 {
-#if defined(APP_VP_SCENARIO_NORMAL) && (APP_VP_SCENARIO_NORMAL == 1)
-    return VP_SCENARIO_NORMAL;
-#elif defined(APP_VP_SCENARIO_EXERCISE) && (APP_VP_SCENARIO_EXERCISE == 1)
-    return VP_SCENARIO_EXERCISE;
-#elif defined(APP_VP_SCENARIO_DAWN) && (APP_VP_SCENARIO_DAWN == 1)
-    return VP_SCENARIO_DAWN;
-#elif defined(APP_VP_SCENARIO_LOW) && (APP_VP_SCENARIO_LOW == 1)
-    return VP_SCENARIO_LOW_GLUCOSE;
-#elif defined(APP_VP_SCENARIO_RAPID) && (APP_VP_SCENARIO_RAPID == 1)
-    return VP_SCENARIO_RAPID_FALL;
+#if defined(APP_VP_SCENARIO_MODE)
+    switch (APP_VP_SCENARIO_MODE)
+    {
+        case VP_SCENARIO_MODE_NORMAL:
+            return VP_SCENARIO_NORMAL;
+        case VP_SCENARIO_MODE_BREAKFAST:
+            return VP_SCENARIO_BREAKFAST;
+        case VP_SCENARIO_MODE_EXERCISE:
+            return VP_SCENARIO_EXERCISE;
+        case VP_SCENARIO_MODE_DAWN:
+            return VP_SCENARIO_DAWN;
+        case VP_SCENARIO_MODE_LOW_GLUCOSE:
+            return VP_SCENARIO_LOW_GLUCOSE;
+        case VP_SCENARIO_MODE_RAPID_FALL:
+            return VP_SCENARIO_RAPID_FALL;
+        default:
+            return VP_SCENARIO_BREAKFAST;
+    }
 #else
     return VP_SCENARIO_BREAKFAST;
 #endif

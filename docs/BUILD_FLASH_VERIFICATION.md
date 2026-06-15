@@ -1,3 +1,29 @@
+## Update 2026-06-15 — deferred APS/V2 startup after first stable render
+
+Status:
+- `EMBEDDED BUILT`
+- `FLASHED`
+- `RUNNING ON HARDWARE`
+
+Evidence:
+- branch: `vp2-background-on-v1-visible`
+- source change:
+  - removed immediate `ApsDemoState_Init()` call from `edgeai_insulin_pump_app_start()`
+  - replaced live startup seeding with a static placeholder dashboard state
+  - added a one-tick arming delay before `dashboard_timer_cb()` starts APS stepping
+- `make clean TOOLCHAIN=GCC_ARM` passed
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+- OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- physical LCD result: live / GUI visible / `Virtual Human` values delayed, then running
+
+Interpretation:
+- the image now renders one stable placeholder frame before any APS/V2 stepping occurs
+- this isolates `VirtualPatientV2` work from first-frame LVGL/display bring-up
+- hardware survived the change and confirms the early-start interaction was part of the freeze risk
+- current startup delay is longer than desired because the visible data path waits through the placeholder-first arming behavior
+
 ## Update 2026-06-15 — VirtualPatientV2 debug-code image confirmed on hardware
 
 Status:
@@ -670,6 +696,7 @@ Scope:
   - added deterministic scenario selection to `VirtualPatientV2`
   - added support for `NORMAL`, `BREAKFAST`, `EXERCISE`, `DAWN`, `LOW_GLUCOSE`, and `RAPID_FALL`
   - preserved `BREAKFAST` as the default no-flag visible runtime
+  - simplified selection to a single compile-time mode value `APP_VP_SCENARIO_MODE=1..6`
 - Host validation:
   - `make -f host.mk test` passed
   - `make -f host.mk regression` passed
@@ -677,3 +704,64 @@ Scope:
   - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
 - Flash / hardware validation:
   - not run in this milestone
+
+## Failed Flash Verification — VirtualPatientV2 rapid scenario image
+- Branch: `vp2-background-on-v1-visible`
+- Source HEAD flashed: `20c23a1`
+- Build/program configuration:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=6 -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=6`
+- OpenOCD result:
+  - pre-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+  - post-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result:
+  - blank / dead / frozen
+- Notes:
+  - the rapid-fall scenario image is not a safe hardware point even though build/program/reset all reported healthy
+
+## Confirmed Recovery — exact runtime restore after rapid scenario failure
+- Restore source:
+  - exact commit `deeb67c`
+  - detached worktree `/tmp/e84-deeb67c-restore`
+- Recovery build/program configuration:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD result:
+  - pre-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+  - post-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result:
+  - live / GUI visible
+- Notes:
+  - `deeb67c` is the latest re-confirmed LCD-live recovery image after the rapid-scenario failure
+
+## Failed Flash Verification — VirtualPatientV2 mode-1 single-mode image
+- Branch: `vp2-background-on-v1-visible`
+- Source HEAD flashed: `20c23a1`
+- Build/program configuration:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=1 -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=1`
+- OpenOCD result:
+  - pre-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+  - post-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result:
+  - blank / dead / frozen
+- Notes:
+  - the single-mode selector refactor passed host/build validation but the mode-1 hardware image is not a safe LCD point
+  - physical truth remains the exact restore commit `deeb67c`
+
+## Confirmed Recovery — exact runtime restore after mode-1 single-mode failure
+- Restore source:
+  - exact commit `deeb67c`
+  - detached worktree `/tmp/e84-deeb67c-restore`
+- Recovery build/program configuration:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD result:
+  - pre-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+  - post-reset healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result:
+  - pending user confirmation

@@ -1,5 +1,15 @@
 # ToDo
 
+## Current Active Milestone — Defer APS/V2 Until After First Stable Render
+- [x] Identify startup-time APS/V2 work still happening during UI construction
+- [x] Remove immediate `ApsDemoState_Init()` from app start
+- [x] Seed the first frame from a static placeholder state
+- [x] Delay APS stepping until after the first dashboard-timer interval
+- [x] Verify clean embedded build
+- [x] Flash deferred-startup build with LCD-safe reset/program/reset
+- [x] Confirm physical LCD remains live
+- [x] Confirm freeze behavior changes or disappears
+- [ ] Shorten the visible startup delay while preserving the safe first render
 ## Current Active Milestone — V2 Single-Source Hardware Verification
 - [x] Confirm whether a `VirtualPatientV1` / `VirtualPatientV2Background` split existed
 - [x] Reproduce the breakfast event on host
@@ -451,12 +461,12 @@ Initial implementation:
 Use compile-time selection:
 
 ```text
-APP_VP_SCENARIO_NORMAL
-APP_VP_SCENARIO_BREAKFAST
-APP_VP_SCENARIO_EXERCISE
-APP_VP_SCENARIO_DAWN
-APP_VP_SCENARIO_LOW
-APP_VP_SCENARIO_RAPID
+APP_VP_SCENARIO_MODE=1   # NORMAL
+APP_VP_SCENARIO_MODE=2   # BREAKFAST
+APP_VP_SCENARIO_MODE=3   # EXERCISE
+APP_VP_SCENARIO_MODE=4   # DAWN
+APP_VP_SCENARIO_MODE=5   # LOW_GLUCOSE
+APP_VP_SCENARIO_MODE=6   # RAPID_FALL
 ```
 
 Later:

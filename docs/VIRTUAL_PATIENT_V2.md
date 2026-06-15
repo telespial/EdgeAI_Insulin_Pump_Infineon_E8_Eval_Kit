@@ -25,15 +25,16 @@
 - `VP_SCENARIO_LOW_GLUCOSE`
 - `VP_SCENARIO_RAPID_FALL`
 
-The default remains `VP_SCENARIO_BREAKFAST` so the current visible dashboard behavior does not change unless a scenario flag is explicitly selected.
+The default remains `VP_SCENARIO_BREAKFAST` so the current visible dashboard behavior does not change unless a scenario mode is explicitly selected.
 
-Supported scenario flags:
+Supported single scenario mode:
 
-- `APP_VP_SCENARIO_NORMAL=1`
-- `APP_VP_SCENARIO_EXERCISE=1`
-- `APP_VP_SCENARIO_DAWN=1`
-- `APP_VP_SCENARIO_LOW=1`
-- `APP_VP_SCENARIO_RAPID=1`
+- `APP_VP_SCENARIO_MODE=1` → `NORMAL`
+- `APP_VP_SCENARIO_MODE=2` → `BREAKFAST`
+- `APP_VP_SCENARIO_MODE=3` → `EXERCISE`
+- `APP_VP_SCENARIO_MODE=4` → `DAWN`
+- `APP_VP_SCENARIO_MODE=5` → `LOW_GLUCOSE`
+- `APP_VP_SCENARIO_MODE=6` → `RAPID_FALL`
 
 ## State Fields
 - `epoch_s`
@@ -112,7 +113,7 @@ Supported scenario flags:
 
 ## Update 2026-06-15 — Scenario Engine Milestone
 
-- Added `vp_scenario_t` and scenario-aware initialization.
+- Added `vp_scenario_t`, scenario mode constants, and scenario-aware initialization.
 - Preserved the current dashboard default by leaving `BREAKFAST` as the no-flag default.
 - Added host coverage proving all six scenarios:
   - stay bounded
@@ -139,6 +140,13 @@ Supported scenario flags:
 
 ## Next Step
 - Flash `VirtualPatientV2` with the known LCD-safe procedure and confirm CRT values remain alive beyond the earlier finite demo window.
+
+## Update 2026-06-15 — Deferred startup hardware result
+- A startup-isolation pass now lets the display render a stable placeholder frame before APS/V2 stepping begins.
+- Hardware result:
+  - LCD alive / GUI visible
+  - `Virtual Human` values stay static briefly after boot, then begin updating
+- This confirms the deferred start is LCD-safe, but the current visible startup hold is longer than desired and should be shortened in a later pass.
 
 ## Update 2026-06-15 — Breakfast Trace
 - `VP2_BREAKFAST_STEP = 4`

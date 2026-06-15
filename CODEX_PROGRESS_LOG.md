@@ -1,5 +1,22 @@
 # Codex Progress Log
 
+## 2026-06-15 — Defer APS/V2 until after first stable render
+
+Changed:
+- Removed immediate APS demo init from `edgeai_insulin_pump_app_start()`.
+- Replaced live startup chart seeding with a static placeholder render.
+- Added a one-tick arming delay so the existing dashboard timer starts APS/V2 work only after the first stable LCD frame.
+
+Tests:
+- `make clean TOOLCHAIN=GCC_ARM`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+
+Hardware result:
+- LCD alive / GUI visible
+- `Virtual Human` values remain static briefly, then begin updating
+- observed startup delay is roughly 20 seconds
+
 ## 2026-06-15 — VirtualPatientV2 breakfast freeze investigation
 
 Changed:
@@ -669,6 +686,13 @@ Next recommended step:
 
 Changed:
 - Added deterministic scenario selection to `VirtualPatientV2` with six modes: `NORMAL`, `BREAKFAST`, `EXERCISE`, `DAWN`, `LOW_GLUCOSE`, and `RAPID_FALL`.
+- Simplified scenario selection to one compile-time mode value:
+  - `APP_VP_SCENARIO_MODE=1` normal
+  - `APP_VP_SCENARIO_MODE=2` breakfast
+  - `APP_VP_SCENARIO_MODE=3` exercise
+  - `APP_VP_SCENARIO_MODE=4` dawn
+  - `APP_VP_SCENARIO_MODE=5` low glucose
+  - `APP_VP_SCENARIO_MODE=6` rapid fall
 - Preserved `BREAKFAST` as the default no-flag runtime so the current proven LCD behavior stays unchanged unless we intentionally build a scenario-specific image later.
 - Added host tests that run all six scenarios and verify bounded behavior plus distinct meal / bolus / glucose signatures.
 
@@ -678,4 +702,4 @@ Tests:
 - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
 
 Next recommended step:
-- Intentionally flash one non-default scenario, most likely `APP_VP_SCENARIO_RAPID=1` or `APP_VP_SCENARIO_EXERCISE=1`, and verify that the CRT values visibly diverge from the default breakfast behavior while the LCD remains stable.
+- Intentionally flash one non-default scenario, most likely `APP_VP_SCENARIO_MODE=6` or `APP_VP_SCENARIO_MODE=3`, and verify that the CRT values visibly diverge from the default breakfast behavior while the LCD remains stable.

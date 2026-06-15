@@ -7926,3 +7926,71 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T08:15:09-07:00] CMD: run embedded build for VirtualPatientV2 scenario-engine phase
 [2026-06-15T08:18:36-07:00] CMD: inspect working tree after VirtualPatientV2 scenario-engine phase
 [2026-06-15T08:18:44-07:00] CMD: clean build churn before committing VirtualPatientV2 scenario-engine milestone
+[2026-06-15T08:19:55-07:00] CMD: inspect status before VirtualPatientV2 rapid-scenario flash
+[2026-06-15T08:20:03-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing VirtualPatientV2 rapid scenario image
+[2026-06-15T08:20:13-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_RAPID=1 for VirtualPatientV2 rapid scenario image
+[2026-06-15T08:23:16-07:00] CMD: read repo AGENTS and required state/runbook docs before continuing rapid scenario flash
+[2026-06-15T08:23:16-07:00] CMD: inspect git status/head/branch/log before continuing rapid scenario flash
+[2026-06-15T08:23:16-07:00] CMD: tail docs/COMMAND_LOG.md for latest rapid scenario flash context
+[2026-06-15T08:23:16-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_RAPID=1 for VirtualPatientV2 rapid scenario image
+[2026-06-15T08:23:47-07:00] RESULT: programming passed; wrote app_combined.hex and verify passed on PSE846GPS2DBZC4A for the VirtualPatientV2 rapid scenario image
+[2026-06-15T08:23:47-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing VirtualPatientV2 rapid scenario image
+[2026-06-15T08:26:44-07:00] RESULT: Physical LCD result for VirtualPatientV2 rapid scenario image: LCD blank / dead / frozen
+[2026-06-15T08:26:44-07:00] CMD: recover last known LCD-live runtime image from exact commit deeb67c using detached worktree
+[2026-06-15T08:27:08-07:00] RESULT: OpenOCD LCD-safe pre-reset-run healthy for exact restore commit deeb67c (PSE846GPS2DBZC4A, CYBOOT_SUCCESS)
+[2026-06-15T08:28:46-07:00] RESULT: clean rebuild passed for exact LCD-live restore commit deeb67c
+[2026-06-15T08:28:46-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP from exact restore commit deeb67c
+[2026-06-15T08:29:20-07:00] RESULT: exact restore commit deeb67c programmed successfully; verify passed on PSE846GPS2DBZC4A
+[2026-06-15T08:29:20-07:00] CMD: OpenOCD LCD-safe post-reset-run after restoring exact commit deeb67c
+[2026-06-15T08:30:10-07:00] RESULT: User confirmed exact restore commit deeb67c recovery image is LCD live / GUI visible after rapid-scenario failure recovery
+[2026-06-15T08:34:45-07:00] CMD: inspect VirtualPatientV2 scenario-selection source before single-mode refactor
+[2026-06-15T08:35:17-07:00] CMD: search docs/source for VirtualPatientV2 scenario compile-flag references after single-mode refactor
+[2026-06-15T08:35:17-07:00] CMD: run host tests after VirtualPatientV2 single-mode scenario refactor
+[2026-06-15T08:35:29-07:00] CMD: run host regression after VirtualPatientV2 single-mode scenario refactor
+[2026-06-15T08:35:30-07:00] CMD: run embedded build after VirtualPatientV2 single-mode scenario refactor
+[2026-06-15T08:37:54-07:00] RESULT: VirtualPatientV2 single-mode scenario refactor passed host tests, host regression, and embedded build
+[2026-06-15T08:38:01-07:00] CMD: clean transient build artifacts after VirtualPatientV2 single-mode scenario refactor
+[2026-06-15T08:43:09-07:00] CMD: prepare VirtualPatientV2 single-mode hardware flash using APP_VP_SCENARIO_MODE=1 (NORMAL)
+[2026-06-15T08:43:25-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing VirtualPatientV2 mode-1 image
+[2026-06-15T08:43:38-07:00] RESULT: OpenOCD LCD-safe pre-reset-run healthy for VirtualPatientV2 mode-1 image (PSE846GPS2DBZC4A, CYBOOT_SUCCESS)
+[2026-06-15T08:43:38-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=1 for VirtualPatientV2 mode-1 image
+[2026-06-15T08:45:05-07:00] RESULT: clean build passed for VirtualPatientV2 mode-1 image (APP_VP_SCENARIO_MODE=1)
+[2026-06-15T08:45:05-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=1 for VirtualPatientV2 mode-1 image
+[2026-06-15T08:45:36-07:00] RESULT: make program passed for VirtualPatientV2 mode-1 image (APP_VP_SCENARIO_MODE=1)
+[2026-06-15T08:45:36-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing VirtualPatientV2 mode-1 image
+[2026-06-15T08:46:41-07:00] CMD: recover LCD after mode-1 scenario failure by rebuilding exact LCD-live restore commit deeb67c in detached worktree
+[2026-06-15T08:46:55-07:00] RESULT: stale detached worktree registration blocked first restore attempt; pruning and retrying exact commit deeb67c recovery
+[2026-06-15T08:46:55-07:00] CMD: OpenOCD LCD-safe pre-reset-run before restoring exact commit deeb67c
+[2026-06-15T08:46:58-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for exact restore commit deeb67c
+[2026-06-15T08:48:37-07:00] RESULT: clean rebuild passed for exact LCD-live restore commit deeb67c
+[2026-06-15T08:48:37-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP from exact restore commit deeb67c
+[2026-06-15T08:49:12-07:00] RESULT: exact restore commit deeb67c programmed successfully; verify passed on PSE846GPS2DBZC4A
+[2026-06-15T08:49:12-07:00] CMD: OpenOCD LCD-safe post-reset-run after restoring exact commit deeb67c
+[2026-06-15T08:54:10-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing VirtualPatientV2 BREAKFAST scenario image (APP_VP_SCENARIO_MODE=2)
+[2026-06-15T08:54:12-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=2 for VirtualPatientV2 BREAKFAST scenario image
+[2026-06-15T08:55:53-07:00] RESULT: clean build passed for VirtualPatientV2 BREAKFAST scenario image (APP_VP_SCENARIO_MODE=2)
+[2026-06-15T08:55:53-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP DEFINES+=APP_VP_SCENARIO_MODE=2 for VirtualPatientV2 BREAKFAST scenario image
+[2026-06-15T08:57:01-07:00] RESULT: make program passed for VirtualPatientV2 BREAKFAST scenario image (APP_VP_SCENARIO_MODE=2)
+[2026-06-15T08:57:01-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing VirtualPatientV2 BREAKFAST scenario image
+[2026-06-15T08:57:41-07:00] INCIDENT: BREAKFAST scenario flash physical result = LCD dead; starting exact restore to deeb67c
+[2026-06-15T08:57:47-07:00] CMD: git worktree add --detach /tmp/e84_restore_deeb67c deeb67c
+[2026-06-15T08:58:09-07:00] CMD: OpenOCD LCD-safe pre-reset-run before restoring exact deeb67c image
+[2026-06-15T08:58:11-07:00] RESULT: OpenOCD LCD-safe pre-reset-run healthy before restoring exact deeb67c image
+[2026-06-15T08:58:11-07:00] CMD: make clean TOOLCHAIN=GCC_ARM && make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 (exact deeb67c restore image)
+[2026-06-15T08:59:46-07:00] RESULT: clean build passed for exact deeb67c restore image
+[2026-06-15T08:59:46-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP (exact deeb67c restore image)
+[2026-06-15T09:00:13-07:00] RESULT: make program passed for exact deeb67c restore image
+[2026-06-15T09:00:13-07:00] CMD: OpenOCD LCD-safe post-reset-run after restoring exact deeb67c image
+[2026-06-15T09:00:15-07:00] RESULT: OpenOCD LCD-safe post-reset-run healthy after restoring exact deeb67c image
+[2026-06-15T09:01:29-07:00] CMD: rg scenario-mode and V2 init call path for user question about init ordering
+[2026-06-15T09:04:45-07:00] CMD: read startup docs and inspect V2 startup path before deferring V2 until after first stable render
+[2026-06-15T09:05:46-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP after deferring APS/V2 startup until after first stable render
+[2026-06-15T09:08:03-07:00] RESULT: clean build passed after deferring APS/V2 startup until after first stable render
+[2026-06-15T09:08:36-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing deferred APS/V2 startup image
+[2026-06-15T09:08:38-07:00] RESULT: OpenOCD LCD-safe pre-reset-run healthy before flashing deferred APS/V2 startup image
+[2026-06-15T09:08:38-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for deferred APS/V2 startup image
+[2026-06-15T09:08:53-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for deferred APS/V2 startup image (env fixed)
+[2026-06-15T09:09:13-07:00] RESULT: make program passed for deferred APS/V2 startup image
+[2026-06-15T09:09:13-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing deferred APS/V2 startup image
+[2026-06-15T09:09:15-07:00] RESULT: OpenOCD LCD-safe post-reset-run healthy after flashing deferred APS/V2 startup image
+[2026-06-15T09:12:51-07:00] CMD: inspect repo state before adding THINKING alert box and documenting delayed-start behavior

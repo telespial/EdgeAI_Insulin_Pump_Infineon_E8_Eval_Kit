@@ -14,6 +14,16 @@ typedef enum
     VP_SCENARIO_RAPID_FALL,
 } vp_scenario_t;
 
+enum
+{
+    VP_SCENARIO_MODE_NORMAL = 1,
+    VP_SCENARIO_MODE_BREAKFAST = 2,
+    VP_SCENARIO_MODE_EXERCISE = 3,
+    VP_SCENARIO_MODE_DAWN = 4,
+    VP_SCENARIO_MODE_LOW_GLUCOSE = 5,
+    VP_SCENARIO_MODE_RAPID_FALL = 6,
+};
+
 typedef struct
 {
     uint32_t epoch_s;

@@ -19,6 +19,18 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-15: Added a display-safe startup isolation change on branch `vp2-background-on-v1-visible` so APS/V2 work is deferred until after the first stable render:
+  - `edgeai_insulin_pump_app_start()` no longer calls `ApsDemoState_Init()` during UI construction
+  - the initial chart / CRT / large glucose render now seeds from a static placeholder APS state
+  - the existing dashboard timer skips its first callback, then begins APS stepping on the next tick
+  - goal: isolate `VirtualPatientV2` runtime from first-frame LVGL/display bring-up without changing the proven LCD layout
+- 2026-06-15: Embedded build validation passed for the deferred-startup isolation change:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- 2026-06-15: Deferred-startup isolation image was flashed with the LCD-safe reset/program/reset flow and physically verified:
+  - LCD alive / GUI visible
+  - `Virtual Human` values stay static briefly after boot, then begin running
+  - observed startup hold was about `20 seconds`, which matches the current placeholder-first / arm-later behavior and confirms the display survives the deferred start
 - 2026-06-15: Implemented the `VirtualPatientV2` scenario-engine phase without changing the proven LCD layout or visible default runtime behavior.
 - 2026-06-15: `VirtualPatientV2` now supports deterministic compile-time-selectable scenarios:
   - `NORMAL`
@@ -27,13 +39,26 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - `DAWN`
   - `LOW_GLUCOSE`
   - `RAPID_FALL`
-- 2026-06-15: The default visible runtime remains `BREAKFAST` unless an explicit `APP_VP_SCENARIO_*` flag is enabled, preserving the current display behavior on the known-good image.
+- 2026-06-15: Scenario selection now uses one compile-time numeric mode value instead of six separate boolean flags:
+  - `APP_VP_SCENARIO_MODE=1` → `NORMAL`
+  - `APP_VP_SCENARIO_MODE=2` → `BREAKFAST`
+  - `APP_VP_SCENARIO_MODE=3` → `EXERCISE`
+  - `APP_VP_SCENARIO_MODE=4` → `DAWN`
+  - `APP_VP_SCENARIO_MODE=5` → `LOW_GLUCOSE`
+  - `APP_VP_SCENARIO_MODE=6` → `RAPID_FALL`
+- 2026-06-15: The default visible runtime remains `BREAKFAST` unless an explicit `APP_VP_SCENARIO_MODE` value is enabled, preserving the current display behavior on the known-good image.
 - 2026-06-15: Added host coverage proving all six scenarios stay bounded, change over time, and produce distinct meal / bolus / glucose signatures.
 - 2026-06-15: Scenario-engine validation passed:
   - `make -f host.mk test`
   - `make -f host.mk regression`
   - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
-- 2026-06-15: No flash was performed for the scenario-engine milestone; current physical LCD truth remains the last separately confirmed hardware image (`deeb67c` reflashed and user-confirmed live).
+- 2026-06-15: A later hardware check of the single-mode selector using `APP_VP_SCENARIO_MODE=1` did not produce a safe LCD image:
+  - source head tested: `20c23a1`
+  - clean build passed
+  - program passed
+  - OpenOCD pre/post reset-run stayed healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+  - physical LCD result was `blank / dead / frozen`
+- 2026-06-15: Current physical LCD truth remains the last separately reconfirmed runtime image at exact commit `deeb67c`.
 - 2026-06-15: Investigated the suspected `VirtualPatientV2` breakfast freeze without reflashing hardware first.
 - 2026-06-15: Confirmed a runtime split in source:
   - `ApsDemoState_Step()` used `VirtualPatientV1`
@@ -1554,3 +1579,28 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
 - Physical LCD result:
   - pending user confirmation
+
+## Update 2026-06-15 Rapid scenario failure and exact LCD-live recovery
+- Branch at failed flash:
+  - `vp2-background-on-v1-visible`
+- Failed image:
+  - commit `20c23a1`
+  - build/programmed with `APP_VP_SCENARIO_RAPID=1`
+- Failure result:
+  - build passed
+  - program passed
+  - OpenOCD pre/post reset-run stayed healthy with `PSE846GPS2DBZC4A` and `CYBOOT_SUCCESS`
+  - physical LCD result was `blank / dead / frozen`
+- Recovery action:
+  - created detached worktree `/tmp/e84-deeb67c-restore`
+  - restored exact commit `deeb67c` (`unify virtual patient v2 runtime`)
+  - ran LCD-safe OpenOCD pre-reset-run
+  - ran `make clean TOOLCHAIN=GCC_ARM`
+  - ran `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+  - ran `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - ran LCD-safe OpenOCD post-reset-run
+- Recovery result:
+  - physical LCD result confirmed `live / GUI visible`
+- Current hardware truth:
+  - exact restore commit `deeb67c` is the latest re-confirmed LCD-live runtime image after the rapid-scenario failure
+  - the rapid-scenario image is not a safe hardware point
