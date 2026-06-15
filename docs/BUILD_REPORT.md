@@ -2,6 +2,27 @@
 
 > Detailed evidence report: `docs/BUILD_FLASH_VERIFICATION.md`
 
+## Update 2026-06-15 — Deferred-startup 250 ms golden checkpoint
+
+## Branch
+- `vp2-background-on-v1-visible`
+
+## Commands
+```bash
+make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP
+```
+
+## Result
+- Program: success
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Physical LCD result: live / GUI visible
+- Scope: recovery-safe delayed startup image with `250 ms` arm delay, normal `5000 ms` replay cadence afterward
+
+## Notes
+- This supersedes the earlier delayed-start checkpoint as the active **golden** restore point.
+- The failsafe restore point is intentionally left unchanged while the mode issue is still being isolated.
+
 ## Update 2026-06-14 — Virtual Patient V2
 
 ## Branch

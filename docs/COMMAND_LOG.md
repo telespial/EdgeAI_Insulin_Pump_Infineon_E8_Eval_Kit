@@ -7996,3 +7996,35 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T09:12:51-07:00] CMD: inspect repo state before adding THINKING alert box and documenting delayed-start behavior
 [2026-06-15T09:14:51-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP after adding THINKING alert box
 [2026-06-15T09:18:20-07:00] RESULT: clean build passed after adding the THINKING startup alert box above Virtual Human
+[2026-06-15T09:19:00-07:00] CMD: verify flash target before THINKING-box program
+[2026-06-15T09:19:09-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing THINKING-box image
+[2026-06-15T09:19:19-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for THINKING-box image ebd787f
+[2026-06-15T09:20:49-07:00] RESULT: make program passed for THINKING-box image ebd787f
+[2026-06-15T09:20:49-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing THINKING-box image
+[2026-06-15T09:23:23-07:00] CMD: remove THINKING hide call and rebuild banner-stays-on image
+[2026-06-15T09:25:04-07:00] RESULT: clean build passed for banner-stays-on THINKING image
+[2026-06-15T09:25:04-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing banner-stays-on THINKING image
+[2026-06-15T09:25:06-07:00] RESULT: OpenOCD pre-reset-run healthy before flashing banner-stays-on THINKING image
+[2026-06-15T09:25:06-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for banner-stays-on THINKING image
+[2026-06-15T09:25:34-07:00] RESULT: make program passed for banner-stays-on THINKING image
+[2026-06-15T09:25:34-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing banner-stays-on THINKING image
+[2026-06-15T09:25:36-07:00] RESULT: OpenOCD post-reset-run healthy after flashing banner-stays-on THINKING image
+[2026-06-15T09:26:16-07:00] CMD: recover LCD by flashing exact last-known-good delayed-start commit 6023494 after THINKING banner failure
+[2026-06-15T09:28:05-07:00] RESULT: exact 6023494 build passed for LCD recovery
+[2026-06-15T09:28:05-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing exact 6023494 recovery image
+[2026-06-15T09:28:07-07:00] RESULT: OpenOCD pre-reset-run healthy before flashing exact 6023494 recovery image
+[2026-06-15T09:28:07-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for exact 6023494 recovery image
+[2026-06-15T09:28:27-07:00] RESULT: make program passed for exact 6023494 recovery image
+[2026-06-15T09:28:27-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing exact 6023494 recovery image
+[2026-06-15T09:28:30-07:00] RESULT: OpenOCD post-reset-run healthy after flashing exact 6023494 recovery image
+[2026-06-15T09:30:01-07:00] CMD: shorten deferred startup arm delay from 5000ms skip to 250ms one-shot arm
+[2026-06-15T09:30:37-07:00] CMD: OpenOCD LCD-safe pre-reset-run before flashing shortened-startup-delay image
+[2026-06-15T09:30:40-07:00] RESULT: OpenOCD pre-reset-run healthy before flashing shortened-startup-delay image
+[2026-06-15T09:30:40-07:00] CMD: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for shortened-startup-delay image
+[2026-06-15T09:31:03-07:00] RESULT: make program passed for shortened-startup-delay image
+[2026-06-15T09:31:03-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing shortened-startup-delay image
+[2026-06-15T09:31:05-07:00] RESULT: OpenOCD post-reset-run healthy after flashing shortened-startup-delay image
+[2026-06-15T09:39:26-07:00] CMD: copy current delayed-start LCD-good artifacts to ../failsafe/e8_insulin_pump_20260615_093926_vp2_delayed_start_250ms_*
+[2026-06-15T09:39:26-07:00] RESULT: captured current app_combined.hex and proj_cm55.elf as delayed-start golden artifacts
+[2026-06-15T09:40:00-07:00] RESULT: physical LCD confirmed live / GUI visible after reflashing the 250 ms delayed-start image
+[2026-06-15T09:40:30-07:00] CMD: update PROJECT_STATE / BUILD_REPORT / BUILD_FLASH_VERIFICATION / RESTORE_POINTS / CODEX_PROGRESS_LOG / ToDo for the new delayed-start golden checkpoint

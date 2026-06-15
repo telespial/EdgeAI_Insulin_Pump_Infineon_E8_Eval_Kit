@@ -15,7 +15,6 @@ Tests:
 Hardware result:
 - LCD alive / GUI visible
 - `Virtual Human` values remain static briefly, then begin updating
-- 2026-06-15: Added a yellow `THINKING` startup alert above `Virtual Human`, wired it to hide on the first live APS sample, and passed a clean embedded build without flashing yet.
 - observed startup delay is roughly 20 seconds
 
 ## 2026-06-15 — VirtualPatientV2 breakfast freeze investigation
@@ -682,6 +681,7 @@ Next recommended step:
 - 2026-06-15: Flashed the `VirtualPatientV2` debug-code image on `vp2-background-on-v1-visible`; hardware stayed live and the center `MG/DL` readout showed steady `299`, proving `V2` reaches its terminal success code without reproducing the earlier freeze during this check.
 - 2026-06-15: Built and flashed a follow-up `VirtualPatientV2` expose image that replaces the final-only `299` center readout with background `V2` glucose and exposes `STEP/CARBS/INS ONBD/TARGET/DEBUG` on the CRT terminal. OpenOCD pre/post reset-run remained healthy; physical LCD confirmation is now pending.
 - 2026-06-15: Built and flashed a one-change chart-refresh isolation image (`APP_V2_DISABLE_CHART_REFRESH=1`) that keeps background `V2` expose values live while disabling only the chart update/refresh block. OpenOCD pre/post reset-run remained healthy; physical LCD confirmation is now pending.
+- 2026-06-15: Removed the failed `THINKING` banner path, reduced the deferred APS/V2 arm delay to `250 ms`, reflashed with the LCD-safe reset/program/reset workflow, and got a fresh physical confirmation that the LCD is live / GUI visible again. This is the new golden checkpoint; the older failsafe remains unchanged.
 
 ## 2026-06-15 — VirtualPatientV2 scenario engine
 

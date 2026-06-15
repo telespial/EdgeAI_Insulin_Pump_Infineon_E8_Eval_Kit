@@ -10,7 +10,6 @@
 - [x] Confirm physical LCD remains live
 - [x] Confirm freeze behavior changes or disappears
 - [ ] Shorten the visible startup delay while preserving the safe first render
-- [ ] Flash and physically verify the `THINKING` startup alert box on the deferred-start image
 ## Current Active Milestone — V2 Single-Source Hardware Verification
 - [x] Confirm whether a `VirtualPatientV1` / `VirtualPatientV2Background` split existed
 - [x] Reproduce the breakfast event on host
@@ -610,3 +609,10 @@ Report:
 - [x] Replace final-only `299` display with exposed background `V2` glucose plus `STEP/CARBS/INS ONBD/TARGET/DEBUG` fields
 - [ ] Determine whether `V2` is repeatedly completing the same step or advancing through scenario state
 - [ ] Capture physical LCD result for the V2 expose image
+
+### Immediate Next Focus — Scenario Mode Issue
+- [x] Recover from the failed `THINKING` banner experiment and restore an LCD-live delayed-start image
+- [x] Shorten the deferred-start arm delay to `250 ms` and confirm the LCD still comes up live
+- [x] Promote the LCD-live `250 ms` delayed-start image as the new golden restore point
+- [ ] Isolate why `APP_VP_SCENARIO_MODE` images can pass build/program yet still blank the LCD
+- [ ] Keep the current delayed-start golden image available as the rollback base while mode work proceeds

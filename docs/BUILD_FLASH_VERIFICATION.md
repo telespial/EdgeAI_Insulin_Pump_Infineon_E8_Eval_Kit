@@ -24,25 +24,6 @@ Interpretation:
 - hardware survived the change and confirms the early-start interaction was part of the freeze risk
 - current startup delay is longer than desired because the visible data path waits through the placeholder-first arming behavior
 
-## Update 2026-06-15 — THINKING startup alert box
-
-Status:
-- `EMBEDDED BUILT`
-
-Evidence:
-- branch: `vp2-background-on-v1-visible`
-- source change:
-  - added a screen-level yellow `THINKING` label above `Virtual Human`
-  - label is visible during the deferred startup hold
-  - `push_sample()` hides the label on the first live APS update
-- `make clean TOOLCHAIN=GCC_ARM` passed
-- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
-- no flash performed yet for this milestone
-
-Interpretation:
-- the startup alert path now compiles cleanly on the known-safe deferred-start image
-- hardware truth is still pending because this update has not been flashed yet
-
 ## Update 2026-06-15 — VirtualPatientV2 debug-code image confirmed on hardware
 
 Status:
@@ -68,6 +49,27 @@ Interpretation:
 - visible LCD / CRT / chart remain on the proven `V1` APS display path while the center glucose number is temporarily repurposed as the `V2` debug indicator
 
 # Build/Flash Verification Evidence Report
+
+## Update 2026-06-15 — Deferred-startup 250 ms LCD-good golden checkpoint
+
+Status:
+- `EMBEDDED BUILT`
+- `FLASHED`
+- `RUNNING ON HARDWARE`
+
+Evidence:
+- branch: `vp2-background-on-v1-visible`
+- source state: current runtime after removing the failed `THINKING` label path and shortening the deferred-start arm delay to `250 ms`
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed earlier for this source state
+- `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+- OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- physical LCD result: `live / GUI visible`
+
+Interpretation:
+- the LCD-safe delayed-start strategy still holds after reducing the initial arm wait to `250 ms`
+- this is the current **golden** restore point for continued work on the scenario-mode issue
+- the older failsafe point remains unchanged on purpose
 
 ## Update 2026-06-15 — Background VirtualPatientV2 on V1-visible runtime
 

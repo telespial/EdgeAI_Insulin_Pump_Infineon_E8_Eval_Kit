@@ -19,14 +19,16 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
-- 2026-06-15: Added a screen-level `THINKING` alert box above `Virtual Human` on branch `vp2-background-on-v1-visible`:
-  - yellow rectangular label
-  - shown during the deferred startup hold
-  - automatically hidden on the first live APS sample inside `push_sample()`
-  - no flash performed yet for this milestone
-- 2026-06-15: Embedded build validation passed for the `THINKING` alert box change:
-  - `make clean TOOLCHAIN=GCC_ARM`
-  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- 2026-06-15: Recovered from the failed `THINKING` banner experiment and shortened the deferred APS/V2 startup arm delay from one full replay tick to `250 ms` while keeping the normal replay cadence at `5000 ms` afterward.
+- 2026-06-15: Current LCD-good hardware truth after the delay reduction:
+  - branch: `vp2-background-on-v1-visible`
+  - source state: current working runtime after removing the `THINKING` label path and applying the `250 ms` one-shot arm delay
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP` passed
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - physical result: LCD live / GUI visible
+- 2026-06-15: This checkpoint is being promoted as the new **golden** restore point for continued mode/startup work.
+- 2026-06-15: The prior failsafe restore point remains intentionally unchanged until the mode issue is isolated.
 - 2026-06-15: Added a display-safe startup isolation change on branch `vp2-background-on-v1-visible` so APS/V2 work is deferred until after the first stable render:
   - `edgeai_insulin_pump_app_start()` no longer calls `ApsDemoState_Init()` during UI construction
   - the initial chart / CRT / large glucose render now seeds from a static placeholder APS state

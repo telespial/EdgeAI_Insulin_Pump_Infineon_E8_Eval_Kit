@@ -240,3 +240,18 @@ Known-good checkpoints for fast recovery when development changes break boot, di
 - Intent:
   - this is the new **golden** restore point for continued `VirtualPatientV2` work
   - the prior failsafe restore point remains unchanged on purpose
+
+## Update 2026-06-15 Deferred-Startup 250 ms Golden Restore Point
+- Status: active **golden** restore truth for the LCD-good delayed-start image after the failed `THINKING` banner experiment.
+- Branch: `vp2-background-on-v1-visible`
+- Commit: current promoted commit after the `250 ms` arm-delay reduction and LCD-live reflash.
+- Artifacts:
+  - `../failsafe/e8_insulin_pump_20260615_093926_vp2_delayed_start_250ms_app_combined.hex`
+  - `../failsafe/e8_insulin_pump_20260615_093926_vp2_delayed_start_250ms_proj_cm55.elf`
+- Physical result:
+  - LCD live
+  - GUI visible
+  - current image survives the shorter startup hold
+- Intent:
+  - this becomes the new **golden** restore point for mode/startup investigation
+  - the prior failsafe restore point remains unchanged on purpose

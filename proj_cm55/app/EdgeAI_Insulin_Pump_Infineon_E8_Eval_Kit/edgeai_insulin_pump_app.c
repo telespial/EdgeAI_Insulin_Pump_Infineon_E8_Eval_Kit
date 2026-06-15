@@ -14,6 +14,7 @@ enum
 {
     CGM_GRAPH_POINTS = 32u,
     CGM_REPLAY_STEP_MS = 5000u,
+    APS_STARTUP_ARM_DELAY_MS = 250u,
     CGM_REPLAY_SAMPLE_MINUTES = 5u,
     BAR_GRAPH_COUNT = 3u,
 };
@@ -32,7 +33,6 @@ typedef struct
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
     lv_obj_t *aps_terminal_label;
-    lv_obj_t *thinking_label;
     lv_obj_t *replay_rate_label;
     lv_obj_t *wifi_bar;
     lv_obj_t *battery_bar;
@@ -438,10 +438,6 @@ static void render_dashboard_state(const aps_demo_state_t *state, bool append_ch
 
 static void push_sample(const aps_demo_state_t *state)
 {
-    if (gDashboard.thinking_label != NULL)
-    {
-        lv_obj_add_flag(gDashboard.thinking_label, LV_OBJ_FLAG_HIDDEN);
-    }
     render_dashboard_state(state, true);
     gDashboard.sample_index++;
 }
@@ -487,6 +483,10 @@ static void dashboard_timer_cb(lv_timer_t *timer)
     if (!gDashboard.aps_runtime_armed)
     {
         gDashboard.aps_runtime_armed = true;
+        if (timer != NULL)
+        {
+            lv_timer_set_period(timer, CGM_REPLAY_STEP_MS);
+        }
         return;
     }
 
@@ -735,25 +735,6 @@ void edgeai_insulin_pump_app_start(void)
         label = lv_label_create(screen);
         if (label != NULL)
         {
-            gDashboard.thinking_label = label;
-            lv_label_set_text(label, "THINKING");
-            lv_obj_set_style_text_color(label, lv_color_hex(0x1A1200), 0);
-            lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
-            lv_obj_set_style_bg_color(label, lv_color_hex(0xFFD54A), 0);
-            lv_obj_set_style_bg_opa(label, LV_OPA_COVER, 0);
-            lv_obj_set_style_border_width(label, 2, 0);
-            lv_obj_set_style_border_color(label, lv_color_hex(0x8A5F00), 0);
-            lv_obj_set_style_radius(label, 4, 0);
-            lv_obj_set_style_pad_left(label, 8, 0);
-            lv_obj_set_style_pad_right(label, 8, 0);
-            lv_obj_set_style_pad_top(label, 4, 0);
-            lv_obj_set_style_pad_bottom(label, 4, 0);
-            lv_obj_align(label, LV_ALIGN_CENTER, 0, 50);
-        }
-
-        label = lv_label_create(screen);
-        if (label != NULL)
-        {
             lv_label_set_text(label, "Artificial Pancreas");
             lv_obj_set_pos(label, 16, 278);
             lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
@@ -794,5 +775,5 @@ void edgeai_insulin_pump_app_start(void)
 
     gDashboard.aps_runtime_armed = false;
     seed_chart_placeholder();
-    gDashboard.timer = lv_timer_create(dashboard_timer_cb, CGM_REPLAY_STEP_MS, NULL);
+    gDashboard.timer = lv_timer_create(dashboard_timer_cb, APS_STARTUP_ARM_DELAY_MS, NULL);
 }
