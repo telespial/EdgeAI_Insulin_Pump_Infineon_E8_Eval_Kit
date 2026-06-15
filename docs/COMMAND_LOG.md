@@ -7916,3 +7916,4 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T08:08:59-07:00] CMD: read required project docs and repo AGENTS before commit/push
 [2026-06-15T08:09:09-07:00] CMD: inspect pending diffs before commit/push request
 [2026-06-15T08:09:26-07:00] CMD: clean build-log churn and commit/push current live V2 hardware truth
+[2026-06-15T08:09:40-07:00] CMD: restore tracked .ninja_log files after docs-only commit/push
