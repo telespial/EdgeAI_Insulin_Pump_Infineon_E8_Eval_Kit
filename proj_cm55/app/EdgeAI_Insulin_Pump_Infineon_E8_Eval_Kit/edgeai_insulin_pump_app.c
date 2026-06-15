@@ -433,6 +433,7 @@ static void push_sample(uint16_t current_mgdl)
     update_aps_terminal_label(gDashboard.sample_index, current_mgdl);
     update_status_bars(current_mgdl, predicted_mgdl, confidence_pct);
     update_wifi_bar(gDashboard.sample_index);
+    update_battery_bar(gDashboard.sample_index);
     if (gDashboard.prediction_accuracy_label != NULL)
     {
         snprintf(header_buffer, sizeof(header_buffer), "%d%%", (int)accuracy_pct);

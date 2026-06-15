@@ -479,3 +479,16 @@
 - Notes:
   - CRT live values continue using the APS demo-state + virtual patient pipeline
   - This is the current active golden/failsafe display restore point
+
+## Pending Physical Confirmation — Live Battery Update Candidate
+- Branch: `aps-demo-state-wiring`
+- Source baseline: static-battery golden restore point `0e058a4` plus the restored `update_battery_bar(gDashboard.sample_index)` call in `push_sample()`
+- Build: passed with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- Program: passed with `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+- OpenOCD pre-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- OpenOCD post-reset: healthy (`PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`)
+- Expected visible state:
+  - WiFi bar still live on the proven path
+  - battery bar still at `32x84 @ (725,97)`
+  - battery bar now updates from the existing backend helper again
+- Physical LCD result: pending

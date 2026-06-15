@@ -19,6 +19,21 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-14: The live battery update candidate has now been programmed with the documented LCD-safe OpenOCD pre/post reset-run flow from the static-battery golden restore point.
+- 2026-06-14: Flash/program verification passed for the live battery candidate:
+  - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`
+  - OpenOCD pre-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+  - OpenOCD post-reset healthy: `PSE846GPS2DBZC4A`, `CYBOOT_SUCCESS`
+- 2026-06-14: Physical LCD confirmation is now pending for the live battery update candidate after real hardware programming.
+- 2026-06-14: This live-battery source state is being committed and pushed as the next restore candidate, but it is not yet a physically confirmed golden LCD point until hardware confirmation is recorded.
+- 2026-06-14: Re-enabled battery live updates from the new static-battery golden point by restoring the existing `update_battery_bar(gDashboard.sample_index)` call in `push_sample()`.
+- 2026-06-14: No other battery changes were made during this step:
+  - same screen-level battery bar object
+  - same geometry `32x84 @ (725,97)`
+  - same style/color logic
+  - same existing backend helper path
+- 2026-06-14: Build verification passed for the live battery wiring candidate with `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`.
+- Physical LCD confirmation is still pending for the live battery wiring candidate.
 - 2026-06-14: Golden/failsafe restore point confirmed for the dual-indicator layout with:
   - LCD live
   - GUI visible

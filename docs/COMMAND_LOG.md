@@ -7552,3 +7552,18 @@ update display-only placeholder values in source and sync pending verification d
 - 2026-06-14: Starting LCD-safe flash for the static-only battery-bar restore image.
 - 2026-06-14: Starting golden/failsafe promotion for the LCD-live static-battery state before re-enabling battery live updates.
 - 2026-06-14: Physical LCD confirmed live with static battery bar; promoting this exact state as the next golden/failsafe restore point before battery backend wiring.
+- 2026-06-14: Re-enabled the existing battery live update call in push_sample() from the new static-battery golden point; no other battery geometry, style, or object-tree changes were made.
+- 2026-06-14: Starting LCD-safe flash for the live battery update candidate from the static-battery golden restore point.
+2026-06-14: make clean TOOLCHAIN=GCC_ARM
+2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8
+2026-06-14: OpenOCD pre-program reset-run for live battery candidate.
+2026-06-14: make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP for live battery candidate.
+2026-06-14: OpenOCD post-program reset-run for live battery candidate.
+2026-06-14: git status --short
+2026-06-14: git branch --show-current
+2026-06-14: git rev-parse --short HEAD
+2026-06-14: git log --oneline -5
+2026-06-14: git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+2026-06-14: git add docs/BUILD_FLASH_VERIFICATION.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+2026-06-14: git commit -m "save live battery restore candidate"
+2026-06-14: git push origin aps-demo-state-wiring
