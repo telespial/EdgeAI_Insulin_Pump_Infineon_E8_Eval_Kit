@@ -19,6 +19,14 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-15: Added a screen-level `THINKING` alert box above `Virtual Human` on branch `vp2-background-on-v1-visible`:
+  - yellow rectangular label
+  - shown during the deferred startup hold
+  - automatically hidden on the first live APS sample inside `push_sample()`
+  - no flash performed yet for this milestone
+- 2026-06-15: Embedded build validation passed for the `THINKING` alert box change:
+  - `make clean TOOLCHAIN=GCC_ARM`
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
 - 2026-06-15: Added a display-safe startup isolation change on branch `vp2-background-on-v1-visible` so APS/V2 work is deferred until after the first stable render:
   - `edgeai_insulin_pump_app_start()` no longer calls `ApsDemoState_Init()` during UI construction
   - the initial chart / CRT / large glucose render now seeds from a static placeholder APS state

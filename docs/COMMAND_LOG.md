@@ -7994,3 +7994,5 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T09:09:13-07:00] CMD: OpenOCD LCD-safe post-reset-run after flashing deferred APS/V2 startup image
 [2026-06-15T09:09:15-07:00] RESULT: OpenOCD LCD-safe post-reset-run healthy after flashing deferred APS/V2 startup image
 [2026-06-15T09:12:51-07:00] CMD: inspect repo state before adding THINKING alert box and documenting delayed-start behavior
+[2026-06-15T09:14:51-07:00] CMD: make clean/build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP after adding THINKING alert box
+[2026-06-15T09:18:20-07:00] RESULT: clean build passed after adding the THINKING startup alert box above Virtual Human

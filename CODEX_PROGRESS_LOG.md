@@ -15,6 +15,7 @@ Tests:
 Hardware result:
 - LCD alive / GUI visible
 - `Virtual Human` values remain static briefly, then begin updating
+- 2026-06-15: Added a yellow `THINKING` startup alert above `Virtual Human`, wired it to hide on the first live APS sample, and passed a clean embedded build without flashing yet.
 - observed startup delay is roughly 20 seconds
 
 ## 2026-06-15 — VirtualPatientV2 breakfast freeze investigation

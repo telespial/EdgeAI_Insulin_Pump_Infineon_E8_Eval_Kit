@@ -10,6 +10,7 @@
 - [x] Confirm physical LCD remains live
 - [x] Confirm freeze behavior changes or disappears
 - [ ] Shorten the visible startup delay while preserving the safe first render
+- [ ] Flash and physically verify the `THINKING` startup alert box on the deferred-start image
 ## Current Active Milestone — V2 Single-Source Hardware Verification
 - [x] Confirm whether a `VirtualPatientV1` / `VirtualPatientV2Background` split existed
 - [x] Reproduce the breakfast event on host

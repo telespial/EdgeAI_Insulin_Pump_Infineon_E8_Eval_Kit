@@ -24,6 +24,25 @@ Interpretation:
 - hardware survived the change and confirms the early-start interaction was part of the freeze risk
 - current startup delay is longer than desired because the visible data path waits through the placeholder-first arming behavior
 
+## Update 2026-06-15 — THINKING startup alert box
+
+Status:
+- `EMBEDDED BUILT`
+
+Evidence:
+- branch: `vp2-background-on-v1-visible`
+- source change:
+  - added a screen-level yellow `THINKING` label above `Virtual Human`
+  - label is visible during the deferred startup hold
+  - `push_sample()` hides the label on the first live APS update
+- `make clean TOOLCHAIN=GCC_ARM` passed
+- `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8` passed
+- no flash performed yet for this milestone
+
+Interpretation:
+- the startup alert path now compiles cleanly on the known-safe deferred-start image
+- hardware truth is still pending because this update has not been flashed yet
+
 ## Update 2026-06-15 — VirtualPatientV2 debug-code image confirmed on hardware
 
 Status:

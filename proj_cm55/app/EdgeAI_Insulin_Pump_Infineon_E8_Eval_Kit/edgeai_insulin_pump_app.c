@@ -32,6 +32,7 @@ typedef struct
     lv_obj_t *glucose_label;
     lv_obj_t *glucose_shadow_label;
     lv_obj_t *aps_terminal_label;
+    lv_obj_t *thinking_label;
     lv_obj_t *replay_rate_label;
     lv_obj_t *wifi_bar;
     lv_obj_t *battery_bar;
@@ -437,6 +438,10 @@ static void render_dashboard_state(const aps_demo_state_t *state, bool append_ch
 
 static void push_sample(const aps_demo_state_t *state)
 {
+    if (gDashboard.thinking_label != NULL)
+    {
+        lv_obj_add_flag(gDashboard.thinking_label, LV_OBJ_FLAG_HIDDEN);
+    }
     render_dashboard_state(state, true);
     gDashboard.sample_index++;
 }
@@ -725,6 +730,25 @@ void edgeai_insulin_pump_app_start(void)
             lv_obj_set_style_bg_opa(label, LV_OPA_TRANSP, 0);
             lv_obj_set_style_pad_all(label, 0, 0);
             lv_obj_align(label, LV_ALIGN_CENTER, 0, 83);
+        }
+
+        label = lv_label_create(screen);
+        if (label != NULL)
+        {
+            gDashboard.thinking_label = label;
+            lv_label_set_text(label, "THINKING");
+            lv_obj_set_style_text_color(label, lv_color_hex(0x1A1200), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
+            lv_obj_set_style_bg_color(label, lv_color_hex(0xFFD54A), 0);
+            lv_obj_set_style_bg_opa(label, LV_OPA_COVER, 0);
+            lv_obj_set_style_border_width(label, 2, 0);
+            lv_obj_set_style_border_color(label, lv_color_hex(0x8A5F00), 0);
+            lv_obj_set_style_radius(label, 4, 0);
+            lv_obj_set_style_pad_left(label, 8, 0);
+            lv_obj_set_style_pad_right(label, 8, 0);
+            lv_obj_set_style_pad_top(label, 4, 0);
+            lv_obj_set_style_pad_bottom(label, 4, 0);
+            lv_obj_align(label, LV_ALIGN_CENTER, 0, 50);
         }
 
         label = lv_label_create(screen);
