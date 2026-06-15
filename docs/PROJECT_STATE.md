@@ -19,6 +19,35 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
 - Build guard enabled: non-`W4P3INCH_DISP` configs fail immediately in `proj_cm55/Makefile`
 
 ## Firmware State
+- 2026-06-14: Completed the host/build-only `Virtual Patient V2` milestone.
+- `ApsDemoState_Step()` now consumes `VirtualPatientV2` instead of `VirtualPatientV1`.
+- New files:
+  - `firmware/include/virtual_patient_v2.h`
+  - `firmware/src/virtual_patient_v2.c`
+  - `docs/VIRTUAL_PATIENT_V2.md`
+- Virtual Patient V2 now models:
+  - breakfast-driven COB rise,
+  - insulin absorption / IOB feedback,
+  - exercise sensitivity shifts,
+  - dawn phenomenon drift,
+  - continuous looping bounded state.
+- Host validation passed:
+  - `make -f host.mk test`
+  - `make -f host.mk regression`
+- Embedded build-only validation passed:
+  - `make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8`
+- No flash was performed in this milestone.
+- Example one-hour V2 summary:
+  - `0 min`: `BG 106`, `IOB 0.80`, `COB 0.00`
+  - `10 min`: `BG 116`, `IOB 0.82`, `COB 60.00`
+  - `30 min`: `BG 138`, `IOB 0.72`, `COB 54.29`
+  - `60 min`: `BG 143`, `IOB 0.60`, `COB 45.71`
+- 2026-06-14: Added `docs/CURRENT_STATUS_AND_COMPLETION_PLAN.md` as the detailed handoff/status snapshot covering:
+  - physically verified LCD/UI milestones,
+  - APS demo-state + virtual patient runtime status,
+  - current restore points,
+  - the live-battery candidate pending physical confirmation,
+  - remaining completion work.
 - 2026-06-14: The live battery update candidate has now been programmed with the documented LCD-safe OpenOCD pre/post reset-run flow from the static-battery golden restore point.
 - 2026-06-14: Flash/program verification passed for the live battery candidate:
   - `make program TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP`

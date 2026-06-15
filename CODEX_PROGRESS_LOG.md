@@ -572,3 +572,5 @@ Next recommended step:
 - 2026-06-14: Preserved golden/failsafe tags at `e1ba009`, then built a replay-rate graph label candidate that slows replay to one 5-minute step every 5 seconds and adds a static `Replay:` / `60X` annotation; flash verification is still pending.
 - 2026-06-14: Added `VirtualPatientV1`, replaced the finite APS demo input sequence, passed host test/regression plus embedded build/program, and physically confirmed CRT values keep changing beyond 60 seconds with the LCD still live.
 - 2026-06-14: Added and verified the `Virtual Human` label above the glucose card, then shortened the CRT labels to `INS ONBD`, `CARBS`, and `INS RATE`; LCD stayed live and this became the new restore point.
+- 2026-06-14: Added `VirtualPatientV2`, switched `ApsDemoState_Step()` to consume it, passed `make -f host.mk test`, passed `make -f host.mk regression`, and passed the embedded build-only check with no LCD/layout changes.
+- 2026-06-14: V2 now keeps BG/IOB/COB alive through a deterministic breakfast + controller response + recovery + exercise + dawn loop instead of the simpler V1 demo-state generator.

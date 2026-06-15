@@ -7569,3 +7569,53 @@ update display-only placeholder values in source and sync pending verification d
 2026-06-14: git push origin aps-demo-state-wiring
 2026-06-14: git tag -f e84-live-battery-restore-candidate-2026-06-14 aed98c2
 2026-06-14: git push origin e84-live-battery-restore-candidate-2026-06-14 --force
+2026-06-14: git status --short
+2026-06-14: git branch --show-current
+2026-06-14: git rev-parse --short HEAD
+2026-06-14: git log --oneline -10
+2026-06-14: tail -n 120 docs/PROJECT_STATE.md
+2026-06-14: tail -n 160 docs/BUILD_FLASH_VERIFICATION.md
+2026-06-14: git tag --list | tail -n 20
+2026-06-14: rg -n "wifi_bar|battery_bar|prediction_accuracy_label|Virtual Human|GLUCOSE:|INS ONBD:|CARBS:|ACTION:|INS RATE:|SAFETY:|Replay:" proj_cm55/app/EdgeAI_Insulin_Pump_Infineon_E8_Eval_Kit/edgeai_insulin_pump_app.c
+2026-06-14: sed -n 1,260p docs/RESTORE_POINTS.md
+2026-06-14: git status --short
+2026-06-14: ls docs/CURRENT_STATUS_AND_COMPLETION_PLAN.md
+2026-06-14: sed -n 1,260p firmware/include/virtual_patient_v1.h
+2026-06-14: sed -n 1,320p firmware/src/virtual_patient_v1.c
+2026-06-14: rg -n "ApsDemoState|VirtualPatientV1|virtual_patient" firmware/include firmware/src proj_cm55 tests
+2026-06-14: sed -n 1,260p firmware/include/aps_demo_state.h
+2026-06-14: sed -n 1,360p firmware/src/aps_demo_state.c
+2026-06-14: sed -n 1,260p docs/VIRTUAL_PATIENT_V1.md
+2026-06-14: rg -n "virtual patient|VirtualPatient|APS demo-state|aps_demo_state" tests firmware/src firmware/include docs
+2026-06-14: sed -n 1,220p docs/APS_DEMO_STATE.md
+2026-06-14: sed -n 1,240p ToDo.md
+2026-06-14: tail -n 120 CODEX_PROGRESS_LOG.md
+2026-06-14: sed -n 800,950p tests/test_runner.c
+2026-06-14: sed -n 1,260p firmware/include/iob_engine.h
+2026-06-14: sed -n 1,260p firmware/include/cob_engine.h
+2026-06-14: sed -n 1,260p firmware/include/predictor_v2.h
+2026-06-14: sed -n 1,240p firmware/include/controller_openaps.h
+2026-06-14: sed -n 1,240p firmware/include/safety_supervisor.h
+2026-06-14: rg -n "virtual_patient_v1|firmware/src/.*\\.c|SOURCES\+=" proj_cm55/Makefile host.mk CMakeLists.txt tests/Makefile .  
+2026-06-14: sed -n 1,220p proj_cm55/Makefile
+2026-06-14: sed -n 1,260p host.mk
+2026-06-14: sed -n 1,220p firmware/include/aps_types.h
+2026-06-14: sed -n 1,220p CMakeLists.txt
+2026-06-14: sed -n 1,320p firmware/src/iob_engine.c
+2026-06-14: sed -n 1,320p firmware/src/cob_engine.c
+2026-06-14: sed -n 1,60p tests/test_runner.c
+2026-06-14: make -f host.mk test
+2026-06-14: make -f host.mk regression
+2026-06-14: make -f host.mk test (retry after V2 fixes)
+2026-06-14: make -f host.mk regression (retry after V2 fixes)
+2026-06-14: make build TOOLCHAIN=GCC_ARM CONFIG_DISPLAY=W4P3INCH_DISP -j8 for Virtual Patient V2
+2026-06-14: generate temporary Virtual Patient V2 one-hour summary probe
+2026-06-14: git status --short
+2026-06-14: git diff --stat
+2026-06-14: git checkout -- proj_cm33_ns/.ninja_log proj_cm33_s/.ninja_log proj_cm55/.ninja_log
+2026-06-14: rm -rf host_build out
+2026-06-14: git status --short
+2026-06-14: git status --short
+2026-06-14: git add CMakeLists.txt CODEX_PROGRESS_LOG.md ToDo.md docs/APS_DEMO_STATE.md docs/BUILD_FLASH_VERIFICATION.md docs/COMMAND_LOG.md docs/PROJECT_STATE.md docs/CURRENT_STATUS_AND_COMPLETION_PLAN.md docs/VIRTUAL_PATIENT_V2.md firmware/include/virtual_patient_v2.h firmware/src/virtual_patient_v2.c firmware/src/aps_demo_state.c proj_cm55/Makefile tests/test_runner.c
+2026-06-14: git commit -m "add virtual patient v2 physiology model"
+2026-06-14: git push origin aps-demo-state-wiring

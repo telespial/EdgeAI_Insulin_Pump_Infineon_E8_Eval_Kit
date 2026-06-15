@@ -8,7 +8,7 @@
 #include "iob_engine.h"
 #include "predictor_v2.h"
 #include "safety_supervisor.h"
-#include "virtual_patient_v1.h"
+#include "virtual_patient_v2.h"
 
 enum
 {
@@ -103,7 +103,7 @@ static void format_tenths(char *buffer, size_t buffer_size, float value)
 
 bool ApsDemoState_Init(void)
 {
-    VirtualPatientV1_Init();
+    VirtualPatientV2_Init();
     PredictorV2_Reset();
     PredictorV2_SetEnabled(true);
     OpenApsController_Reset();
@@ -118,7 +118,7 @@ bool ApsDemoState_Init(void)
 bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
 {
     uint32_t step_index;
-    virtual_patient_state_t patient_state = {0};
+    virtual_patient_v2_state_t patient_state = {0};
     predictor_v2_input_t input = {0};
     predictor_v2_output_t prediction = {0};
     aps_controller_output_t command = {0};
@@ -137,7 +137,7 @@ bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
     }
 
     step_index = step_index_from_now(now_s);
-    if (!VirtualPatientV1_Step(now_s, g_runtime.last_delivered_insulin_u_hr, &patient_state))
+    if (!VirtualPatientV2_Step(now_s, g_runtime.last_delivered_insulin_u_hr, &patient_state))
     {
         return false;
     }
@@ -158,9 +158,9 @@ bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
     input.cgm.sensor_flags = 0u;
     input.cgm.valid = true;
 
-    input.physiology.iob_u = patient_state.insulin_iob_u;
+    input.physiology.iob_u = patient_state.iob_u;
     input.physiology.insulin_activity_u_per_hr = 0.0f;
-    input.physiology.cob_g = patient_state.meal_cob_g;
+    input.physiology.cob_g = patient_state.cob_g;
     input.physiology.carb_absorption_g_per_hr = 0.0f;
     input.physiology.basal_u_per_hr = patient_state.basal_u_hr;
     input.physiology.insulin_30m_u = 0.0f;
@@ -169,12 +169,12 @@ bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
     input.physiology.carbs_120m_g = 0.0f;
     input.physiology.minutes_since_bolus = 0u;
     input.physiology.minutes_since_meal = 0u;
-    input.physiology.activity_state = (uint8_t)((patient_state.activity_factor < 1.0f) ? ACTIVITY_EXERCISE : ACTIVITY_SEDENTARY);
+    input.physiology.activity_state = (uint8_t)((patient_state.activity_factor > 1.05f) ? ACTIVITY_EXERCISE : ACTIVITY_SEDENTARY);
     input.physiology.activity_confidence_pct = 95u;
-    input.physiology.motion_rms_5m = (patient_state.activity_factor < 1.0f) ? 0.65f : 0.05f;
-    input.physiology.motion_rms_15m = (patient_state.activity_factor < 1.0f) ? 0.55f : 0.04f;
-    input.physiology.active_minutes = (patient_state.activity_factor < 1.0f) ? 20u : 0u;
-    input.physiology.post_exercise_minutes = (patient_state.activity_factor < 1.0f) ? 5u : 0u;
+    input.physiology.motion_rms_5m = (patient_state.activity_factor > 1.05f) ? 0.65f : 0.05f;
+    input.physiology.motion_rms_15m = (patient_state.activity_factor > 1.05f) ? 0.55f : 0.04f;
+    input.physiology.active_minutes = (patient_state.activity_factor > 1.05f) ? 20u : 0u;
+    input.physiology.post_exercise_minutes = (patient_state.activity_factor > 1.05f) ? 5u : 0u;
     input.physiology_present = true;
 
     if (!PredictorV2_Update(&input, &prediction))
@@ -193,8 +193,8 @@ bool ApsDemoState_Step(uint32_t now_s, aps_demo_state_t *state)
     }
 
     state->bg_mgdl = patient_state.bg_mgdl;
-    state->iob_u = patient_state.insulin_iob_u;
-    state->cob_g = patient_state.meal_cob_g;
+    state->iob_u = patient_state.iob_u;
+    state->cob_g = patient_state.cob_g;
     state->action = command.action;
     state->insulin_u_hr = command.requested_basal_u_per_hr;
     state->safety_flags = command.reason_flags;

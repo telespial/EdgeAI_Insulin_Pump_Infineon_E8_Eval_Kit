@@ -236,6 +236,9 @@
 - [x] Write the next APS display milestone plan and branch plan before touching firmware again.
 - [x] Run `BG`-only placeholder replacement as the next single-field display experiment from `2c8c6f1`.
 - [x] Replace the remaining terminal placeholders with live `IOB`, `COB`, `INS`, and `SAFETY` values on the proven CRT path.
+- [x] Upgrade the APS demo-state patient source from `VirtualPatientV1` to a more physiology-driven `VirtualPatientV2` with meal, exercise, and dawn effects.
+- [ ] Flash and physically verify `VirtualPatientV2` on the current LCD-safe baseline after the battery-bar state is settled.
+- [ ] Add replay-rate settings/backend scaling so virtual-patient time and battery behavior share one explicit speed control.
 
 - [x] Promote the live multi-field CRT terminal state to the next golden/failsafe restore point if the user wants to lock it in.
 - [x] Complete APS demo-state CRT wiring flash verification on hardware.
