@@ -29,6 +29,8 @@ PSOC Edge E84 Eval (EPC2), LVGL graphics base for Smart Pong port.
   - physical result: LCD live / GUI visible
 - 2026-06-15: This checkpoint is being promoted as the new **golden** restore point for continued mode/startup work.
 - 2026-06-15: The prior failsafe restore point remains intentionally unchanged until the mode issue is isolated.
+- 2026-06-15: Added `docs/VP2_MODE_LCD_FAILURE.md` as the single source-of-truth writeup for the current scenario-mode LCD blanking bug.
+- 2026-06-15: Rewrote `docs/START_HERE.md` so new sessions land on the active insulin-pump / APS runtime, current restore point, repo paths, required docs, and current blocking bug instead of the older Smart Pong startup context.
 - 2026-06-15: Added a display-safe startup isolation change on branch `vp2-background-on-v1-visible` so APS/V2 work is deferred until after the first stable render:
   - `edgeai_insulin_pump_app_start()` no longer calls `ApsDemoState_Init()` during UI construction
   - the initial chart / CRT / large glucose render now seeds from a static placeholder APS state

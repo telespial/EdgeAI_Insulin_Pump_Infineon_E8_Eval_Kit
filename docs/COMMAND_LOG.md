@@ -8028,3 +8028,5 @@ update display-only placeholder values in source and sync pending verification d
 [2026-06-15T09:39:26-07:00] RESULT: captured current app_combined.hex and proj_cm55.elf as delayed-start golden artifacts
 [2026-06-15T09:40:00-07:00] RESULT: physical LCD confirmed live / GUI visible after reflashing the 250 ms delayed-start image
 [2026-06-15T09:40:30-07:00] CMD: update PROJECT_STATE / BUILD_REPORT / BUILD_FLASH_VERIFICATION / RESTORE_POINTS / CODEX_PROGRESS_LOG / ToDo for the new delayed-start golden checkpoint
+[2026-06-15T09:47:00-07:00] CMD: audit START_HERE / AGENTS / V2 freeze docs and add a dedicated scenario-mode LCD failure doc
+[2026-06-15T09:49:00-07:00] CMD: rewrite START_HERE to point at the active repo truth, rules, restore point, and blocking scenario-mode bug

@@ -616,3 +616,4 @@ Report:
 - [x] Promote the LCD-live `250 ms` delayed-start image as the new golden restore point
 - [ ] Isolate why `APP_VP_SCENARIO_MODE` images can pass build/program yet still blank the LCD
 - [ ] Keep the current delayed-start golden image available as the rollback base while mode work proceeds
+- [x] Create a dedicated mode-failure source-of-truth doc for future sessions
